@@ -1,11 +1,10 @@
 import Image from "next/image";
-import MrtSvg from "./MrtSvg";
+import FullMrtSvg from "./FullMrtSvg";
 
 export default function Home() {
   return (
     <div>
-      <h1>Guessr</h1>
-      <MrtSvg />
+      <FullMrtSvg />
     </div>
   );
 }
