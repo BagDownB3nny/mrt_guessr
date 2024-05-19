@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { MrtSvg } from "./MrtSvg";
+import MrtSvg from "./MrtSvg";
 
 export default function Home() {
   return (
