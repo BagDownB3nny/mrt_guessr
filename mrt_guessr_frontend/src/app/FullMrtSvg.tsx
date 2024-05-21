@@ -37,11 +37,13 @@ const {
   aj,
 } = styles;
 
-const FullMrtSvg = () => {
+const FullMrtSvg = (props: any) => {
+  const { onCorrectClick, currentStation } = props;
+
   return (
     <div>
       <MrtBackgroundSvg />
-      <MrtSvg />
+      <MrtSvg onCorrectClick={onCorrectClick} currentStation={currentStation} />
       {/* <LrtSvg /> */}
     </div>
   );
