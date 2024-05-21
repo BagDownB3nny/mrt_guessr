@@ -1,7 +1,231 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import styles from "./MrtMap.css";
+import { stat } from "fs";
+
+const DowntownLineStations = [
+  "Bukit Panjang",
+  "Cashew",
+  "Hillview",
+  "Beauty World",
+  "King Albert Park",
+  "Sixth Avenue",
+  "Tan Kah Kee",
+  "Botanic Gardens",
+  "Stevens",
+  "Newton",
+  "Little India",
+  "Rochor",
+  "Bugis",
+  "Promenade",
+  "Bayfront",
+  "Downtown",
+  "Telok Ayer",
+  "Chinatown",
+  "Fort Canning",
+  "Bencoolen",
+  "Jalan Besar",
+  "Bendemeer",
+  "Geylang Bahru",
+  "Mattar",
+  "MacPherson",
+  "Ubi",
+  "Kaki Bukit",
+  "Bedok North",
+  "Bedok Reservoir",
+  "Tampines West",
+  "Tampines",
+  "Tampines East",
+  "Upper Changi",
+  "Expo",
+];
+
+const EastWestLineStations = [
+  "Tuas Link",
+  "Tuas West Road",
+  "Tuas Crescent",
+  "Gul Circle",
+  "Joo Koon",
+  "Pioneer",
+  "Boon Lay",
+  "Lakeside",
+  "Chinese Garden",
+  "Jurong East",
+  "Clementi",
+  "Dover",
+  "Buona Vista",
+  "Commonwealth",
+  "Queenstown",
+  "Redhill",
+  "Tiong Bahru",
+  "Outram Park",
+  "Tanjong Pagar",
+  "Raffles Place",
+  "City Hall",
+  "Bugis",
+  "Lavender",
+  "Kallang",
+  "Aljunied",
+  "Paya Lebar",
+  "Eunos",
+  "Kembangan",
+  "Bedok",
+  "Tanah Merah",
+  "Expo",
+  "Changi Airport",
+  "Simei",
+  "Tampines",
+  "Pasir Ris",
+];
+
+const CircleLineStations = [
+  "Marina Bay",
+  "Bayfront",
+  "Dhoby Ghaut",
+  "Bras Basah",
+  "Esplanade",
+  "Promenade",
+  "Nicoll Highway",
+  "Stadium",
+  "Mountbatten",
+  "Dakota",
+  "Paya Lebar",
+  "MacPherson",
+  "Tai Seng",
+  "Bartley",
+  "Serangoon",
+  "Lorong Chuan",
+  "Bishan",
+  "Marymount",
+  "Caldecott",
+  "Botanic Gardens",
+  "Farrer Road",
+  "Holland Village",
+  "Buona Vista",
+  "one-north",
+  "Kent Ridge",
+  "Haw Par Villa",
+  "Pasir Panjang",
+  "Labrador Park",
+  "Telok Blangah",
+  "HarbourFront",
+];
+
+const NorthSouthLineStations = [
+  "Marina South Pier",
+  "Marina Bay",
+  "Raffles Place",
+  "City Hall",
+  "Dhoby Ghaut",
+  "Somerset",
+  "Orchard",
+  "Newton",
+  "Novena",
+  "Toa Payoh",
+  "Braddell",
+  "Bishan",
+  "Ang Mo Kio",
+  "Yio Chu Kang",
+  "Khatib",
+  "Yishun",
+  "Canberra",
+  "Sembawang",
+  "Admiralty",
+  "Woodlands",
+  "Marsiling",
+  "Kranji",
+  "Yew Tee",
+  "Choa Chu Kang",
+  "Bukit Gombak",
+  "Bukit Batok",
+  "Jurong East",
+];
+
+const NorthEastLineStations = [
+  "HarbourFront",
+  "Outram Park",
+  "Chinatown",
+  "Clarke Quay",
+  "Dhoby Ghaut",
+  "Little India",
+  "Farrer Park",
+  "Boon Keng",
+  "Potong Pasir",
+  "Woodleigh",
+  "Serangoon",
+  "Kovan",
+  "Hougang",
+  "Buangkok",
+  "Sengkang",
+  "Punggol",
+];
+
+const ThomsonEastCoastLineStations = [
+  "Woodlands North",
+  "Woodlands",
+  "Woodlands South",
+  "Springleaf",
+  "Lentor",
+  "Mayflower",
+  "Bright Hill",
+  "Upper Thomson",
+  "Caldecott",
+  "Mount Pleasant",
+  "Stevens",
+  "Napier",
+  "Orchard Boulevard",
+  "Orchard",
+  "Great World",
+  "Havelock",
+  "Outram Park",
+  "Maxwell",
+  "Shenton Way",
+  "Marina Bay",
+  "Marina South",
+  "Gardens by the Bay",
+];
+
+const getAllStations = (): String[] => {
+  const allStations = new Set();
+  DowntownLineStations.forEach((station) => allStations.add(station));
+  EastWestLineStations.forEach((station) => allStations.add(station));
+  CircleLineStations.forEach((station) => allStations.add(station));
+  NorthSouthLineStations.forEach((station) => allStations.add(station));
+  NorthEastLineStations.forEach((station) => allStations.add(station));
+  ThomsonEastCoastLineStations.forEach((station) => allStations.add(station));
+  return Array.from(allStations);
+};
+
+const randomItem = (arr: String[]) => {
+  arr.splice((Math.random() * arr.length) | 0, 1);
+};
+
+const getStationName = (id: String) => {
+  return id.substring(0, id.length - 7).replace(/_/g, " ");
+};
 
 const MrtSvg = () => {
+  const [unseenstations, setUnseenStations] = useState<String[]>(
+    getAllStations()
+  );
+  const [currentStation, setCurrentStation] = useState<String>("");
+  const [clickedStations, setClickedStations] = useState<String[]>([]);
+
+  const handleClick = (e: any) => {
+    let station = "";
+    if (e.target.tagName.toLowerCase() === "path") {
+      station = getStationName(e.target.parentNode.parentNode.id);
+    } else {
+      station = getStationName(e.target.id);
+    }
+    console.log(station);
+    if (station === currentStation) {
+      // setClickedStations([...clickedStations, station]);
+      // const newStation = randomItem(unseenstations);
+      // setCurrentStation(newStation);
+    }
+  };
+
   return (
     <svg
       id="a"
@@ -9,7 +233,7 @@ const MrtSvg = () => {
       xmlns="http://www.w3.org/2000/svg"
       style={{ position: "absolute" }}
     >
-      <g id="Cashew_Button">
+      <g id="Cashew_Button" onClick={handleClick}>
         <g id="g1447">
           <path
             className="n"
@@ -40,7 +264,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Hillview_Button">
+      <g id="Hillview_Button" onClick={handleClick}>
         <g id="g1452">
           <path
             className="n"
@@ -71,7 +295,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Beauty_World_Button">
+      <g id="Beauty_World_Button" onClick={handleClick}>
         <g id="g1457">
           <path
             className="n"
@@ -102,7 +326,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="King_Albert_Park_Button">
+      <g id="King_Albert_Park_Button" onClick={handleClick}>
         <g id="g1462">
           <path
             className="n"
@@ -133,7 +357,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Sixth_Avenue_Button">
+      <g id="Sixth_Avenue_Button" onClick={handleClick}>
         <g id="g1467">
           <path
             className="n"
@@ -164,7 +388,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Tan_Kah_Kee_Button">
+      <g id="Tan_Kah_Kee_Button" onClick={handleClick}>
         <g id="g1472">
           <path
             className="n"
@@ -195,7 +419,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Rochor_Button">
+      <g id="Rochor_Button" onClick={handleClick}>
         <g id="g1477">
           <path
             className="n"
@@ -231,7 +455,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Fort_Canning_Button">
+      <g id="Fort_Canning_Button" onClick={handleClick}>
         <g id="g1483">
           <path
             className="n"
@@ -267,7 +491,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Bencoolen_Button">
+      <g id="Bencoolen_Button" onClick={handleClick}>
         <g id="g1489">
           <path
             className="n"
@@ -303,7 +527,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Jalan_Besar_Button">
+      <g id="Jalan_Besar_Button" onClick={handleClick}>
         <g id="g1495">
           <path
             className="n"
@@ -339,7 +563,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Bendemeer_Button">
+      <g id="Bendemeer_Button" onClick={handleClick}>
         <g id="g1501">
           <path
             className="n"
@@ -375,7 +599,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Geylang_Bahru_Button">
+      <g id="Geylang_Bahru_Button" onClick={handleClick}>
         <g id="g1507">
           <path
             className="n"
@@ -411,7 +635,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Mattar_Button">
+      <g id="Mattar_Button" onClick={handleClick}>
         <g id="g1513">
           <path
             className="n"
@@ -447,7 +671,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Ubi_Button">
+      <g id="Ubi_Button" onClick={handleClick}>
         <g id="g1519">
           <path
             className="n"
@@ -483,7 +707,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Kaki_Bukit_Button">
+      <g id="Kaki_Bukit_Button" onClick={handleClick}>
         <g id="g1525">
           <path
             className="n"
@@ -519,7 +743,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Bedok_North_Button">
+      <g id="Bedok_North_Button" onClick={handleClick}>
         <g id="g1531">
           <path
             className="n"
@@ -555,7 +779,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Bedok_Resovoir_Button">
+      <g id="Bedok_Resovoir_Button" onClick={handleClick}>
         <g id="g1537">
           <path
             className="n"
@@ -591,7 +815,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Tampines_West_Button">
+      <g id="Tampines_West_Button" onClick={handleClick}>
         <g id="g1543">
           <path
             className="n"
@@ -627,7 +851,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Tampines_Button">
+      <g id="Tampines_Button" onClick={handleClick}>
         <g id="g1549">
           <path
             className="n"
@@ -704,7 +928,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Tampines_East_Button">
+      <g id="Tampines_East_Button" onClick={handleClick}>
         <g id="g1561">
           <path
             className="n"
@@ -740,7 +964,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Upper_Changi_Button">
+      <g id="Upper_Changi_Button" onClick={handleClick}>
         <g id="g1567">
           <path
             className="n"
@@ -776,7 +1000,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Telok_Ayer_Button">
+      <g id="Telok_Ayer_Button" onClick={handleClick}>
         <g id="g1573">
           <path
             className="n"
@@ -812,7 +1036,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Downtown_Button">
+      <g id="Downtown_Button" onClick={handleClick}>
         <g id="g1579">
           <path
             className="n"
@@ -848,7 +1072,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Bukit_Batok_Button">
+      <g id="Bukit_Batok_Button" onClick={handleClick}>
         <g id="g1585">
           <path
             className="n"
@@ -879,7 +1103,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Bukit_Gombak_Button">
+      <g id="Bukit_Gombak_Button" onClick={handleClick}>
         <g id="g1590">
           <path
             className="n"
@@ -910,7 +1134,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Yew_Tee_Button">
+      <g id="Yew_Tee_Button" onClick={handleClick}>
         <g id="g1595">
           <path
             className="n"
@@ -941,7 +1165,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Kranji_Button">
+      <g id="Kranji_Button" onClick={handleClick}>
         <g id="g1600">
           <path
             className="n"
@@ -972,7 +1196,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Marsiling_Button">
+      <g id="Marsiling_Button" onClick={handleClick}>
         <g id="g1605">
           <path
             className="n"
@@ -1003,7 +1227,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Admiralty_Button">
+      <g id="Admiralty_Button" onClick={handleClick}>
         <g id="g1610">
           <path
             className="n"
@@ -1039,7 +1263,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Sembawang_Button">
+      <g id="Sembawang_Button" onClick={handleClick}>
         <g id="g1616">
           <path
             className="n"
@@ -1075,7 +1299,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Canberra_Button">
+      <g id="Canberra_Button" onClick={handleClick}>
         <g id="g1622">
           <path
             className="n"
@@ -1111,7 +1335,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Yishun_Button">
+      <g id="Yishun_Button" onClick={handleClick}>
         <g id="g1628">
           <path
             className="n"
@@ -1147,7 +1371,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Khatib_Button">
+      <g id="Khatib_Button" onClick={handleClick}>
         <g id="g1634">
           <path
             className="n"
@@ -1183,7 +1407,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Yio_Chu_Kang_Button">
+      <g id="Yio_Chu_Kang_Button" onClick={handleClick}>
         <g id="g1640">
           <path
             className="n"
@@ -1219,7 +1443,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Ang_Mo_Kio_Button">
+      <g id="Ang_Mo_Kio_Button" onClick={handleClick}>
         <g id="g1646">
           <path
             className="n"
@@ -1255,7 +1479,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Braddell_Button">
+      <g id="Braddell_Button" onClick={handleClick}>
         <g id="g1652">
           <path
             className="n"
@@ -1291,7 +1515,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Toa_Payoh_Button">
+      <g id="Toa_Payoh_Button" onClick={handleClick}>
         <g id="g1658">
           <path
             className="n"
@@ -1327,7 +1551,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Novena_Button">
+      <g id="Novena_Button" onClick={handleClick}>
         <g id="g1664">
           <path
             className="n"
@@ -1363,7 +1587,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Somerset_Button">
+      <g id="Somerset_Button" onClick={handleClick}>
         <g id="g1670">
           <path
             className="n"
@@ -1399,7 +1623,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Marina_South_Pier_Button">
+      <g id="Marina_South_Pier_Button" onClick={handleClick}>
         <g id="g1676">
           <path
             className="n"
@@ -1435,7 +1659,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Pasir_Ris_Button">
+      <g id="Pasir_Ris_Button" onClick={handleClick}>
         <g id="g1682">
           <path
             className="n"
@@ -1466,7 +1690,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Simei_Button">
+      <g id="Simei_Button" onClick={handleClick}>
         <g id="g1687">
           <path
             className="n"
@@ -1497,7 +1721,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Bedok_Button">
+      <g id="Bedok_Button" onClick={handleClick}>
         <g id="g1692">
           <path
             className="n"
@@ -1528,7 +1752,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Changi_Airport_Button">
+      <g id="Changi_Airport_Button" onClick={handleClick}>
         <g id="g1697">
           <path
             className="n"
@@ -1559,7 +1783,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Kembangan_Button">
+      <g id="Kembangan_Button" onClick={handleClick}>
         <g id="g1702">
           <path
             className="n"
@@ -1590,7 +1814,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Eunos_Button">
+      <g id="Eunos_Button" onClick={handleClick}>
         <g id="g1707">
           <path
             className="n"
@@ -1621,7 +1845,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Aljunied_Button">
+      <g id="Aljunied_Button" onClick={handleClick}>
         <g id="g1712">
           <path
             className="n"
@@ -1652,7 +1876,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Kallang_Button">
+      <g id="Kallang_Button" onClick={handleClick}>
         <g id="g1717">
           <path
             className="n"
@@ -1688,7 +1912,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Lavender_Button">
+      <g id="Lavender_Button" onClick={handleClick}>
         <g id="g1723">
           <path
             className="n"
@@ -1724,7 +1948,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Tanjong_Pagar_Button">
+      <g id="Tanjong_Pagar_Button" onClick={handleClick}>
         <g id="g1729">
           <path
             className="n"
@@ -1760,7 +1984,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Tiong_Bahru_Button">
+      <g id="Tiong_Bahru_Button" onClick={handleClick}>
         <g id="g1735">
           <path
             className="n"
@@ -1796,7 +2020,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Redhill_Button">
+      <g id="Redhill_Button" onClick={handleClick}>
         <g id="g1741">
           <path
             className="n"
@@ -1832,7 +2056,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Queenstown_Button">
+      <g id="Queenstown_Button" onClick={handleClick}>
         <g id="g1747">
           <path
             className="n"
@@ -1868,7 +2092,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Commonwealth_Button">
+      <g id="Commonwealth_Button" onClick={handleClick}>
         <g id="g1753">
           <path
             className="n"
@@ -1904,7 +2128,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Dover_Button">
+      <g id="Dover_Button" onClick={handleClick}>
         <g id="g1759">
           <path
             className="n"
@@ -1940,7 +2164,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Clementi_Button">
+      <g id="Clementi_Button" onClick={handleClick}>
         <g id="g1765">
           <path
             className="n"
@@ -1976,7 +2200,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Chinese_Garden_Button">
+      <g id="Chinese_Garden_Button" onClick={handleClick}>
         <g id="g1771">
           <path
             className="n"
@@ -2012,7 +2236,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Lakeside_Button">
+      <g id="Lakeside_Button" onClick={handleClick}>
         <g id="g1777">
           <path
             className="n"
@@ -2048,7 +2272,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Pioneer_Button">
+      <g id="Pioneer_Button" onClick={handleClick}>
         <g id="g1783">
           <path
             className="n"
@@ -2084,7 +2308,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Boon_Lay_Button">
+      <g id="Boon_Lay_Button" onClick={handleClick}>
         <g id="g1789">
           <path
             className="n"
@@ -2120,7 +2344,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Joo_Koon_Button">
+      <g id="Joo_Koon_Button" onClick={handleClick}>
         <g id="g1795">
           <path
             className="n"
@@ -2156,7 +2380,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Gul_Circle_Button">
+      <g id="Gul_Circle_Button" onClick={handleClick}>
         <g id="g1801">
           <path
             className="n"
@@ -2192,7 +2416,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Tuas_Crescent_Button">
+      <g id="Tuas_Crescent_Button" onClick={handleClick}>
         <g id="g1807">
           <path
             className="n"
@@ -2228,7 +2452,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Tuas_West_Road_Button">
+      <g id="Tuas_West_Road_Button" onClick={handleClick}>
         <g id="g1813">
           <path
             className="n"
@@ -2264,7 +2488,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Tuas_Link_Button">
+      <g id="Tuas_Link_Button" onClick={handleClick}>
         <g id="g1819">
           <path
             className="n"
@@ -2300,7 +2524,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Farrer_Park_Button">
+      <g id="Farrer_Park_Button" onClick={handleClick}>
         <g id="g1825">
           <path
             className="n"
@@ -2331,7 +2555,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Boon_Keng_Button">
+      <g id="Boon_Keng_Button" onClick={handleClick}>
         <g id="g1830">
           <path
             className="n"
@@ -2362,7 +2586,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Potong_Pasir_Button">
+      <g id="Potong_Pasir_Button" onClick={handleClick}>
         <g id="g1835">
           <path
             className="n"
@@ -2398,7 +2622,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Woodleigh_Button">
+      <g id="Woodleigh_Button" onClick={handleClick}>
         <g id="g1841">
           <path
             className="n"
@@ -2434,7 +2658,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Kovan_Button">
+      <g id="Kovan_Button" onClick={handleClick}>
         <g id="g1847">
           <path
             className="n"
@@ -2470,7 +2694,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Hougang_Button">
+      <g id="Hougang_Button" onClick={handleClick}>
         <g id="g1853">
           <path
             className="n"
@@ -2506,7 +2730,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Buangkok_Button">
+      <g id="Buangkok_Button" onClick={handleClick}>
         <g id="g1859">
           <path
             className="n"
@@ -2542,7 +2766,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Clarke_Quay_Button">
+      <g id="Clarke_Quay_Button" onClick={handleClick}>
         <g id="g1865">
           <path
             className="n"
@@ -2573,7 +2797,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Bras_Basah_Button">
+      <g id="Bras_Basah_Button" onClick={handleClick}>
         <g id="g1870">
           <path
             className="n"
@@ -2604,7 +2828,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Esplanade_Button">
+      <g id="Esplanade_Button" onClick={handleClick}>
         <g id="g1875">
           <path
             className="n"
@@ -2635,7 +2859,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Nicoll_Highway_Button">
+      <g id="Nicoll_Highway_Button" onClick={handleClick}>
         <g id="g1880">
           <path
             className="n"
@@ -2666,7 +2890,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Stadium_Button">
+      <g id="Stadium_Button" onClick={handleClick}>
         <g id="g1885">
           <path
             className="n"
@@ -2697,7 +2921,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Mountbatten_Button">
+      <g id="Mountbatten_Button" onClick={handleClick}>
         <g id="g1890">
           <path
             className="n"
@@ -2728,7 +2952,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Dakota_Button">
+      <g id="Dakota_Button" onClick={handleClick}>
         <g id="g1895">
           <path
             className="n"
@@ -2759,7 +2983,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Tai_Seng_Button">
+      <g id="Tai_Seng_Button" onClick={handleClick}>
         <g id="g1900">
           <path
             className="n"
@@ -2795,7 +3019,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Bartley_Button">
+      <g id="Bartley_Button" onClick={handleClick}>
         <g id="g1906">
           <path
             className="n"
@@ -2831,7 +3055,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Lorong_Chuan_Button">
+      <g id="Lorong_Chuan_Button" onClick={handleClick}>
         <g id="g1912">
           <path
             className="n"
@@ -2867,7 +3091,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Marymount_Button">
+      <g id="Marymount_Button" onClick={handleClick}>
         <g id="g1918">
           <path
             className="n"
@@ -2903,7 +3127,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Farrer_Road_Button">
+      <g id="Farrer_Road_Button" onClick={handleClick}>
         <g id="g1924">
           <path
             className="n"
@@ -2939,7 +3163,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Holland_Village_Button">
+      <g id="Holland_Village_Button" onClick={handleClick}>
         <g id="g1930">
           <path
             className="n"
@@ -2975,7 +3199,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="one-north_Button">
+      <g id="one-north_Button" onClick={handleClick}>
         <g id="g1936">
           <path
             className="n"
@@ -3011,7 +3235,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Kent_Ridge_Button">
+      <g id="Kent_Ridge_Button" onClick={handleClick}>
         <g id="g1942">
           <path
             className="n"
@@ -3047,7 +3271,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Haw_Par_Villa_Button">
+      <g id="Haw_Par_Villa_Button" onClick={handleClick}>
         <g id="g1948">
           <path
             className="n"
@@ -3083,7 +3307,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Pasir_Panjang_Button">
+      <g id="Pasir_Panjang_Button" onClick={handleClick}>
         <g id="g1954">
           <path
             className="n"
@@ -3119,7 +3343,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Labrador_Button">
+      <g id="Labrador_Button" onClick={handleClick}>
         <g id="g1960">
           <path
             className="n"
@@ -3155,7 +3379,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Telok_Blangah_Button">
+      <g id="Telok_Blangah_Button" onClick={handleClick}>
         <g id="g1966">
           <path
             className="n"
@@ -3191,7 +3415,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Woodlands_North_Button">
+      <g id="Woodlands_North_Button" onClick={handleClick}>
         <g id="g1972">
           <path
             className="n"
@@ -3222,7 +3446,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Woodlands_South_Button">
+      <g id="Woodlands_South_Button" onClick={handleClick}>
         <g id="g1977">
           <path
             className="n"
@@ -3253,7 +3477,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Springleaf_Button">
+      <g id="Springleaf_Button" onClick={handleClick}>
         <g id="g1982">
           <path
             className="n"
@@ -3284,7 +3508,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Lentor_Button">
+      <g id="Lentor_Button" onClick={handleClick}>
         <g id="g1987">
           <path
             className="n"
@@ -3315,7 +3539,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Mayflower_Button">
+      <g id="Mayflower_Button" onClick={handleClick}>
         <g id="g1992">
           <path
             className="n"
@@ -3346,7 +3570,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Bright_Hill_Button">
+      <g id="Bright_Hill_Button" onClick={handleClick}>
         <g id="g1997">
           <path
             className="n"
@@ -3377,7 +3601,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Upper_Thomson_Button">
+      <g id="Upper_Thomson_Button" onClick={handleClick}>
         <g id="g2002">
           <path
             className="n"
@@ -3408,7 +3632,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="MacPherson_Button">
+      <g id="MacPherson_Button" onClick={handleClick}>
         <g id="g2007">
           <path
             className="n"
@@ -3478,7 +3702,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Promenade_Button">
+      <g id="Promenade_Button" onClick={handleClick}>
         <g id="g2019">
           <path
             className="n"
@@ -3543,7 +3767,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Jurong_East_Button">
+      <g id="Jurong_East_Button" onClick={handleClick}>
         <g id="g2030">
           <path
             className="n"
@@ -3608,7 +3832,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Choa_Chu_Kang_Button">
+      <g id="Choa_Chu_Kang_Button" onClick={handleClick}>
         <g id="g2041">
           <path
             className="n"
@@ -3668,7 +3892,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Sengkang_Button">
+      <g id="Sengkang_Button" onClick={handleClick}>
         <g id="g2051">
           <path
             className="n"
@@ -3733,7 +3957,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Punggol_Button">
+      <g id="Punggol_Button" onClick={handleClick}>
         <g id="g2062">
           <path
             className="n"
@@ -3798,7 +4022,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Woodlands_Button">
+      <g id="Woodlands_Button" onClick={handleClick}>
         <g id="g2073">
           <path
             className="n"
@@ -3858,7 +4082,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Bishan_Button">
+      <g id="Bishan_Button" onClick={handleClick}>
         <g id="g2083">
           <path
             className="n"
@@ -3928,7 +4152,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Serangoon_Button">
+      <g id="Serangoon_Button" onClick={handleClick}>
         <g id="g2095">
           <path
             className="n"
@@ -3998,7 +4222,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Paya_Lebar_Button">
+      <g id="Paya_Lebar_Button" onClick={handleClick}>
         <g id="g2107">
           <path
             className="n"
@@ -4058,7 +4282,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Dhoby_Ghaut_Button">
+      <g id="Dhoby_Ghaut_Button" onClick={handleClick}>
         <polygon
           className="m"
           points="731.45,773.63 731.45,790.98 745.01,790.98 749.37,790.98 758.76,790.98 758.76,790.04 758.76,790.04 749.91,790.04 745.71,790.04 731.45,790.04 731.45,774.58 745.71,774.58 749.91,774.58 758.76,774.58 758.76,773.63 749.37,773.63 745.01,773.63 "
@@ -4150,7 +4374,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="City_Hall_Button">
+      <g id="City_Hall_Button" onClick={handleClick}>
         <g id="g2132">
           <path
             className="n"
@@ -4220,7 +4444,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Tanah_Merah_Button">
+      <g id="Tanah_Merah_Button" onClick={handleClick}>
         <g id="g2144">
           <path
             className="n"
@@ -4283,7 +4507,7 @@ const MrtSvg = () => {
           id="rect2151"
         />
       </g>
-      <g id="Little_India_Button">
+      <g id="Little_India_Button" onClick={handleClick}>
         <g id="g2153">
           <path
             className="n"
@@ -4348,7 +4572,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Chinatown_Button">
+      <g id="Chinatown_Button" onClick={handleClick}>
         <g id="g2164">
           <path
             className="n"
@@ -4413,7 +4637,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Bugis_Button">
+      <g id="Bugis_Button" onClick={handleClick}>
         <g id="g2175">
           <path
             className="n"
@@ -4483,7 +4707,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Expo_Button">
+      <g id="Expo_Button" onClick={handleClick}>
         <g id="g2187">
           <path
             className="n"
@@ -4548,7 +4772,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Bayfront_Button">
+      <g id="Bayfront_Button" onClick={handleClick}>
         <g id="g2198">
           <path
             className="n"
@@ -4613,7 +4837,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Caldecott_Button">
+      <g id="Caldecott_Button" onClick={handleClick}>
         <g id="g2209">
           <path
             className="n"
@@ -4678,7 +4902,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Botanic_Gardens_Button">
+      <g id="Botanic_Gardens_Button" onClick={handleClick}>
         <g id="g2220">
           <path
             className="n"
@@ -4743,7 +4967,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Buona_Vista_Button">
+      <g id="Buona_Vista_Button" onClick={handleClick}>
         <g id="g2231">
           <path
             className="n"
@@ -4813,7 +5037,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="HarbourFront_Button">
+      <g id="HarbourFront_Button" onClick={handleClick}>
         <g id="g2243">
           <path
             className="n"
@@ -4878,7 +5102,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Raffles_Place_Button">
+      <g id="Raffles_Place_Button" onClick={handleClick}>
         <g id="g2254">
           <path
             className="n"
@@ -10908,7 +11132,7 @@ const MrtSvg = () => {
           id="path3406"
         />
       </g>
-      <g id="Newton_Button">
+      <g id="Newton_Button" onClick={handleClick}>
         <g id="g3408">
           <path
             className="n"
@@ -10990,7 +11214,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Bukit_Panjang_Button">
+      <g id="Bukit_Panjang_Button" onClick={handleClick}>
         <g id="g3421">
           <path
             className="n"
@@ -11064,7 +11288,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Napier_Button">
+      <g id="Napier_Button" onClick={handleClick}>
         <g id="g3469">
           <path
             className="n"
@@ -11100,7 +11324,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Orchard_Boulevard_Button">
+      <g id="Orchard_Boulevard_Button" onClick={handleClick}>
         <g id="g3475">
           <path
             className="n"
@@ -11136,7 +11360,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Great_World_Button">
+      <g id="Great_World_Button" onClick={handleClick}>
         <g id="g3481">
           <path
             className="n"
@@ -11172,7 +11396,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Havelock_Button">
+      <g id="Havelock_Button" onClick={handleClick}>
         <g id="g3487">
           <path
             className="n"
@@ -11208,7 +11432,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Maxwell_Button">
+      <g id="Maxwell_Button" onClick={handleClick}>
         <g id="g3493">
           <path
             className="n"
@@ -11244,7 +11468,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Gardens_by_the_Bay_Button">
+      <g id="Gardens_by_the_Bay_Button" onClick={handleClick}>
         <g id="g3499">
           <path
             className="n"
@@ -11280,7 +11504,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Shenton_Way_Button">
+      <g id="Shenton_Way_Button" onClick={handleClick}>
         <g id="g3505">
           <path
             className="n"
@@ -11316,7 +11540,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Orchard_Button">
+      <g id="Orchard_Button" onClick={handleClick}>
         <g id="g3511">
           <path
             className="n"
@@ -11386,7 +11610,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Outram_Park_Button">
+      <g id="Outram_Park_Button" onClick={handleClick}>
         <polygon
           className="m"
           points="635.73,888.77 635.73,906.13 649.29,906.13 653.65,906.13 663.04,906.13 663.04,905.18 663.04,905.18 654.18,905.18 649.99,905.18 635.73,905.18 635.73,889.72 649.99,889.72 654.18,889.72 663.04,889.72 663.04,888.77 653.65,888.77 649.29,888.77 "
@@ -11483,7 +11707,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Marina_Bay_Button">
+      <g id="Marina_Bay_Button" onClick={handleClick}>
         <polygon
           className="m"
           points="853.3,1012.35 853.3,1029.71 866.86,1029.71 871.22,1029.71 880.61,1029.71 880.61,1028.77 880.61,1028.77 871.76,1028.77 867.56,1028.77 853.3,1028.77 853.3,1013.3 867.56,1013.3 871.76,1013.3 880.61,1013.3 880.61,1012.35 871.22,1012.35 866.86,1012.35 "
@@ -11580,7 +11804,7 @@ const MrtSvg = () => {
           />
         </g>
       </g>
-      <g id="Stevens_Button">
+      <g id="Stevens_Button" onClick={handleClick}>
         <g id="g3555">
           <path
             className="n"

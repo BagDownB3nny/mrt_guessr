@@ -40,7 +40,7 @@ const {
 const FullMrtSvg = () => {
   return (
     <div>
-      {/* <MrtBackgroundSvg /> */}
+      <MrtBackgroundSvg />
       <MrtSvg />
       {/* <LrtSvg /> */}
     </div>
