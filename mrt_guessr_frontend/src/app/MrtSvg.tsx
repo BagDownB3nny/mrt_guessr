@@ -22,7 +22,8 @@ const MrtSvg = (props: any) => {
   };
 
   useEffect(() => {
-    const id = `${newlyCorrectStation.replace(" ", "_")}_Button`;
+    const id = `${newlyCorrectStation.replace(" ", "_")}`;
+    console.log(id);
     const correctTextElement = document.getElementById(`${id}_Text`);
     if (correctTextElement) {
       correctTextElement.style.display = "block";
