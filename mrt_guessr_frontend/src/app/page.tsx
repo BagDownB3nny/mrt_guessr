@@ -206,6 +206,7 @@ export default function Home() {
   );
   const [currentStation, setCurrentStation] = useState<String>("");
   const [clickedStations, setClickedStations] = useState<String[]>([]);
+  const [newlyCorrectStation, setNewlyCorrectStation] = useState<String>("");
 
   const getNewStation = () => {
     const index = getRandomInt(unseenstations.length);
@@ -219,7 +220,7 @@ export default function Home() {
   const onCorrectClick = (station: String) => {
     setClickedStations((prev) => [...prev, station]);
     getNewStation();
-    console.log("CORRECT!");
+    setNewlyCorrectStation(station);
   };
 
   useEffect(() => {
@@ -233,6 +234,7 @@ export default function Home() {
       <FullMrtSvg
         onCorrectClick={onCorrectClick}
         currentStation={currentStation}
+        newlyCorrectStation={newlyCorrectStation}
       />
     </div>
   );
