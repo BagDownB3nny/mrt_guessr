@@ -37,7 +37,7 @@ jobs:
       - name: Upload artifact 📡
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./out
+          path: ./mrt_guessr_frontend/out
 
   deploy:
     environment:
