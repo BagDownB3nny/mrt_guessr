@@ -30,10 +30,7 @@ jobs:
           static_site_generator: next
 
       - name: Build with Next.js 🏗️
-        run: |
-          cd mrt_guessr_frontend
-          npx next build
-          mv ./out ../out
+        run: npx next build
 
       - name: Upload artifact 📡
         uses: actions/upload-pages-artifact@v3

@@ -12,12 +12,10 @@ runs:
       id: cache_dependencies
       uses: actions/cache@v3
       with:
-        path: ./mrt_guessr_frontend/node_modules
+        path: ./node_modules
         key: node-modules-${{ hashFiles('package-lock.json') }}
 
     - name: Install dependencies 🔧
       shell: bash
       if: steps.cache_dependencies.outputs.cache-hit != 'true'
-      run: |
-        cd mrt_guessr_frontend
-        npm ci
+      run: npm ci
