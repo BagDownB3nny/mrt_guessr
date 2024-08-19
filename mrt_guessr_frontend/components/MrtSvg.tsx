@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import styles from "./MrtMap.css";
 
 const getStationName = (id: String) => {
   return id.substring(0, id.length - 7).replace(/_/g, " ");
@@ -11,18 +10,20 @@ const MrtSvg = (props: any) => {
 
   const handleClick = (e: any) => {
     let station = "";
+    console.log(e.target);
     if (e.target.tagName.toLowerCase() === "path") {
       station = getStationName(e.target.parentNode.parentNode.id);
     } else {
       station = getStationName(e.target.id);
     }
+    console.log(station);
     if (station === currentStation) {
       onCorrectClick(station);
     }
   };
 
   useEffect(() => {
-    const id = `${newlyCorrectStation.replace(" ", "_")}`;
+    const id = `${newlyCorrectStation.replaceAll(" ", "_")}`;
     console.log(id);
     const correctTextElement = document.getElementById(`${id}_Text`);
     if (correctTextElement) {
@@ -604,7 +605,7 @@ const MrtSvg = (props: any) => {
           />
         </g>
       </g>
-      <g id="Bedok_Resovoir_Button" onClick={handleClick}>
+      <g id="Bedok_Reservoir_Button" onClick={handleClick}>
         <g id="g1537">
           <path
             className="n"
@@ -3168,7 +3169,7 @@ const MrtSvg = (props: any) => {
           />
         </g>
       </g>
-      <g id="Labrador_Button" onClick={handleClick}>
+      <g id="Labrador_Park_Button" onClick={handleClick}>
         <g id="g1960">
           <path
             className="n"
@@ -7194,7 +7195,7 @@ const MrtSvg = (props: any) => {
           id="path2685"
         />
       </g>
-      <g id="Labrador_Text">
+      <g id="Labrador_Park_Text">
         <path
           className="ae"
           d="m 438.77,954.87 v -6.38 c 0,-0.18 0.09,-0.4 0.3,-0.65 0.37,-0.43 0.78,-0.65 1.25,-0.66 v 6.74 h 2.77 v 0.94 h -4.31 z"
@@ -10118,7 +10119,7 @@ const MrtSvg = (props: any) => {
           id="path3245"
         />
       </g>
-      <g id="Bedok_Resovoir_Text">
+      <g id="Bedok_Reservoir_Text">
         <path
           className="ae"
           d="m 1213.87,440.87 h 2.49 c 0.85,0 1.48,0.09 1.88,0.27 0.64,0.28 0.97,0.77 0.97,1.47 0,0.45 -0.14,0.84 -0.41,1.17 -0.17,0.2 -0.38,0.37 -0.64,0.49 -0.14,0.07 -0.34,0.13 -0.61,0.19 0.48,0.08 0.85,0.19 1.11,0.33 0.57,0.33 0.86,0.83 0.86,1.5 0,0.53 -0.18,0.99 -0.54,1.36 -0.33,0.34 -0.77,0.57 -1.32,0.69 -0.41,0.09 -0.95,0.13 -1.64,0.13 h -1.9 v -5.44 c 0,-0.26 0.15,-0.53 0.46,-0.83 0.23,-0.22 0.49,-0.37 0.78,-0.45 v -0.04 h -1.4 l -0.07,-0.86 z m 1.74,3.26 h 0.41 c 0.42,0 0.72,-0.03 0.92,-0.09 0.53,-0.16 0.79,-0.56 0.79,-1.2 0,-0.44 -0.14,-0.75 -0.43,-0.93 -0.19,-0.12 -0.58,-0.19 -1.18,-0.19 h -0.51 z m 0,3.48 h 0.51 c 0.47,0 0.8,-0.04 1.01,-0.11 0.26,-0.09 0.45,-0.25 0.59,-0.48 0.13,-0.22 0.2,-0.5 0.2,-0.81 0,-0.52 -0.18,-0.88 -0.53,-1.08 -0.23,-0.13 -0.69,-0.2 -1.37,-0.2 h -0.41 v 2.67 z"
