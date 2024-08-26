@@ -3,6 +3,9 @@ import Image from "next/image";
 import FullMrtSvg from "../components/FullMrtSvg";
 import { useEffect, useState } from "react";
 import React from "react";
+import '../styles/global.css';
+import FixedBar from "../components/FixedBar";
+import { disableBodyScroll, enableBodyScroll, clearAllBodyScrollLocks } from 'body-scroll-lock';
 
 const DowntownLineStations = [
   "Bukit Panjang",
@@ -227,138 +230,15 @@ export default function Home() {
   }, []);
 
   return (
-    <div>
-      <h1>Guess the MRT station!</h1>
-      <h2>Current Station: {currentStation}</h2>
-      <FullMrtSvg
-        onCorrectClick={onCorrectClick}
-        currentStation={currentStation}
-        newlyCorrectStation={newlyCorrectStation}
-      />
-      <style jsx global>{`
-        .e {
-          fill: none;
-        }
-
-        .f,
-        .g {
-          fill: #0055b8;
-        }
-
-        .h {
-          fill: #010101;
-        }
-
-        .i,
-        .j {
-          fill: #00953b;
-        }
-
-        .k,
-        .l {
-          fill: #008996;
-        }
-
-        .m,
-        .n {
-          fill: #fff;
-        }
-
-        .o,
-        .p {
-          fill: #ff9e18;
-        }
-
-        .q {
-          fill: #929497;
-        }
-
-        .r,
-        .s {
-          fill: #9d5918;
-        }
-
-        .t,
-        .u {
-          fill: #9e28b5;
-        }
-
-        .v {
-          fill: #8da4ac;
-        }
-
-        .w {
-          fill: #dcebf1;
-        }
-
-        .x,
-        .y {
-          fill: #e1251b;
-        }
-
-        .aa {
-          fill: #0a1f8f;
-        }
-
-        .ab {
-          fill: #93d500;
-        }
-
-        .ac,
-        .ad {
-          fill: #718472;
-        }
-
-        .ae,
-        .af {
-          fill: #2d2a26;
-        }
-
-        .ag {
-          fill: #383a37;
-        }
-
-        .af,
-        .ad,
-        .y,
-        .u,
-        .s,
-        .p,
-        .n,
-        .g,
-        .l,
-        .j {
-          fill-rule: evenodd;
-        }
-
-        .ah {
-          clip-path: url(#c);
-        }
-
-        .ai {
-          clip-path: url(#b);
-        }
-
-        .aj {
-          clip-path: url(#d);
-        }
-
-        .station {
-          transition: transform 0.3s ease, filter 0.3s ease;
-          transform-origin: center;
-          transform-box: fill-box;
-          transform: scale(1.1);
-        }
-
-        .station:hover {
-          filter: url(#glow-effect);
-          transform: scale(2);
-        }
-
-        .station-text {
-          display: none;
-        }
-      `}</style>
-    </div>
+    <>
+      <FixedBar currentStation={currentStation}/>
+      <div className="map">
+        <FullMrtSvg
+          onCorrectClick={onCorrectClick}
+          currentStation={currentStation}
+          newlyCorrectStation={newlyCorrectStation}
+        />
+      </div>
+    </>
   );
 }

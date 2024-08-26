@@ -49,6 +49,7 @@ const MrtSvg = (props: any) => {
       viewBox="0 0 1569.24 1405.99"
       xmlns="http://www.w3.org/2000/svg"
       style={{ position: "absolute" }}
+      height="148vh"
     >
       <defs>
         <filter id="glow-effect" x="-50%" y="-50%" width="200%" height="200%">

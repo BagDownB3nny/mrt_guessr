@@ -7,6 +7,7 @@ const MrtBackgroundSvg = () => {
       viewBox="0 0 1569.24 1405.99"
       xmlns="http://www.w3.org/2000/svg"
       style={{ position: "absolute" }}
+      height="148vh"
     >
       <defs>
         <clipPath id="b">
