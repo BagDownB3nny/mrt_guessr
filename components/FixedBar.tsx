@@ -10,7 +10,9 @@ const FixedBar: React.FC<Props> = (props) => {
 
     return (
         <div className ={styles.fixedBar}>
+            <div className={styles.fixedText}>
             {currentStation}
+            </div>
         </div>
     );
 };

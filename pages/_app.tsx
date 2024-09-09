@@ -227,6 +227,7 @@ export default function Home() {
 
   useEffect(() => {
     getNewStation();
+    disableBodyScroll(document.querySelector('.map'));
   }, []);
 
   return (
