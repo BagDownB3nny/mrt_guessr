@@ -209,6 +209,7 @@ export default function Home() {
   const [currentStation, setCurrentStation] = useState<String>("");
   const [clickedStations, setClickedStations] = useState<String[]>([]);
   const [newlyCorrectStation, setNewlyCorrectStation] = useState<String>("");
+  const [tries, setTries] = useState<number>(3);
 
   const getNewStation = () => {
     const index = getRandomInt(unseenstations.length);
@@ -216,14 +217,19 @@ export default function Home() {
     setCurrentStation(newStation);
     unseenstations.splice(index, 1);
     setUnseenStations(unseenstations);
-    console.log("Unseen stations: ", unseenstations);
   };
 
   const onCorrectClick = (station: String) => {
     setClickedStations((prev) => [...prev, station]);
     getNewStation();
     setNewlyCorrectStation(station);
+    setTries(3);
   };
+
+  const onWrongClick = () => {
+    setTries((prev) => prev - 1);
+  }
+
 
   useEffect(() => {
     getNewStation();
@@ -232,12 +238,14 @@ export default function Home() {
 
   return (
     <>
-      <FixedBar currentStation={currentStation}/>
+      <FixedBar currentStation={currentStation} tries={tries}/>
       <div className="map">
         <FullMrtSvg
           onCorrectClick={onCorrectClick}
+          onWrongClick={onWrongClick}
           currentStation={currentStation}
           newlyCorrectStation={newlyCorrectStation}
+          tries={tries}
         />
       </div>
     </>

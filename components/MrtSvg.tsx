@@ -1,12 +1,43 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import styles from './mrtMap.module.css';
 
 const getStationName = (id: String) => {
   return id.substring(0, id.length - 7).replace(/_/g, " ");
 };
 
 const MrtSvg = (props: any) => {
-  const { onCorrectClick, currentStation, newlyCorrectStation } = props;
+  const { onCorrectClick, onWrongClick, currentStation, newlyCorrectStation, tries } = props;
+
+  useEffect(() => {
+    console.log(tries);
+    console.log("Tries decreased");
+    if (tries <= 0) {
+      const correctStationButtonId = `${currentStation.replaceAll(" ", "_")}_Button`;
+      console.log(correctStationButtonId);
+      const correctButtonElement = document.getElementById(correctStationButtonId);
+      console.log(correctButtonElement);
+      if (correctButtonElement) {
+        if (document.getElementById("showButtonCircle")) {
+          return;
+        }
+        const rect = correctButtonElement.getBoundingClientRect();
+        const circleElement = document.createElement("div");
+        circleElement.id = "showButtonCircle";
+        circleElement.className = styles.circle;
+
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        circleElement.style.left = `${centerX - 100}px`; // Subtract half the width (10px) to center
+        circleElement.style.top = `${centerY - 100}px`;  // Subtract half the height (10px) to center
+
+        circleElement.addEventListener("animationend", () => {
+          circleElement.remove();
+        });
+        document.body.appendChild(circleElement);
+      }
+    }
+  }, [tries]);
 
   const handleClick = (e: any) => {
     let station = "";
@@ -19,6 +50,8 @@ const MrtSvg = (props: any) => {
     console.log(station);
     if (station === currentStation) {
       onCorrectClick(station);
+    } else {
+      onWrongClick();
     }
   };
 
@@ -4794,7 +4827,7 @@ const MrtSvg = (props: any) => {
           />
         </g>
       </g>
-      <g id="Buona_Vista_Button" onClick={handleClick}>
+      <g id="Buona_Vista_Button" onClick={handleClick} className={styles.glowing}>
         <g id="g2231">
           <path
             className="n"

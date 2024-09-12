@@ -1,0 +1,39 @@
+.circle {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    border-style: solid;
+    border-width: 2px;
+    border-color: black;
+    background-color: transparent;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    animation: shrinkAndDisappear 1s cubic-bezier(0.4, 0, 1, 1) forwards;
+    pointer-events: none;
+}
+
+@keyframes shrinkAndDisappear {
+    0% {
+        transform: scale(1);
+        /* Start at original size */
+        opacity: 1;
+        /* Fully visible */
+    }
+
+    95% {
+        transform: scale(0);
+        /* Shrink to zero size */
+        opacity: 1;
+        /* Still visible while shrinking */
+    }
+
+    100% {
+        opacity: 0;
+        /* Fully transparent */
+        transform: scale(0);
+        /* Ensure it stays at zero size */
+    }
+}
