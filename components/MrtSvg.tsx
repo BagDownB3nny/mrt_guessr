@@ -1,21 +1,32 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import styles from './mrtMap.module.css';
+import styles from "./mrtMap.module.css";
 
 const getStationName = (id: String) => {
   return id.substring(0, id.length - 7).replace(/_/g, " ");
 };
 
 const MrtSvg = (props: any) => {
-  const { onCorrectClick, onWrongClick, currentStation, newlyCorrectStation, tries } = props;
+  const {
+    onCorrectClick,
+    onWrongClick,
+    currentStation,
+    newlyCorrectStation,
+    tries,
+  } = props;
 
   useEffect(() => {
     console.log(tries);
     console.log("Tries decreased");
     if (tries <= 0) {
-      const correctStationButtonId = `${currentStation.replaceAll(" ", "_")}_Button`;
+      const correctStationButtonId = `${currentStation.replaceAll(
+        " ",
+        "_"
+      )}_Button`;
       console.log(correctStationButtonId);
-      const correctButtonElement = document.getElementById(correctStationButtonId);
+      const correctButtonElement = document.getElementById(
+        correctStationButtonId
+      );
       console.log(correctButtonElement);
       if (correctButtonElement) {
         if (document.getElementById("showButtonCircle")) {
@@ -29,7 +40,7 @@ const MrtSvg = (props: any) => {
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
         circleElement.style.left = `${centerX - 100}px`; // Subtract half the width (10px) to center
-        circleElement.style.top = `${centerY - 100}px`;  // Subtract half the height (10px) to center
+        circleElement.style.top = `${centerY - 100}px`; // Subtract half the height (10px) to center
 
         circleElement.addEventListener("animationend", () => {
           circleElement.remove();
@@ -64,35 +75,8 @@ const MrtSvg = (props: any) => {
     }
   }, [newlyCorrectStation]);
 
-  useEffect(() => {
-    const buttonElements = document.querySelectorAll('[id$="_Button"]');
-    buttonElements.forEach((el) => {
-      el.classList.add("station");
-    });
-
-    const textElements = document.querySelectorAll('[id$="_Text"]');
-    textElements.forEach((el) => {
-      el.classList.add("station-text");
-    });
-  });
-
   return (
-    <svg
-      id="a"
-      viewBox="0 0 1569.24 1405.99"
-      xmlns="http://www.w3.org/2000/svg"
-      style={{ position: "absolute" }}
-      height="148vh"
-    >
-      <defs>
-        <filter id="glow-effect" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="4" result="coloredBlur" />
-          <feMerge>
-            <feMergeNode in="coloredBlur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
+    <>
       <g id="Cashew_Button" onClick={handleClick}>
         <g id="g1447">
           <path
@@ -4827,7 +4811,11 @@ const MrtSvg = (props: any) => {
           />
         </g>
       </g>
-      <g id="Buona_Vista_Button" onClick={handleClick} className={styles.glowing}>
+      <g
+        id="Buona_Vista_Button"
+        onClick={handleClick}
+        className={styles.glowing}
+      >
         <g id="g2231">
           <path
             className="n"
@@ -12192,7 +12180,7 @@ const MrtSvg = (props: any) => {
           id="path3653"
         />
       </g>
-    </svg>
+    </>
   );
 };
 

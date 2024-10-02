@@ -1,11 +1,9 @@
 "use client";
-import Image from "next/image";
-import FullMrtSvg from "../components/FullMrtSvg";
 import { useEffect, useState } from "react";
 import React from "react";
-import '../styles/global.css';
+import "../styles/global.css";
 import FixedBar from "../components/FixedBar";
-import { disableBodyScroll, enableBodyScroll, clearAllBodyScrollLocks } from 'body-scroll-lock';
+import MrtMapController from "../components/MrtMapController";
 
 const DowntownLineStations = [
   "Bukit Panjang",
@@ -228,19 +226,17 @@ export default function Home() {
 
   const onWrongClick = () => {
     setTries((prev) => prev - 1);
-  }
-
+  };
 
   useEffect(() => {
     getNewStation();
-    disableBodyScroll(document.querySelector('.map'));
   }, []);
 
   return (
     <>
-      <FixedBar currentStation={currentStation} tries={tries}/>
-      <div className="map">
-        <FullMrtSvg
+      <FixedBar currentStation={currentStation} tries={tries} />
+      <div style={{ width: "100vw", height: "100vh", borderStyle: "solid" }}>
+        <MrtMapController
           onCorrectClick={onCorrectClick}
           onWrongClick={onWrongClick}
           currentStation={currentStation}
