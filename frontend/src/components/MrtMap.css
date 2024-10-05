@@ -1,0 +1,16 @@
+.station {
+    transition:
+      transform 0.3s ease,
+      filter 0.3s ease;
+    transform-origin: center;
+    transform-box: fill-box;
+  }
+  
+  .station:hover {
+    filter: url(#glow-effect);
+    transform: scale(2);
+  }
+  
+  .station-text {
+    display: none;
+  }
