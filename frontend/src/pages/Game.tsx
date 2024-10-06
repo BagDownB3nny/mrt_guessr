@@ -214,6 +214,22 @@ export default function Game(props: any) {
   const [newlyCorrectStation, setNewlyCorrectStation] = useState<String>("");
   const [tries, setTries] = useState<number>(3);
 
+  useEffect(() => {
+    const preventGesture = (event: any) => {
+      event.preventDefault(); // Prevent default iOS behavior
+    };
+
+    document.addEventListener("gesturestart", preventGesture);
+    document.addEventListener("gesturechange", preventGesture);
+    document.addEventListener("gestureend", preventGesture);
+
+    return () => {
+      document.removeEventListener("gesturestart", preventGesture);
+      document.removeEventListener("gesturechange", preventGesture);
+      document.removeEventListener("gestureend", preventGesture);
+    };
+  }, []);
+
   const getNewStation = () => {
     const index = getRandomInt(unseenstations.length);
     const newStation = unseenstations[index];
