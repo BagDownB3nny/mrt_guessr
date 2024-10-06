@@ -1,0 +1,23 @@
+.buttonContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    flex-basis: calc(100vh * 1/6);
+}
+
+.trackButton {
+    height: 5vh;
+    aspect-ratio: 2 / 1;
+    border-style: solid;
+    border-radius: 2rem;
+    border-width: 0.5vh;
+    border-color: white;
+    background-color: #E53C30;
+}
+
+.trackText {
+    font-size: 28px;
+    font-weight: medium;
+}

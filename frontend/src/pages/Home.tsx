@@ -1,7 +1,25 @@
 import React, { useEffect } from "react";
-import styles from "./Home.module.css";
+import styles from "../css/Home.module.css";
+import TrackButtonContainer from "../components/TrackButtonContainer";
 
-export default function Home() {
+export default function Home(props: any) {
+  const { scrollToNextPage } = props;
+
+  const quickplayProps = {
+    text: "Quickplay",
+    onClick: () => console.log("Quickplay"),
+  };
+
+  const singaporeTourProps = {
+    text: "Singapore Tour",
+    onClick: scrollToNextPage,
+  };
+
+  const customChallengeProps = {
+    text: "Custom Challenge",
+    onClick: () => console.log("Custom Challenge"),
+  };
+
   return (
     <div className={styles.home}>
       <div className={styles.titleContainer}>
@@ -9,18 +27,9 @@ export default function Home() {
       </div>
       <div className={styles.trackContainer}>
         <div className={styles.track}>
-          <div className={styles.buttonContainer}>
-            <div className={styles.trackButton} />
-            <div className={styles.trackText}>Quickplay</div>
-          </div>
-          <div className={styles.buttonContainer}>
-            <div className={styles.trackButton} />
-            <div className={styles.trackText}>Singapore Tour</div>
-          </div>
-          <div className={styles.buttonContainer}>
-            <div className={styles.trackButton} />
-            <div className={styles.trackText}>Custom Challenge</div>
-          </div>
+          <TrackButtonContainer {...quickplayProps} />
+          <TrackButtonContainer {...singaporeTourProps} />
+          <TrackButtonContainer {...customChallengeProps} />
           <div id={"trackLine"} className={styles.trackLine} />
         </div>
       </div>
