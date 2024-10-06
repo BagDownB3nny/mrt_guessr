@@ -1,5 +1,5 @@
 .mapContainer {
-    flex-basis: 80%!important;
+    flex-basis: 80dvh;
     background-color: "#DAEEF5";
     overflow: hidden;
 }
