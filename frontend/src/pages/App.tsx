@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import FixedBar from "./components/FixedBar";
-import MrtMapController from "./components/MrtMapController";
+import FixedBar from "../components/FixedBar";
+import MrtMapController from "../components/MrtMapController";
 
 const DowntownLineStations = [
   "Bukit Panjang",
