@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import SVG from "react-inlinesvg";
-import styles from "./MrtMap.module.css";
+import styles from "../css/MrtMap.module.css";
 
 const getStationName = (id: String) => {
   return id.substring(0, id.length - 7).replace(/_/g, " ");

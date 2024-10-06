@@ -1,15 +1,32 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import App from "./pages/MainHome";
 import reportWebVitals from "./reportWebVitals";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Game, { GameType } from "./pages/Game";
+import Mainhome from "./pages/MainHome";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Mainhome />,
+  },
+  {
+    path: "/quickgame",
+    element: <Game gameType={GameType.QUICKGAME} />,
+  },
+  {
+    path: "/singaporetour",
+    element: <Game gameType={GameType.SINGAPORETOUR} />,
+  },
+]);
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
 

@@ -198,7 +198,13 @@ function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);
 }
 
-export default function Home() {
+export enum GameType {
+  QUICKGAME,
+  SINGAPORETOUR,
+}
+
+export default function Game(props: any) {
+  const { gameType } = props;
   const [unseenstations, setUnseenStations] = useState<String[]>(
     getAllStations()
   );

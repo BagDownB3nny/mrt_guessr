@@ -1,23 +1,26 @@
 import React, { useEffect } from "react";
 import styles from "../css/Home.module.css";
 import TrackButtonContainer from "../components/TrackButtonContainer";
+import { useNavigate } from "react-router-dom";
 
 export default function Home(props: any) {
   const { scrollToNextPage } = props;
 
+  const navigate = useNavigate();
+
   const quickplayProps = {
     text: "Quickplay",
-    onClick: () => console.log("Quickplay"),
+    onClick: () => navigate("/quickgame"),
   };
 
   const singaporeTourProps = {
     text: "Singapore Tour",
-    onClick: scrollToNextPage,
+    onClick: () => navigate("/singaporetour"),
   };
 
   const customChallengeProps = {
     text: "Custom Challenge",
-    onClick: () => console.log("Custom Challenge"),
+    onClick: () => scrollToNextPage,
   };
 
   return (
