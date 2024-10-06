@@ -6,6 +6,7 @@ import {
 } from "react-zoom-pan-pinch";
 import SVG from "react-inlinesvg";
 import styles from "../css/MrtMap.module.css";
+import Controls from "./Controls";
 
 const getStationName = (id: String) => {
   return id.substring(0, id.length - 7).replace(/_/g, " ");
@@ -126,6 +127,7 @@ const MrtMapController = (props: any) => {
               title="React"
             />
           </MiniMap>
+          <Controls />
         </div>
       </TransformWrapper>
     </div>
