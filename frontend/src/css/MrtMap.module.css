@@ -1,3 +1,9 @@
+.mapContainer {
+    flex-basis: 80%!important;
+    background-color: "#DAEEF5";
+    overflow: hidden;
+}
+
 .station {
 transition:
     transform 0.3s ease,

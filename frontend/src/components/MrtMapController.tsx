@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useRef } from "react";
-import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import {
+  TransformWrapper,
+  TransformComponent,
+  MiniMap,
+} from "react-zoom-pan-pinch";
 import SVG from "react-inlinesvg";
 import styles from "../css/MrtMap.module.css";
 
@@ -87,26 +91,44 @@ const MrtMapController = (props: any) => {
   };
 
   return (
-    <TransformWrapper
-      initialScale={1}
-      initialPositionX={0}
-      initialPositionY={100}
-      limitToBounds={false}
-      doubleClick={{ disabled: true }}
-    >
-      <TransformComponent
-        wrapperStyle={{ width: "100%", height: "100%" }}
-        contentStyle={{ width: "100%", height: "100%" }}
+    <div className={styles.mapContainer}>
+      <TransformWrapper
+        initialScale={1}
+        initialPositionX={0}
+        initialPositionY={100}
+        doubleClick={{ disabled: true }}
       >
-        <SVG
-          src="/full-mrt-map.svg"
-          width="100%"
-          height="100%"
-          title="React"
-          onLoad={addStyleToStationsAndText}
-        />
-      </TransformComponent>
-    </TransformWrapper>
+        <TransformComponent
+          wrapperStyle={{ width: "100%", height: "100%" }}
+          contentStyle={{ width: "100%", height: "100%" }}
+        >
+          <SVG
+            src="/full-mrt-map.svg"
+            width="100%"
+            height="100%"
+            title="React"
+            onLoad={addStyleToStationsAndText}
+          />
+        </TransformComponent>
+        <div
+          style={{
+            position: "absolute",
+            zIndex: 5,
+            top: "0px",
+            right: "0px",
+          }}
+        >
+          <MiniMap width={400}>
+            <SVG
+              src="/full-mrt-map.svg"
+              width="100%"
+              height="100%"
+              title="React"
+            />
+          </MiniMap>
+        </div>
+      </TransformWrapper>
+    </div>
   );
 };
 

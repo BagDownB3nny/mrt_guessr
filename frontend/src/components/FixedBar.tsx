@@ -11,19 +11,16 @@ const FixedBar: React.FC<Props> = (props) => {
   const arrayData = [2, 1, 0];
 
   return (
-    <div
-      onClick={() => console.log(currentStation)}
-      className={styles.fixedBar}
-    >
+    <div className={styles.fixedBar}>
       <div className={styles.fixedText}>{currentStation}</div>
       <div className={styles.triesBox}>
-        {arrayData.map((num) => {
+        {/* {arrayData.map((num) => {
           if (tries > num) {
             return <img key={num} src="/greyX.png" className={styles.try} />;
           } else {
             return <img src="/redX.png" className={styles.try} />;
           }
-        })}
+        })} */}
       </div>
     </div>
   );

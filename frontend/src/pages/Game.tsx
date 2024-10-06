@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import FixedBar from "../components/FixedBar";
 import MrtMapController from "../components/MrtMapController";
+import styles from "../css/Game.module.css";
 
 const DowntownLineStations = [
   "Bukit Panjang",
@@ -237,17 +238,15 @@ export default function Game(props: any) {
   }, []);
 
   return (
-    <>
+    <div className={styles.GameContainer}>
+      <MrtMapController
+        onCorrectClick={onCorrectClick}
+        onWrongClick={onWrongClick}
+        currentStation={currentStation}
+        newlyCorrectStation={newlyCorrectStation}
+        tries={tries}
+      />
       <FixedBar currentStation={currentStation} tries={tries} />
-      <div style={{ width: "100vw", height: "100vh", borderStyle: "solid" }}>
-        <MrtMapController
-          onCorrectClick={onCorrectClick}
-          onWrongClick={onWrongClick}
-          currentStation={currentStation}
-          newlyCorrectStation={newlyCorrectStation}
-          tries={tries}
-        />
-      </div>
-    </>
+    </div>
   );
 }
