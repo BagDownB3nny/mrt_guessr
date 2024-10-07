@@ -213,6 +213,7 @@ export default function Game(props: any) {
   const [clickedStations, setClickedStations] = useState<String[]>([]);
   const [newlyCorrectStation, setNewlyCorrectStation] = useState<String>("");
   const [tries, setTries] = useState<number>(3);
+  const [currentScore, setCurrentScore] = useState<number>(0);
 
   useEffect(() => {
     const preventGesture = (event: any) => {
@@ -230,6 +231,17 @@ export default function Game(props: any) {
     };
   }, []);
 
+  const getStationsLeft = () => {
+    const stationsFound = clickedStations.length;
+    const totalStations = stationsFound + unseenstations.length;
+    return `${stationsFound}/${totalStations}`;
+  };
+
+  const getScore = () => {
+    const stationsFound = clickedStations.length;
+    return `${currentScore}/${stationsFound * 3}`;
+  };
+
   const getNewStation = () => {
     const index = getRandomInt(unseenstations.length);
     const newStation = unseenstations[index];
@@ -238,7 +250,9 @@ export default function Game(props: any) {
     setUnseenStations(unseenstations);
   };
 
-  const onCorrectClick = (station: String) => {
+  const onCorrectClick = (station: String, tries: number) => {
+    console.log(tries);
+    setCurrentScore((prev) => prev + tries);
     setClickedStations((prev) => [...prev, station]);
     getNewStation();
     setNewlyCorrectStation(station);
@@ -262,7 +276,12 @@ export default function Game(props: any) {
         newlyCorrectStation={newlyCorrectStation}
         tries={tries}
       />
-      <FixedBar currentStation={currentStation} tries={tries} />
+      <FixedBar
+        currentStation={currentStation}
+        tries={tries}
+        getScore={getScore}
+        getStationsLeft={getStationsLeft}
+      />
     </div>
   );
 }

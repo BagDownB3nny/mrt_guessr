@@ -22,15 +22,21 @@ const MrtMapController = (props: any) => {
   } = props;
 
   const currentStationRef = useRef(currentStation);
+  const currentTries = useRef(tries);
 
   useEffect(() => {
     currentStationRef.current = currentStation;
   }, [currentStation]);
 
+  useEffect(() => {
+    currentTries.current = tries;
+  }, [tries]);
+
   const handleClick = (e: any) => {
     const station = getStationName(e);
     if (station === currentStationRef.current) {
-      onCorrectClick(station);
+      console.log(currentTries.current);
+      onCorrectClick(station, currentTries.current);
     } else {
       onWrongClick();
     }

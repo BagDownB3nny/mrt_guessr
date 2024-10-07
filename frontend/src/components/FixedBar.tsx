@@ -4,10 +4,12 @@ import styles from "../css/FixedBar.module.css";
 interface Props {
   currentStation: String;
   tries: number;
+  getScore: () => string;
+  getStationsLeft: () => string;
 }
 
 const FixedBar: React.FC<Props> = (props) => {
-  const { currentStation, tries } = props;
+  const { currentStation, tries, getScore, getStationsLeft } = props;
   const arrayData = [2, 1, 0];
 
   return (
@@ -30,11 +32,11 @@ const FixedBar: React.FC<Props> = (props) => {
       <div className={styles.rightColumn}>
         <div className={styles.stationsLeftContainer}>
           <div className={styles.stationsLeftText}>Stations found:</div>
-          <div className={styles.stationsLeftScore}>5/10</div>
+          <div className={styles.stationsLeftScore}>{getStationsLeft()}</div>
         </div>
         <div className={styles.scoreContainer}>
           <div className={styles.scoreText}>Current score:</div>
-          <div className={styles.score}>12/15</div>
+          <div className={styles.score}>{getScore()}</div>
         </div>
       </div>
     </div>
