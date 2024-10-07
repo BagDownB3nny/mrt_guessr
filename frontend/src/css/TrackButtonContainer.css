@@ -4,15 +4,15 @@
     justify-content: center;
     align-items: center;
     gap: 1.5rem;
-    flex-basis: calc(100vh * 1/6);
+    flex-basis: calc(100dvh * 1/6);
 }
 
 .trackButton {
-    height: 5vh;
+    height: 5dvh;
     aspect-ratio: 2 / 1;
     border-style: solid;
     border-radius: 2rem;
-    border-width: 0.5vh;
+    border-width: 0.5dvh;
     border-color: white;
     background-color: #E53C30;
 }

@@ -8,7 +8,7 @@ export default function Mainhome() {
   const scrollToNextPage = () => {
     console.log("Scrolling");
     window.scrollTo({
-      top: window.innerHeight, // Scroll to the next page (100vh down)
+      top: window.innerHeight,
       behavior: "smooth",
     });
   };
