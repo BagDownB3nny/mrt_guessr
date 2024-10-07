@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "../css/FixedBar.module.css";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   currentStation: String;
@@ -12,10 +13,14 @@ const FixedBar: React.FC<Props> = (props) => {
   const { currentStation, tries, getScore, getStationsLeft } = props;
   const arrayData = [2, 1, 0];
 
+  const navigate = useNavigate();
+
   return (
     <div className={styles.fixedBar}>
       <div className={styles.leftColumn}>
-        <div className={styles.quitButton}>Quit game</div>
+        <div className={styles.quitButton} onClick={() => navigate("/")}>
+          Quit game
+        </div>
       </div>
       <div className={styles.middleColumn}>
         <div className={styles.stationName}>{currentStation}</div>

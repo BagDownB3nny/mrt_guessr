@@ -19,6 +19,12 @@
 .quitButton {
     padding: 10px;
     font-size: 28px;
+    width: auto;
+}
+
+.quitButton:hover {
+    background-color: #003d41;
+    cursor: pointer;
 }
 
 .middleColumn {

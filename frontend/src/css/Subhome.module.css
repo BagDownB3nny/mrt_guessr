@@ -44,6 +44,14 @@
     background-color: #E53C30;
 }
 
+.buttonContainer:hover {
+    cursor: pointer;
+}
+
+.buttonContainer:hover .trackButton {
+    background-color: #D13A2D;
+}
+
 .trackText {
     font-size: 28px;
     font-weight: medium;

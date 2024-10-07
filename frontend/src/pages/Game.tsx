@@ -8,6 +8,7 @@ const DowntownLineStations = [
   "Bukit Panjang",
   "Cashew",
   "Hillview",
+  "Hume",
   "Beauty World",
   "King Albert Park",
   "Sixth Avenue",
@@ -39,6 +40,8 @@ const DowntownLineStations = [
   "Tampines East",
   "Upper Changi",
   "Expo",
+  "Xilin",
+  "Sungei Bedok",
 ];
 
 const EastWestLineStations = [
@@ -159,6 +162,7 @@ const NorthEastLineStations = [
   "Buangkok",
   "Sengkang",
   "Punggol",
+  "Punggol Coast",
 ];
 
 const ThomsonEastCoastLineStations = [
@@ -182,6 +186,15 @@ const ThomsonEastCoastLineStations = [
   "Shenton Way",
   "Marina Bay",
   "Gardens by the Bay",
+  "Tanjong Rhu",
+  "Katong Park",
+  "Tanjong Katong",
+  "Marine Parade",
+  "Marine Terrace",
+  "Siglap",
+  "Bayshore",
+  "Bedok South",
+  "Sungei Bedok",
 ];
 
 const getAllStations = (): String[] => {
@@ -195,6 +208,18 @@ const getAllStations = (): String[] => {
   return Array.from(allStations);
 };
 
+const getNStations = (n: number) => {
+  const allStations = getAllStations();
+  const nStations = [];
+  for (let i = 0; i < n; i++) {
+    const index = getRandomInt(allStations.length);
+    nStations.push(allStations[index]);
+    allStations.splice(index, 1);
+  }
+  console.log(nStations);
+  return nStations;
+};
+
 function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);
 }
@@ -206,9 +231,7 @@ export enum GameType {
 
 export default function Game(props: any) {
   const { gameType } = props;
-  const [unseenstations, setUnseenStations] = useState<String[]>(
-    getAllStations()
-  );
+  const [unseenStations, setUnseenStations] = useState<String[]>([]);
   const [currentStation, setCurrentStation] = useState<String>("");
   const [clickedStations, setClickedStations] = useState<String[]>([]);
   const [newlyCorrectStation, setNewlyCorrectStation] = useState<String>("");
@@ -233,7 +256,10 @@ export default function Game(props: any) {
 
   const getStationsLeft = () => {
     const stationsFound = clickedStations.length;
-    const totalStations = stationsFound + unseenstations.length;
+    let totalStations = stationsFound + unseenStations.length;
+    if (currentStation) {
+      totalStations++;
+    }
     return `${stationsFound}/${totalStations}`;
   };
 
@@ -243,11 +269,12 @@ export default function Game(props: any) {
   };
 
   const getNewStation = () => {
-    const index = getRandomInt(unseenstations.length);
-    const newStation = unseenstations[index];
+    const index = getRandomInt(unseenStations.length);
+    const newStation = unseenStations[index];
+    console.log(newStation);
     setCurrentStation(newStation);
-    unseenstations.splice(index, 1);
-    setUnseenStations(unseenstations);
+    unseenStations.splice(index, 1);
+    setUnseenStations(unseenStations);
   };
 
   const onCorrectClick = (station: String, tries: number) => {
@@ -264,8 +291,19 @@ export default function Game(props: any) {
   };
 
   useEffect(() => {
-    getNewStation();
+    if (gameType === GameType.QUICKGAME) {
+      setUnseenStations(getNStations(10));
+    } else if (gameType === GameType.SINGAPORETOUR) {
+      setUnseenStations(getAllStations());
+    }
   }, []);
+
+  useEffect(() => {
+    console.log(unseenStations);
+    if (!currentStation && unseenStations.length > 0) {
+      getNewStation();
+    }
+  }, [unseenStations]);
 
   return (
     <div className={styles.GameContainer}>
