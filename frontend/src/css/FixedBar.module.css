@@ -1,12 +1,13 @@
 .fixedBar {
     flex-basis: 20dvh;
-    background-color: #004e52;
-    color: white;
+    background-color: #E3E3E1;
+    color: #262627;
     justify-content: center;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     gap: 10px;
+    border-top: 1dvh solid #E53C30;
 }
 
 .leftColumn {
@@ -23,7 +24,7 @@
 }
 
 .quitButton:hover {
-    background-color: #003d41;
+    background-color: #f5f5f5;
     cursor: pointer;
 }
 

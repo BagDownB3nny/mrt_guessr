@@ -1,0 +1,71 @@
+.modalContainer {
+    height: 60dvh;
+    width: 60dvw;
+    display: flex;
+    flex-direction: column;
+    background-color: #E3E3E1;
+    border-style: none;
+    color: #262627;
+}
+
+.closeButtonRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-basis: 5dvh;
+}
+
+.closeButtonContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-basis: 6dvw;
+}
+
+.modalTitle {
+    flex-basis: 48dvw;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 48px;
+    font-weight: bold;
+}
+
+.rowContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    flex-basis: 32dvh;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    flex-basis: 8dvh;
+}
+
+.text {
+    font-size: 28px;
+    font-weight: medium;
+}
+
+.number {
+    font-size: 48px;
+    font-weight: bold;
+}
+
+.scoresRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    flex-basis: 13dvh;
+}

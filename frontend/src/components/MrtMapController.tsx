@@ -120,7 +120,7 @@ const MrtMapController = (props: any) => {
         <div
           style={{
             position: "absolute",
-            zIndex: 5,
+            zIndex: 0,
             top: "0px",
             right: "0px",
           }}

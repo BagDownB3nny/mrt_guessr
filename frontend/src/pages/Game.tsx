@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import FixedBar from "../components/FixedBar";
 import MrtMapController from "../components/MrtMapController";
 import styles from "../css/Game.module.css";
+import GameFinishModal from "../components/GameFinishModal";
 
 const DowntownLineStations = [
   "Bukit Panjang",
@@ -237,6 +238,14 @@ export default function Game(props: any) {
   const [newlyCorrectStation, setNewlyCorrectStation] = useState<String>("");
   const [tries, setTries] = useState<number>(3);
   const [currentScore, setCurrentScore] = useState<number>(0);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const [stationsGuessedInOneTry, setStationsGuessedInOneTry] = useState(0);
+  const [stationsGuessedInTwoTries, setStationsGuessedInTwoTries] = useState(0);
+  const [stationsGuessedInThreeTries, setStationsGuessedInThreeTries] =
+    useState(0);
+  const [stationsGuessedAfterThreeTries, setStationsGuessedAfterThreeTries] =
+    useState(0);
 
   useEffect(() => {
     const preventGesture = (event: any) => {
@@ -277,13 +286,41 @@ export default function Game(props: any) {
     setUnseenStations(unseenStations);
   };
 
+  const updateStationsFoundInTries = (tries: number) => {
+    switch (tries) {
+      case 3:
+        setStationsGuessedInOneTry((prev) => prev + 1);
+        break;
+      case 2:
+        setStationsGuessedInTwoTries((prev) => prev + 1);
+        break;
+      case 1:
+        setStationsGuessedInThreeTries((prev) => prev + 1);
+        break;
+      case 0:
+        setStationsGuessedAfterThreeTries((prev) => prev + 1);
+        break;
+    }
+  };
+
   const onCorrectClick = (station: String, tries: number) => {
-    console.log(tries);
+    if (tries < 0) {
+      tries = 0;
+    }
+    updateStationsFoundInTries(tries);
     setCurrentScore((prev) => prev + tries);
     setClickedStations((prev) => [...prev, station]);
     getNewStation();
     setNewlyCorrectStation(station);
     setTries(3);
+    if (unseenStations.length === 0) {
+      console.log("Game end");
+      onGameEnd();
+    }
+  };
+
+  const onGameEnd = () => {
+    setModalOpen(true);
   };
 
   const onWrongClick = () => {
@@ -292,7 +329,7 @@ export default function Game(props: any) {
 
   useEffect(() => {
     if (gameType === GameType.QUICKGAME) {
-      setUnseenStations(getNStations(10));
+      setUnseenStations(getNStations(1));
     } else if (gameType === GameType.SINGAPORETOUR) {
       setUnseenStations(getAllStations());
     }
@@ -320,6 +357,17 @@ export default function Game(props: any) {
         getScore={getScore}
         getStationsLeft={getStationsLeft}
       />
+      <GameFinishModal
+        modalOpen={modalOpen}
+        setModalOpen={setModalOpen}
+        stationsGuessedInOneTry={stationsGuessedInOneTry}
+        stationsGuessedInTwoTries={stationsGuessedInTwoTries}
+        stationsGuessedInThreeTries={stationsGuessedInThreeTries}
+        stationsGuessedAfterThreeTries={stationsGuessedAfterThreeTries}
+      />
+      {/* {unseenStations.length === 0 && !currentStation && (
+        <GameFinishModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
+      )} */}
     </div>
   );
 }

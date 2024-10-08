@@ -31,7 +31,8 @@
     justify-content: center;
     align-items: center;
     gap: 1.5rem;
-    flex-basis: calc(100dvh * 1/6);
+    flex-basis: calc(100dvh * 1/8);
+    cursor: pointer;
 }
 
 .trackButton {
@@ -48,9 +49,9 @@
     cursor: pointer;
 }
 
-.buttonContainer:hover .trackButton {
+/* .buttonContainer:hover .trackButton {
     background-color: #D13A2D;
-}
+} */
 
 .trackText {
     font-size: 28px;

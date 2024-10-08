@@ -6,6 +6,7 @@
     height: 100dvh;
     background-color: #E3E3E1;
     font-family: 'Inter', sans-serif;
+    color: #262627;
 }
 
 .titleContainer {
@@ -36,7 +37,7 @@
     display: flex;
     flex-direction: column;
     align-items: start;
-    justify-self: start;
+    justify-content: space-evenly;
     transform: translateX(calc(50vw - 10dvh));
 }
 
@@ -46,5 +47,5 @@
     position: absolute;
     z-index: -1;
     background-color: #E53C30;
-    transform: translate(4.5dvh, 10dvh);
+    transform: translate(4.6dvh, 5dvh);
 }
