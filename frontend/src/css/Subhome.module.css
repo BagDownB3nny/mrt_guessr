@@ -49,9 +49,9 @@
     cursor: pointer;
 }
 
-/* .buttonContainer:hover .trackButton {
-    background-color: #D13A2D;
-} */
+.buttonContainer:hover .trackText {
+    color: #E53C30;
+}
 
 .trackText {
     font-size: 28px;

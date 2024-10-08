@@ -69,3 +69,6 @@
     gap: 1.5rem;
     flex-basis: 13dvh;
 }
+
+@media (max-width:800px){
+}

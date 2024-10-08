@@ -356,6 +356,7 @@ export default function Game(props: any) {
         tries={tries}
         getScore={getScore}
         getStationsLeft={getStationsLeft}
+        setModalOpen={setModalOpen}
       />
       <GameFinishModal
         modalOpen={modalOpen}
@@ -364,10 +365,8 @@ export default function Game(props: any) {
         stationsGuessedInTwoTries={stationsGuessedInTwoTries}
         stationsGuessedInThreeTries={stationsGuessedInThreeTries}
         stationsGuessedAfterThreeTries={stationsGuessedAfterThreeTries}
+        getScore={getScore}
       />
-      {/* {unseenStations.length === 0 && !currentStation && (
-        <GameFinishModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
-      )} */}
     </div>
   );
 }

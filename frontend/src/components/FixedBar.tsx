@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import styles from "../css/FixedBar.module.css";
 import { useNavigate } from "react-router-dom";
 
@@ -7,10 +7,12 @@ interface Props {
   tries: number;
   getScore: () => string;
   getStationsLeft: () => string;
+  setModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const FixedBar: React.FC<Props> = (props) => {
-  const { currentStation, tries, getScore, getStationsLeft } = props;
+  const { currentStation, tries, getScore, getStationsLeft, setModalOpen } =
+    props;
   const arrayData = [2, 1, 0];
 
   const navigate = useNavigate();
@@ -23,7 +25,14 @@ const FixedBar: React.FC<Props> = (props) => {
         </div>
       </div>
       <div className={styles.middleColumn}>
-        <div className={styles.stationName}>{currentStation}</div>
+        {currentStation && (
+          <div className={styles.stationName}>{currentStation}</div>
+        )}
+        {!currentStation && (
+          <div className={styles.viewScore}>
+            <div onClick={() => setModalOpen(true)}>View stats</div>
+          </div>
+        )}
         <div className={styles.triesBox}>
           {arrayData.map((num) => {
             if (tries > num) {

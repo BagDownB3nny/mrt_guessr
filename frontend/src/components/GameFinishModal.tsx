@@ -12,6 +12,7 @@ export default function GameFinishModal(props: any) {
     stationsGuessedInTwoTries,
     stationsGuessedInThreeTries,
     stationsGuessedAfterThreeTries,
+    getScore,
   } = props;
 
   useEffect(() => {
@@ -49,19 +50,27 @@ export default function GameFinishModal(props: any) {
           </div>
           <div className={styles.rowContainer}>
             <div className={styles.row}>
-              <div className={styles.text}>Stations found in 1 try: </div>
+              <div className={styles.text}>
+                Stations found in 1 try (3 points each):{" "}
+              </div>
               <div className={styles.number}>{stationsGuessedInOneTry}</div>
             </div>
             <div className={styles.row}>
-              <div className={styles.text}>Stations found in 2 tries: </div>
+              <div className={styles.text}>
+                Stations found in 2 tries (2 points each):{" "}
+              </div>
               <div className={styles.number}>{stationsGuessedInTwoTries}</div>
             </div>
             <div className={styles.row}>
-              <div className={styles.text}>Stations found in 3 tries: </div>
+              <div className={styles.text}>
+                Stations found in 3 tries (1 point each):{" "}
+              </div>
               <div className={styles.number}>{stationsGuessedInThreeTries}</div>
             </div>
             <div className={styles.row}>
-              <div className={styles.text}>Stations found after 3 tries: </div>
+              <div className={styles.text}>
+                Stations found after 3 tries (no points):{" "}
+              </div>
               <div className={styles.number}>
                 {stationsGuessedAfterThreeTries}
               </div>
@@ -69,7 +78,7 @@ export default function GameFinishModal(props: any) {
           </div>
           <div className={styles.scoresRow}>
             <div className={styles.text}>Total score: </div>
-            <div className={styles.number}>15 / 30</div>
+            <div className={styles.number}>{getScore()}</div>
           </div>
         </div>
       </Modal>
