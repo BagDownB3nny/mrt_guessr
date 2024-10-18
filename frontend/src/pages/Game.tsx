@@ -329,7 +329,7 @@ export default function Game(props: any) {
 
   useEffect(() => {
     if (gameType === GameType.QUICKGAME) {
-      setUnseenStations(getNStations(1));
+      setUnseenStations(getNStations(10));
     } else if (gameType === GameType.SINGAPORETOUR) {
       setUnseenStations(getAllStations());
     }
