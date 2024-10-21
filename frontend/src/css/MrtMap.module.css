@@ -9,11 +9,13 @@ transition:
     filter 0.3s ease;
 transform-origin: center;
 transform-box: fill-box;
+transform: scale(1.2);
 }
 
 .station:hover {
 filter: url(#glow-effect);
 transform: scale(2);
+cursor: pointer;
 }
 
 .stationText {

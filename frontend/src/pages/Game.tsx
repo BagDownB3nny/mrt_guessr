@@ -4,6 +4,7 @@ import FixedBar from "../components/FixedBar";
 import MrtMapController from "../components/MrtMapController";
 import styles from "../css/Game.module.css";
 import GameFinishModal from "../components/GameFinishModal";
+import { useNavigate } from "react-router-dom";
 
 const DowntownLineStations = [
   "Bukit Panjang",
@@ -247,6 +248,8 @@ export default function Game(props: any) {
   const [stationsGuessedAfterThreeTries, setStationsGuessedAfterThreeTries] =
     useState(0);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const preventGesture = (event: any) => {
       event.preventDefault(); // Prevent default iOS behavior
@@ -319,12 +322,21 @@ export default function Game(props: any) {
     }
   };
 
+  const onWrongClick = () => {
+    setTries((prev) => prev - 1);
+  };
+
   const onGameEnd = () => {
     setModalOpen(true);
   };
 
-  const onWrongClick = () => {
-    setTries((prev) => prev - 1);
+  const restartGame = () => {
+    if (gameType === GameType.QUICKGAME) {
+      console.log("quickgame");
+      navigate("/quickgame");
+    } else if (gameType === GameType.SINGAPORETOUR) {
+      navigate("/singaporetour");
+    }
   };
 
   useEffect(() => {
@@ -357,6 +369,7 @@ export default function Game(props: any) {
         getScore={getScore}
         getStationsLeft={getStationsLeft}
         setModalOpen={setModalOpen}
+        restartGame={restartGame}
       />
       <GameFinishModal
         modalOpen={modalOpen}

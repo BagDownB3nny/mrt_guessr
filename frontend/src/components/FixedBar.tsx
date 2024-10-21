@@ -8,11 +8,18 @@ interface Props {
   getScore: () => string;
   getStationsLeft: () => string;
   setModalOpen: Dispatch<SetStateAction<boolean>>;
+  restartGame: () => void;
 }
 
 const FixedBar: React.FC<Props> = (props) => {
-  const { currentStation, tries, getScore, getStationsLeft, setModalOpen } =
-    props;
+  const {
+    currentStation,
+    tries,
+    getScore,
+    getStationsLeft,
+    setModalOpen,
+    restartGame,
+  } = props;
   const arrayData = [2, 1, 0];
 
   const navigate = useNavigate();
@@ -22,6 +29,9 @@ const FixedBar: React.FC<Props> = (props) => {
       <div className={styles.leftColumn}>
         <div className={styles.quitButton} onClick={() => navigate("/")}>
           Quit game
+        </div>
+        <div className={styles.restartGame} onClick={restartGame}>
+          Restart Game
         </div>
       </div>
       <div className={styles.middleColumn}>
