@@ -5,7 +5,7 @@ import reportWebVitals from "./reportWebVitals";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Game, { GameType } from "./pages/Game";
 import Mainhome from "./pages/MainHome";
-import { Analytics } from "@vercel/analytics/react";
+import { inject } from "@vercel/analytics";
 
 const router = createBrowserRouter([
   {
@@ -28,7 +28,6 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <RouterProvider router={router} />
-    <Analytics />
   </React.StrictMode>
 );
 
@@ -36,3 +35,4 @@ root.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+inject();
