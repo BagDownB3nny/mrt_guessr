@@ -218,7 +218,6 @@ const getNStations = (n: number) => {
     nStations.push(allStations[index]);
     allStations.splice(index, 1);
   }
-  console.log(nStations);
   return nStations;
 };
 
@@ -283,7 +282,6 @@ export default function Game(props: any) {
   const getNewStation = () => {
     const index = getRandomInt(unseenStations.length);
     const newStation = unseenStations[index];
-    console.log(newStation);
     setCurrentStation(newStation);
     unseenStations.splice(index, 1);
     setUnseenStations(unseenStations);
@@ -317,7 +315,6 @@ export default function Game(props: any) {
     setNewlyCorrectStation(station);
     setTries(3);
     if (unseenStations.length === 0) {
-      console.log("Game end");
       onGameEnd();
     }
   };
@@ -332,7 +329,6 @@ export default function Game(props: any) {
 
   const restartGame = () => {
     if (gameType === GameType.QUICKGAME) {
-      console.log("quickgame");
       navigate("/quickgame");
     } else if (gameType === GameType.SINGAPORETOUR) {
       navigate("/singaporetour");
@@ -348,7 +344,6 @@ export default function Game(props: any) {
   }, []);
 
   useEffect(() => {
-    console.log(unseenStations);
     if (!currentStation && unseenStations.length > 0) {
       getNewStation();
     }

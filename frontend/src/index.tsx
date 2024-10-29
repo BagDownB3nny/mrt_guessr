@@ -5,6 +5,7 @@ import reportWebVitals from "./reportWebVitals";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Game, { GameType } from "./pages/Game";
 import Mainhome from "./pages/MainHome";
+import { Analytics } from "@vercel/analytics/react";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +28,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <RouterProvider router={router} />
+    <Analytics />
   </React.StrictMode>
 );
 
