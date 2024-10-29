@@ -5,6 +5,7 @@ import MrtMapController from "../components/MrtMapController";
 import styles from "../css/Game.module.css";
 import GameFinishModal from "../components/GameFinishModal";
 import { useNavigate } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
 
 const DowntownLineStations = [
   "Bukit Panjang",
@@ -375,6 +376,7 @@ export default function Game(props: any) {
         stationsGuessedAfterThreeTries={stationsGuessedAfterThreeTries}
         getScore={getScore}
       />
+      <Analytics />
     </div>
   );
 }
