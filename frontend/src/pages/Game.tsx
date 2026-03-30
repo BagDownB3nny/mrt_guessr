@@ -325,7 +325,11 @@ export default function Game(props: any) {
   };
 
   const restartGame = () => {
-    // Reset all state to restart
+    // Hide all revealed station text labels in the SVG
+    document.querySelectorAll('[id$="_Text"]').forEach((el) => {
+      (el as HTMLElement).style.display = "none";
+    });
+    // Reset all state
     setClickedStations([]);
     setCurrentStation("");
     setNewlyCorrectStation("");
