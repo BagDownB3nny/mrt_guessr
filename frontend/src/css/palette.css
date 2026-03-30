@@ -1,0 +1,44 @@
+/**
+ * palette.css — MRT Guessr design tokens
+ *
+ * Import this file once (in index.css) and use the variables everywhere.
+ * Never hard-code hex colours in component CSS files.
+ *
+ * Naming convention:
+ *   --color-<role>[-variant]
+ */
+
+:root {
+  /* ── Brand / UI neutrals ───────────────────────────────────────────────── */
+  --color-bg-app:       #E3E3E1;   /* landing + bottom bar background        */
+  --color-bg-white:     #ffffff;   /* card / capsule / stat box backgrounds  */
+  --color-sea:          #DAEEF5;   /* map ocean background / transition veil */
+  --color-ink:          #262627;   /* primary text + icons                   */
+  --color-ink-muted:    rgba(38, 38, 39, 0.55);  /* labels, tier message     */
+  --color-ink-faint:    rgba(38, 38, 39, 0.35);  /* borders, dividers        */
+
+  /* ── MRT line colours ──────────────────────────────────────────────────── */
+  --color-nsrl:         #E2231A;   /* North–South Line red (map accent / HUD border) */
+  --color-ewl:          #009645;   /* East–West Line green                   */
+  --color-ccl:          #FA9E0D;   /* Circle Line orange                     */
+  --color-grey:         #8B8B8B;   /* missed / neutral                       */
+
+  /* ── Semantic stat cell colours ───────────────────────────────────────── */
+  --color-cell-ewl-bg:  rgba(0, 150, 69, 0.15);
+  --color-cell-ewl-fg:  #006630;
+  --color-cell-ccl-bg:  rgba(250, 158, 13, 0.18);
+  --color-cell-ccl-fg:  #7a4b00;
+  --color-cell-nsl-bg:  rgba(226, 35, 26, 0.13);
+  --color-cell-nsl-fg:  #9a1a14;
+  --color-cell-grey-bg: rgba(120, 120, 120, 0.14);
+  --color-cell-grey-fg: #4a4a4a;
+  --color-missed-text:  #991b1b;
+
+  /* ── Feedback edge glows ───────────────────────────────────────────────── */
+  --color-glow-correct-hi:  rgba(34, 255, 106, 0.95);
+  --color-glow-correct-mid: rgba(34, 255, 106, 0.65);
+  --color-glow-correct-lo:  rgba(34, 255, 106, 0.35);
+  --color-glow-wrong-hi:    rgba(226, 35, 26, 0.95);
+  --color-glow-wrong-mid:   rgba(226, 35, 26, 0.65);
+  --color-glow-wrong-lo:    rgba(226, 35, 26, 0.35);
+}

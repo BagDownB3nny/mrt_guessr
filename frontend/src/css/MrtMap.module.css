@@ -2,7 +2,7 @@
     position: relative;
     flex: 1 1 auto;
     min-height: 0;
-    background-color: #DAEEF5;
+    background-color: var(--color-sea);
     overflow: hidden;
     touch-action: none;
 }
@@ -37,7 +37,7 @@
     border: 2px solid rgba(38, 38, 39, 0.8);
     border-radius: 999px;
     background: rgba(227, 227, 225, 0.92);
-    color: #262627;
+    color: var(--color-ink);
     font-size: 1rem;
     font-weight: 700;
     line-height: 1;
@@ -46,8 +46,8 @@
 
 .controlButton:hover {
     cursor: pointer;
-    background: #262627;
-    color: #E3E3E1;
+    background: var(--color-ink);
+    color: var(--color-bg-app);
 }
 
 .station {
@@ -90,7 +90,7 @@
     pointer-events: none;
     font-size: 0.55rem;
     font-weight: 800;
-    color: #262627;
+    color: var(--color-ink);
     white-space: nowrap;
     transform: translate(-50%, -100%);
     transform-origin: center bottom;
@@ -111,7 +111,7 @@
     border-radius: 50%;
     border-style: solid;
     border-width: 3px;
-    border-color: #262627;
+    border-color: var(--color-ink);
     background-color: transparent;
     position: absolute;
     z-index: 3;

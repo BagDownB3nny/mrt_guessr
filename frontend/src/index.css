@@ -1,3 +1,5 @@
+@import "./css/palette.css";
+
 * {
   box-sizing: border-box;
 }
@@ -13,8 +15,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #E3E3E1;
-  color: #262627;
+  background: var(--color-bg-app);
+  color: var(--color-ink);
 }
 
 button,

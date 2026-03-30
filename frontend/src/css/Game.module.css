@@ -13,7 +13,7 @@
   position: absolute;
   inset: 0;
   z-index: 200;
-  background-color: #DAEEF5;
+  background-color: var(--color-sea);
   pointer-events: none;
   opacity: 1;
   transition: opacity 600ms ease;
@@ -30,9 +30,9 @@
   pointer-events: none;
   background: transparent;
   box-shadow:
-    inset 0 0 0 14px rgba(34, 255, 106, 0.95),
-    inset 0 0 48px 22px rgba(34, 255, 106, 0.65),
-    inset 0 0 96px 32px rgba(34, 255, 106, 0.35);
+    inset 0 0 0 14px var(--color-glow-correct-hi),
+    inset 0 0 48px 22px var(--color-glow-correct-mid),
+    inset 0 0 96px 32px var(--color-glow-correct-lo);
   animation: edgeGlow 0.45s ease-out forwards;
 }
 
@@ -43,9 +43,9 @@
   pointer-events: none;
   background: transparent;
   box-shadow:
-    inset 0 0 0 14px rgba(229, 60, 48, 0.95),
-    inset 0 0 48px 22px rgba(229, 60, 48, 0.65),
-    inset 0 0 96px 32px rgba(229, 60, 48, 0.35);
+    inset 0 0 0 14px var(--color-glow-wrong-hi),
+    inset 0 0 48px 22px var(--color-glow-wrong-mid),
+    inset 0 0 96px 32px var(--color-glow-wrong-lo);
   animation: edgeGlow 0.45s ease-out forwards;
 }
 
@@ -53,5 +53,3 @@
   0%   { opacity: 1; }
   100% { opacity: 0; }
 }
-
-

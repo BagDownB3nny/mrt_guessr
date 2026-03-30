@@ -13,7 +13,7 @@
     position: relative;
     width: min(38rem, calc(100vw - 2rem));
     max-height: calc(100dvh - 2.5rem);
-    border: 0.45rem solid #E53C30;
+    border: 0.45rem solid var(--color-nsrl);
     border-radius: 2rem;
     overflow: auto;
     outline: none;
@@ -23,8 +23,8 @@
     display: flex;
     flex-direction: column;
     gap: 1.4rem;
-    background-color: #E3E3E1;
-    color: #262627;
+    background-color: var(--color-bg-app);
+    color: var(--color-ink);
     padding: 1.8rem 1.4rem 1.6rem;
 }
 
@@ -85,10 +85,10 @@
 }
 
 /* MRT line colours */
-.cellGreen  { background: rgba(0, 150, 69, 0.15);   color: #006630; }  /* EWL green  #009645 */
-.cellYellow { background: rgba(250, 158, 13, 0.18); color: #7a4b00; }  /* CCL orange #FA9E0D */
-.cellOrange { background: rgba(226, 35, 26, 0.13);  color: #9a1a14; }  /* NSL red    #E2231A */
-.cellRed    { background: rgba(120, 120, 120, 0.14); color: #4a4a4a; } /* Missed grey         */
+.cellGreen  { background: var(--color-cell-ewl-bg);   color: var(--color-cell-ewl-fg); }  /* EWL green  var(--color-ewl) */
+.cellYellow { background: var(--color-cell-ccl-bg); color: var(--color-cell-ccl-fg); }  /* CCL orange var(--color-ccl) */
+.cellOrange { background: var(--color-cell-nsl-bg);  color: var(--color-cell-nsl-fg); }  /* NSL red    #E2231A */
+.cellRed    { background: var(--color-cell-grey-bg); color: var(--color-cell-grey-fg); } /* Missed grey         */
 
 /* ── Station lists ──────────────────────────────────────────── */
 .stationLists {
@@ -103,8 +103,8 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: #ffffff;
-    border: 2px solid #262627;
+    background: var(--color-bg-white);
+    border: 2px solid var(--color-ink);
     border-radius: 1rem;
     overflow: hidden;
 }
@@ -146,7 +146,7 @@
 }
 
 .stationPillMissed {
-    color: #991b1b;
+    color: var(--color-missed-text);
 }
 
 /* ── Actions ────────────────────────────────────────────────── */
@@ -164,8 +164,8 @@
     letter-spacing: 0.02em;
     border: none;
     border-radius: 999px;
-    background: #262627;
-    color: #E3E3E1;
+    background: var(--color-ink);
+    color: var(--color-bg-app);
     cursor: pointer;
     transition: opacity 150ms ease;
 }
@@ -181,7 +181,7 @@
     border: 2px solid rgba(38, 38, 39, 0.35);
     border-radius: 999px;
     background: transparent;
-    color: #262627;
+    color: var(--color-ink);
     cursor: pointer;
     transition: background 150ms ease, border-color 150ms ease;
 }
