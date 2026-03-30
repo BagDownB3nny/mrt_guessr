@@ -1,39 +1,36 @@
 .fixedBar {
-    position: relative;
     flex-shrink: 0;
     background-color: #E3E3E1;
     color: #262627;
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: minmax(4.5rem, auto) minmax(0, 1fr) auto;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.8rem;
     padding: 0.6rem 1rem calc(0.6rem + env(safe-area-inset-bottom));
-    padding-right: 6.5rem; /* room for floating icon buttons */
     border-top: 0.45rem solid #E53C30;
     box-sizing: border-box;
     min-height: 5rem;
 }
 
-/* ── Left: score ────────────────────────────────────────────── */
 .leftColumn {
-    flex: 0 0 5rem;
     display: flex;
     align-items: center;
+    justify-content: flex-start;
 }
 
-.leftColumn .statBlock {
-    align-items: flex-start;
-}
-
-/* ── Middle: station name + tries ──────────────────────────── */
 .middleColumn {
-    flex: 1 1 0;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 0.4rem;
-    min-width: 0;
+}
+
+.rightColumn {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
 }
 
 .stationName {
@@ -44,11 +41,11 @@
     text-wrap: balance;
 }
 
-.viewScore {
+.viewStats {
     display: flex;
 }
 
-.viewScore button {
+.viewStats button {
     padding: 0.45rem 1rem;
     font-size: clamp(0.9rem, 1vw + 0.6rem, 1.2rem);
     font-weight: 700;
@@ -59,7 +56,7 @@
     cursor: pointer;
 }
 
-.viewScore button:hover {
+.viewStats button:hover {
     background-color: #262627;
     color: #E3E3E1;
 }
@@ -76,22 +73,10 @@
     height: clamp(1.3rem, 2vw, 1.8rem);
 }
 
-/* ── Right: found ───────────────────────────────────────────── */
-.rightColumn {
-    flex: 0 0 5rem;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-}
-
-.rightColumn .statBlock {
-    align-items: flex-end;
-}
-
 .statBlock {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: flex-start;
 }
 
 .statLabel {
@@ -108,15 +93,10 @@
     line-height: 1.1;
 }
 
-/* ── Floating icon buttons (bottom-right) ───────────────────── */
 .iconButtons {
-    position: absolute;
-    right: 0.75rem;
-    bottom: calc(0.55rem + env(safe-area-inset-bottom));
     display: flex;
     flex-direction: row;
     gap: 0.45rem;
-    z-index: 10;
 }
 
 .iconBtn {
@@ -147,20 +127,14 @@
     height: 100%;
 }
 
-/* ── Mobile ─────────────────────────────────────────────────── */
 @media (max-width: 640px) {
     .fixedBar {
-        padding-right: 6rem;
+        grid-template-columns: minmax(4rem, auto) minmax(0, 1fr) auto;
+        gap: 0.6rem;
         min-height: 4.5rem;
     }
 
-    .rightColumn {
-        gap: 0.65rem;
-    }
-
     .iconButtons {
-        right: 0.6rem;
-        bottom: calc(0.45rem + env(safe-area-inset-bottom));
         gap: 0.35rem;
     }
 

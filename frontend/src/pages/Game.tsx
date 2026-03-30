@@ -165,7 +165,6 @@ export default function Game({ gameType }: GameProps) {
       <FixedBar
         currentStation={currentStation}
         tries={tries}
-        getScore={getScore}
         getStationsLeft={getStationsLeft}
         setModalOpen={setModalOpen}
         restartGame={restartGame}

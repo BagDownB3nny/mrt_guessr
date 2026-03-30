@@ -28,11 +28,15 @@
   inset: 0;
   z-index: 100;
   pointer-events: none;
-  background: rgba(34, 197, 94, 0.25);
-  animation: greenGlow 0.5s ease-out forwards;
+  background: transparent;
+  box-shadow:
+    inset 0 0 0 10px rgba(34, 255, 106, 0.95),
+    inset 0 0 32px 14px rgba(34, 255, 106, 0.65),
+    inset 0 0 64px 18px rgba(34, 255, 106, 0.35);
+  animation: greenGlowEdge 0.45s ease-out forwards;
 }
 
-@keyframes greenGlow {
+@keyframes greenGlowEdge {
   0% {
     opacity: 1;
   }
