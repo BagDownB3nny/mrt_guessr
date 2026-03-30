@@ -37,6 +37,13 @@
     text-align: center;
 }
 
+.subline {
+    font-size: clamp(0.9rem, 1.4vw, 1.1rem);
+    font-weight: 600;
+    opacity: 0.55;
+    text-align: center;
+}
+
 .headline {
     font-size: clamp(1.6rem, 3.5vw, 2.4rem);
     font-weight: 800;

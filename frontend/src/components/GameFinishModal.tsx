@@ -34,6 +34,7 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
 
   const score = guessStats.inOneTry * 3 + guessStats.inTwoTries * 2 + guessStats.inThreeTries * 1;
   const total = guessStats.inOneTry + guessStats.inTwoTries + guessStats.inThreeTries + guessStats.afterThreeTries;
+  const found = guessStats.inOneTry + guessStats.inTwoTries + guessStats.inThreeTries;
   const maxScore = total * 3;
   const tierMessage = getTierMessage(score, maxScore);
 
@@ -46,8 +47,9 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
       onRequestClose={() => setModalOpen(false)}
     >
       <div className={styles.modalContainer}>
-        {/* Tier message headline */}
+        {/* Header */}
         <div className={styles.header}>
+          <div className={styles.subline}>Found {found}/{total} stations</div>
           <div className={styles.headline}>{tierMessage}</div>
         </div>
 
