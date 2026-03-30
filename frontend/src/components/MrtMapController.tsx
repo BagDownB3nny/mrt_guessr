@@ -27,20 +27,34 @@ const MrtMapController = (props: any) => {
   const currentTries = useRef(tries);
   const transformRef = useRef<ReactZoomPanPinchRef | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  // Track pan/pinch at the container level so station elements stay touch-listener-free
+  const touchMovedRef = useRef(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
-  // Block iOS Safari from intercepting 2-finger pinch gestures on the map.
-  // Must be non-passive so preventDefault() actually works.
+  // At the container level: block browser pinch + track whether a touch moved.
+  // Keeping ALL touch listeners OFF station elements so iOS Safari doesn't route
+  // the first touch's ownership to a deep SVG child (which breaks pinch detection).
   useEffect(() => {
     const container = mapContainerRef.current;
     if (!container) return;
-    const blockBrowserPinch = (e: TouchEvent) => {
+
+    const onTouchStart = (e: TouchEvent) => {
+      touchMovedRef.current = false;
       if (e.touches.length >= 2) {
+        // Non-passive preventDefault blocks iOS from intercepting as a page pinch
         e.preventDefault();
       }
     };
-    container.addEventListener("touchstart", blockBrowserPinch, { passive: false });
-    return () => container.removeEventListener("touchstart", blockBrowserPinch);
+    const onTouchMove = (e: TouchEvent) => {
+      touchMovedRef.current = true;
+    };
+
+    container.addEventListener("touchstart", onTouchStart, { passive: false });
+    container.addEventListener("touchmove", onTouchMove, { passive: true });
+    return () => {
+      container.removeEventListener("touchstart", onTouchStart);
+      container.removeEventListener("touchmove", onTouchMove);
+    };
   }, []);
 
   useEffect(() => {
@@ -145,14 +159,12 @@ const MrtMapController = (props: any) => {
       }
 
       el.setAttribute("data-bound-click", "true");
-      // Track touch movement so we can skip click if the user was panning
-      let touchMoved = false;
-      el.addEventListener("touchstart", () => { touchMoved = false; }, { passive: true });
-      el.addEventListener("touchmove", () => { touchMoved = true; }, { passive: true });
+      // NO touch listeners on station elements — all touch tracking happens at
+      // the container level so iOS Safari never routes a touch's ownership here.
       el.addEventListener("click", () => {
-        // If the touch moved before this click, it was a pan — ignore it
-        if (touchMoved) return;
-        // Pop feedback animation — use double rAF to reliably restart on SVG elements
+        // If a touch moved before this click, it was a pan — skip
+        if (touchMovedRef.current) return;
+        // Pop feedback animation — double rAF reliably restarts on SVG elements
         el.classList.remove(styles.stationPop);
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
