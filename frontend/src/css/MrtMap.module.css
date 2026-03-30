@@ -94,7 +94,7 @@
     white-space: nowrap;
     transform: translate(-50%, -100%);
     transform-origin: center bottom;
-    animation: wrongLabelFloat 0.8s ease-out forwards;
+    animation: wrongLabelFloat 0.8s linear forwards;
     z-index: 5;
     text-shadow:
         -1px -1px 0 #fff,
@@ -106,7 +106,7 @@
 
 @keyframes wrongLabelFloat {
     0%   { opacity: 1;   transform: translate(-50%, -100%); }
-    60%  { opacity: 1;   transform: translate(-50%, calc(-100% - 1.25rem)); }
+    60%  { opacity: 1; }
     100% { opacity: 0;   transform: translate(-50%, calc(-100% - 1.75rem)); }
 }
 
