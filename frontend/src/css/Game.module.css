@@ -30,17 +30,45 @@
   pointer-events: none;
   background: transparent;
   box-shadow:
-    inset 0 0 0 10px rgba(34, 255, 106, 0.95),
-    inset 0 0 32px 14px rgba(34, 255, 106, 0.65),
-    inset 0 0 64px 18px rgba(34, 255, 106, 0.35);
-  animation: greenGlowEdge 0.45s ease-out forwards;
+    inset 0 0 0 14px rgba(34, 255, 106, 0.95),
+    inset 0 0 48px 22px rgba(34, 255, 106, 0.65),
+    inset 0 0 96px 32px rgba(34, 255, 106, 0.35);
+  animation: edgeGlow 0.45s ease-out forwards;
 }
 
-@keyframes greenGlowEdge {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
+.redFlash {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  background: transparent;
+  box-shadow:
+    inset 0 0 0 14px rgba(229, 60, 48, 0.95),
+    inset 0 0 48px 22px rgba(229, 60, 48, 0.65),
+    inset 0 0 96px 32px rgba(229, 60, 48, 0.35);
+  animation: edgeGlow 0.45s ease-out forwards;
+}
+
+@keyframes edgeGlow {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Wrong-guess floating label */
+.wrongLabel {
+  position: fixed;
+  z-index: 150;
+  pointer-events: none;
+  font-size: clamp(0.95rem, 2vw, 1.3rem);
+  font-weight: 800;
+  color: #E53C30;
+  white-space: nowrap;
+  transform: translate(-50%, -100%);
+  animation: floatUp 0.8s ease-out forwards;
+}
+
+@keyframes floatUp {
+  0%   { opacity: 1;   transform: translate(-50%, -100%); }
+  60%  { opacity: 1;   transform: translate(-50%, calc(-100% - 2.5rem)); }
+  100% { opacity: 0;   transform: translate(-50%, calc(-100% - 3.5rem)); }
 }

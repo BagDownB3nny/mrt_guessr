@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import FixedBar from "../components/FixedBar";
 import MrtMapController from "../components/MrtMapController";
@@ -40,6 +40,10 @@ export default function Game({ gameType }: GameProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [totalStations, setTotalStations] = useState(0);
   const [showGreenFlash, setShowGreenFlash] = useState(false);
+  const [showRedFlash, setShowRedFlash] = useState(false);
+  // wrongLabels: each entry is { id, label, x, y } — rendered as floating text
+  const [wrongLabels, setWrongLabels] = useState<{ id: number; label: string; x: number; y: number }[]>([]);
+  const wrongLabelCounter = useRef(0);
   // Sea-colour entry veil — starts opaque, fades out once the SVG is ready
   const [veilVisible, setVeilVisible] = useState(true);
   const [guessStats, setGuessStats] = useState<GuessStats>({
@@ -92,8 +96,15 @@ export default function Game({ gameType }: GameProps) {
     getNewStation();
   };
 
-  const onWrongClick = () => {
+  const onWrongClick = (stationName: string, x: number, y: number) => {
     setTries((prev) => prev - 1);
+    // Red edge glow
+    setShowRedFlash(true);
+    setTimeout(() => setShowRedFlash(false), 450);
+    // Floating label
+    const id = ++wrongLabelCounter.current;
+    setWrongLabels((prev) => [...prev, { id, label: stationName, x, y }]);
+    setTimeout(() => setWrongLabels((prev) => prev.filter((l) => l.id !== id)), 800);
   };
 
   const restartGame = () => {
@@ -140,6 +151,17 @@ export default function Game({ gameType }: GameProps) {
   return (
     <div className={styles.GameContainer}>
       {showGreenFlash && <div className={styles.greenFlash} aria-hidden="true" />}
+      {showRedFlash && <div className={styles.redFlash} aria-hidden="true" />}
+      {wrongLabels.map(({ id, label, x, y }) => (
+        <div
+          key={id}
+          className={styles.wrongLabel}
+          style={{ left: x, top: y }}
+          aria-hidden="true"
+        >
+          {label}
+        </div>
+      ))}
       <MrtMapController
         onCorrectClick={onCorrectClick}
         onWrongClick={onWrongClick}

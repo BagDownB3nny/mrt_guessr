@@ -16,7 +16,7 @@ const getStationName = (id: string): string =>
 
 interface Props {
   onCorrectClick: (station: string, tries: number) => void;
-  onWrongClick: () => void;
+  onWrongClick: (stationName: string, x: number, y: number) => void;
   currentStation: string;
   newlyCorrectStation: string;
   tries: number;
@@ -180,7 +180,11 @@ export default function MrtMapController({
         if (station === currentStationRef.current) {
           onCorrectClick(station, currentTriesRef.current);
         } else {
-          onWrongClick();
+          // Use the centre of the clicked element for the floating label position
+          const rect = (el as Element).getBoundingClientRect();
+          const cx = rect.left + rect.width / 2;
+          const cy = rect.top;
+          onWrongClick(station, cx, cy);
         }
       });
     });
