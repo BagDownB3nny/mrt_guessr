@@ -43,13 +43,16 @@ const FixedBar: React.FC<Props> = (props) => {
           </div>
         )}
         <div className={styles.triesBox}>
-          {arrayData.map((num) =>
-            tries > num ? (
-              <img key={num} src="/greyX.png" className={styles.try} alt="" />
-            ) : (
-              <img key={num} src="/redX.png" className={styles.try} alt="" />
-            )
-          )}
+          {arrayData.map((num) => {
+            const isSpent = tries <= num;
+            return (
+              <span
+                key={num}
+                className={`${styles.tryMarker} ${isSpent ? styles.tryMarkerSpent : ""}`}
+                aria-hidden="true"
+              />
+            );
+          })}
         </div>
       </div>
 

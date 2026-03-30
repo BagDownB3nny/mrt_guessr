@@ -64,13 +64,36 @@
 .triesBox {
     display: flex;
     flex-direction: row;
-    gap: 0.45rem;
+    gap: 0.5rem;
     justify-content: center;
+    align-items: center;
 }
 
-.try {
-    width: clamp(1.3rem, 2vw, 1.8rem);
-    height: clamp(1.3rem, 2vw, 1.8rem);
+/* Station-marker style try indicator */
+.tryMarker {
+    display: inline-block;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    background-color: #ffffff;
+    border: 0.14rem solid #262627;
+    box-shadow: 0 0 0 0.22rem #E53C30;
+    flex-shrink: 0;
+    transition: box-shadow 200ms ease, background-color 200ms ease, transform 200ms ease;
+}
+
+/* Spent: red fill, ring gone, shrink-pop animation */
+.tryMarkerSpent {
+    background-color: #E53C30;
+    box-shadow: 0 0 0 0.22rem rgba(229, 60, 48, 0.25);
+    animation: markerPop 250ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes markerPop {
+    0%   { transform: scale(1); }
+    35%  { transform: scale(1.55); }
+    65%  { transform: scale(0.82); }
+    100% { transform: scale(1); }
 }
 
 .statBlock {
