@@ -49,8 +49,8 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
       <div className={styles.modalContainer}>
         {/* Header */}
         <div className={styles.header}>
-          <div className={styles.subline}>Found {found}/{total} stations</div>
-          <div className={styles.headline}>{tierMessage}</div>
+          <div className={styles.headline}>Found {found}/{total} stations</div>
+          <div className={styles.subline}>{tierMessage}</div>
         </div>
 
         {/* Stats grid */}

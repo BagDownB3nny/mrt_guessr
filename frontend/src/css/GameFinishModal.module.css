@@ -38,9 +38,9 @@
 }
 
 .subline {
-    font-size: clamp(0.9rem, 1.4vw, 1.1rem);
-    font-weight: 600;
-    opacity: 0.55;
+    font-size: clamp(0.85rem, 1.3vw, 1rem);
+    font-weight: 500;
+    color: rgba(38, 38, 39, 0.5);
     text-align: center;
 }
 
