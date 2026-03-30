@@ -1,55 +1,63 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../css/Home.module.css";
 import Home from "./Home";
 import { Analytics } from "@vercel/analytics/react";
 
-const SCROLL_DISTANCE = typeof window !== "undefined" ? window.innerHeight * 2 : 1600;
-const SCROLL_DURATION = 1500; // scroll takes 1.5s
-const LIFT_DELAY      = 80;   // brief pause before lift
-const LIFT_DURATION   = 700;  // matches CSS transition
+// All durations in ms — CSS transitions must match these exactly
+const TRAVEL_DURATION = 1500; // content slides up (simulates scrolling down the line)
+const LIFT_DELAY      = 80;   // brief pause before the overlay lifts
+const LIFT_DURATION   = 700;  // overlay translateY(-100%) — matches CSS transition
 
 export default function Mainhome() {
-  const navigate = useNavigate();
-  const overlayRef = useRef<HTMLDivElement | null>(null);
-  const [locked, setLocked]       = useState(true);
-  const [lifted, setLifted]       = useState(false);
-  const [departing, setDeparting] = useState(false);
-  const [veilOpacity, setVeilOpacity] = useState(0);
-
-  // Tie veil opacity to scroll progress (0 → 1 over SCROLL_DISTANCE px)
-  const handleScroll = useCallback(() => {
-    const el = overlayRef.current;
-    if (!el) return;
-    const progress = Math.min(el.scrollTop / SCROLL_DISTANCE, 1);
-    setVeilOpacity(progress);
-  }, []);
+  const navigate  = useNavigate();
+  const [phase, setPhase] = useState<"idle" | "travelling" | "lifting">("idle");
+  const routeRef  = useRef<string>("");
 
   const handleSelectStation = (route?: string) => {
-    if (departing || !route) return;
-    setDeparting(true);
-    setLocked(false);
+    if (phase !== "idle" || !route) return;
+    routeRef.current = route;
 
-    overlayRef.current?.scrollTo({ top: SCROLL_DISTANCE, behavior: "smooth" });
+    // Phase 1: slide content up + fade veil in (CSS animation, 1.5s)
+    setPhase("travelling");
 
-    setTimeout(() => setLifted(true), SCROLL_DURATION + LIFT_DELAY);
-    setTimeout(() => navigate(route), SCROLL_DURATION + LIFT_DELAY + LIFT_DURATION);
+    // Phase 2: lift the whole overlay after travel finishes
+    setTimeout(() => setPhase("lifting"), TRAVEL_DURATION + LIFT_DELAY);
+
+    // Navigate once lifting is done
+    setTimeout(() => navigate(route), TRAVEL_DURATION + LIFT_DELAY + LIFT_DURATION);
   };
-
-  const cls = [
-    styles.overlayLayer,
-    locked  ? styles.overlayLocked : "",
-    lifted  ? styles.overlayLifted : "",
-  ].filter(Boolean).join(" ");
 
   return (
     <div className={styles.scene}>
-      <div className={cls} ref={overlayRef} onScroll={handleScroll}>
-        <Home onSelectStation={handleSelectStation} />
-        {/* Sea-colour veil: fades in as scroll progresses */}
+      {/*
+        The overlay is never scrolled — it just sits over the game background.
+        We use CSS transforms to animate it out.
+      */}
+      <div
+        className={[
+          styles.overlayLayer,
+          phase === "lifting" ? styles.overlayLifted : "",
+        ].filter(Boolean).join(" ")}
+      >
+        {/*
+          Inner content wrapper.
+          On "travelling": slides up by 200dvh (following the red line) over 1.5s.
+          This simulates the user scrolling down the line.
+        */}
+        <div className={[
+          styles.homeContent,
+          phase === "travelling" || phase === "lifting" ? styles.homeContentTravelling : "",
+        ].filter(Boolean).join(" ")}>
+          <Home onSelectStation={handleSelectStation} />
+        </div>
+
+        {/* Sea-colour veil — fades in during travel */}
         <div
-          className={styles.seaVeil}
-          style={{ opacity: veilOpacity }}
+          className={[
+            styles.seaVeil,
+            phase === "travelling" || phase === "lifting" ? styles.seaVeilVisible : "",
+          ].filter(Boolean).join(" ")}
           aria-hidden="true"
         />
       </div>

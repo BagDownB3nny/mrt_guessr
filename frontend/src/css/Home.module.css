@@ -11,41 +11,44 @@
     position: absolute;
     inset: 0;
     z-index: 2;
-    overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-width: none;
+    overflow: hidden;  /* no scrolling — animation is purely transform-based */
     background-color: #E3E3E1;
     transition: transform 700ms cubic-bezier(0.72, 0, 0.2, 1);
 }
 
-.overlayLayer::-webkit-scrollbar { display: none; }
+/* Lifts the whole overlay upward after travel completes */
+.overlayLifted { transform: translateY(-100%); }
 
-/* Prevents user from scrolling before a button is tapped */
-.overlayLocked { overflow: hidden; }
+/* ── Inner content wrapper ───────────────────────────────────────────────
+ * Translates upward by 200dvh over 1.5s, simulating camera following the line.
+ */
+.homeContent {
+    position: relative;
+    width: 100%;
+    will-change: transform;
+}
 
-/* Sea-colour veil — fixed inside the overlay, fades in during scroll */
+.homeContentTravelling {
+    transition: transform 1500ms cubic-bezier(0.4, 0, 0.6, 1);
+    transform: translateY(-200dvh);
+}
+
+/* Sea-colour veil: sits over content, fades in during travel */
 .seaVeil {
-    position: fixed;
+    position: absolute;
     inset: 0;
+    height: 100dvh;     /* cover only the visible viewport */
     background-color: #DAEEF5;
     pointer-events: none;
     z-index: 10;
     opacity: 0;
-    /* No CSS transition — opacity is driven directly by JS scroll progress */
 }
 
-/* Slide the entire overlay upward to reveal the game */
-.overlayLifted { transform: translateY(-100%); }
-
-/* ── Outer column — full-width container for the scrollable content ─────── */
-.homeColumn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    font-family: Arial, sans-serif;
-    color: #262627;
+.seaVeilVisible {
+    transition: opacity 1500ms ease;
+    opacity: 1;
 }
+
 
 /* ── First viewport ─────────────────────────────────────────────────────── */
 .home {

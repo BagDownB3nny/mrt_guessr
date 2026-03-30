@@ -21,8 +21,7 @@ export default function Home({ onSelectStation }: HomeProps) {
   ];
 
   return (
-    // Full-width column layout so the track column + tail can share a reference point
-    <div className={styles.homeColumn}>
+    <>
 
       {/* ── First viewport: title + buttons ── */}
       <div className={styles.home}>
@@ -53,6 +52,6 @@ export default function Home({ onSelectStation }: HomeProps) {
         </div>
       </div>
 
-    </div>
+    </>
   );
 }
