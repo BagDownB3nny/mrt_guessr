@@ -22,7 +22,7 @@ export default function TrackButtonContainer(props: ButtonProp) {
         type="button"
       >
         <span className={homeStyles.stationMarker} aria-hidden="true">
-          <span className={homeStyles.stationCode}>{code}</span>
+          {code ? <span className={homeStyles.stationCode}>{code}</span> : null}
         </span>
         <span className={homeStyles.stationLabelGroup}>
           <span className={homeStyles.stationName}>{text}</span>

@@ -3,7 +3,7 @@ import styles from "../css/Home.module.css";
 import TrackButtonContainer from "../components/TrackButtonContainer";
 
 type StationConfig = {
-  code: string;
+  code?: string;
   disabled?: boolean;
   onClick: () => void;
   text: string;
@@ -15,9 +15,9 @@ type HomeProps = {
 
 export default function Home({ onSelectStation }: HomeProps) {
   const stations: StationConfig[] = [
-    { code: "MG1", text: "Quickplay",        onClick: () => onSelectStation("/quickgame") },
-    { code: "MG2", text: "Singapore Tour",   onClick: () => onSelectStation("/singaporetour") },
-    { code: "MG3", text: "Custom Challenge", onClick: () => onSelectStation(), disabled: true },
+    { text: "Quickplay",          onClick: () => onSelectStation("/quickgame") },
+    { text: "Singapore Tour",     onClick: () => onSelectStation("/singaporetour") },
+    { text: "Custom Challenges",  onClick: () => onSelectStation(), disabled: true },
   ];
 
   return (

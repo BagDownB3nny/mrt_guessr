@@ -5,7 +5,7 @@ import Home from "./Home";
 import { Analytics } from "@vercel/analytics/react";
 
 // All durations in ms — CSS transitions must match these exactly
-const TRAVEL_DURATION = 1500; // content slides up (simulates scrolling down the line)
+const TRAVEL_DURATION = 1000; // content slides up (simulates scrolling down the line)
 const LIFT_DELAY      = 80;   // brief pause before the overlay lifts
 const LIFT_DURATION   = 700;  // overlay translateY(-100%) — matches CSS transition
 
