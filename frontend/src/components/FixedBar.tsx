@@ -34,7 +34,9 @@ const FixedBar: React.FC<Props> = (props) => {
       {/* Middle: station name + tries */}
       <div className={styles.middleColumn}>
         {currentStation ? (
-          <div className={styles.stationName}>{currentStation}</div>
+          <div key={currentStation} className={styles.stationCapsule}>
+            <span className={styles.stationName}>{currentStation}</span>
+          </div>
         ) : (
           <div className={styles.viewStats}>
             <button onClick={() => setModalOpen(true)} type="button">
