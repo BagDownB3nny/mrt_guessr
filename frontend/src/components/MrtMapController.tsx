@@ -151,6 +151,17 @@ const MrtMapController = (props: any) => {
   }, [newlyCorrectStation]);
 
   const addStyleToStationsAndText = () => {
+    // Set touch-action: none on the SVG and all its descendants.
+    // touch-action doesn't cascade through SVG elements, so we must set it
+    // explicitly on each node that sits between the wrapper and the stations.
+    const svgEl = document.querySelector('svg#New_Map') as SVGElement | null;
+    if (svgEl) {
+      (svgEl as any).style.touchAction = "none";
+      svgEl.querySelectorAll('*').forEach((el) => {
+        (el as HTMLElement).style.touchAction = "none";
+      });
+    }
+
     const buttonElements = document.querySelectorAll('[id$="_Button"]');
     buttonElements.forEach((el) => {
       el.classList.add(styles.station);
@@ -200,7 +211,7 @@ const MrtMapController = (props: any) => {
       >
         <TransformComponent
           wrapperStyle={{ width: "100%", height: "100%", touchAction: "none" }}
-          contentStyle={{ width: "100%", height: "100%" }}
+          contentStyle={{ width: "100%", height: "100%", touchAction: "none" }}
         >
           <SVG
             src="/full-mrt-map.svg"
