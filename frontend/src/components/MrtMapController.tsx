@@ -129,13 +129,13 @@ const MrtMapController = (props: any) => {
       }
 
       el.setAttribute("data-bound-click", "true");
-      // Use pointerup instead of click so we can distinguish tap vs drag/pinch
-      el.addEventListener("pointerup", (e) => {
-        // Only fire on single-touch taps — if it's a pinch/multi-touch, skip
-        const pe = e as PointerEvent;
-        if (pe.pointerType === "touch" && pe.isPrimary === false) {
-          return;
-        }
+      // Track touch movement so we can skip click if the user was panning
+      let touchMoved = false;
+      el.addEventListener("touchstart", () => { touchMoved = false; }, { passive: true });
+      el.addEventListener("touchmove", () => { touchMoved = true; }, { passive: true });
+      el.addEventListener("click", () => {
+        // If the touch moved before this click, it was a pan — ignore it
+        if (touchMoved) return;
         // Pop feedback animation — use double rAF to reliably restart on SVG elements
         el.classList.remove(styles.stationPop);
         requestAnimationFrame(() => {
