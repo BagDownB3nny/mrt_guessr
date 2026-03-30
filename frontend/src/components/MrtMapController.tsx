@@ -114,19 +114,7 @@ export default function MrtMapController({
     const buttonEl = document.getElementById(buttonId);
     if (!buttonEl || document.getElementById("showButtonCircle")) return;
 
-    // Pan to the station (keep current scale, no zoom change)
-    try {
-      const api = transformRef.current;
-      if (api) {
-        const scale = api.instance.transformState.scale;
-        api.zoomToElement(buttonEl, scale, 500, "easeOut");
-      }
-    } catch {
-      // Pan is best-effort — circle will still appear even if it fails
-    }
-
-    // Show the highlight circle after the pan animation completes
-    setTimeout(() => {
+    const spawnCircle = () => {
       const el = document.getElementById(buttonId);
       if (!el || document.getElementById("showButtonCircle")) return;
 
@@ -144,7 +132,39 @@ export default function MrtMapController({
       circle.style.top = `${cy - size / 2}px`;
       circle.addEventListener("animationend", () => circle.remove());
       document.body.appendChild(circle);
-    }, 550);
+    };
+
+    // Check if the station button is already visible within the map container
+    const container = mapContainerRef.current;
+    const isAlreadyVisible = (() => {
+      if (!container) return false;
+      const containerRect = container.getBoundingClientRect();
+      const buttonRect = buttonEl.getBoundingClientRect();
+      const margin = 40; // px — a small inset so edge-clipped stations still pan
+      return (
+        buttonRect.left   >= containerRect.left   + margin &&
+        buttonRect.right  <= containerRect.right  - margin &&
+        buttonRect.top    >= containerRect.top    + margin &&
+        buttonRect.bottom <= containerRect.bottom - margin
+      );
+    })();
+
+    if (isAlreadyVisible) {
+      // Station is on screen — show circle immediately, no pan needed
+      spawnCircle();
+    } else {
+      // Pan to the station first, then show the circle
+      try {
+        const api = transformRef.current;
+        if (api) {
+          const scale = api.instance.transformState.scale;
+          api.zoomToElement(buttonEl, scale, 500, "easeOut");
+        }
+      } catch {
+        // Pan is best-effort
+      }
+      setTimeout(spawnCircle, 550);
+    }
   }, [currentStation, isMobile, tries]);
 
   // ── Reveal station name text when correctly guessed ───────────────────────
