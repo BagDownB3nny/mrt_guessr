@@ -39,6 +39,7 @@ export default function Game({ gameType }: GameProps) {
   const [tries, setTries] = useState(TRIES_PER_STATION);
   const [currentScore, setCurrentScore] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
+  const [totalStations, setTotalStations] = useState(0);
   const [showGreenFlash, setShowGreenFlash] = useState(false);
   const [guessStats, setGuessStats] = useState<GuessStats>({
     inOneTry: 0,
@@ -49,11 +50,8 @@ export default function Game({ gameType }: GameProps) {
 
   // ── Derived display values ─────────────────────────────────────────────────
 
-  const getStationsLeft = (): string => {
-    const found = clickedStations.length;
-    const total = found + unseenStations.length + (currentStation ? 1 : 0);
-    return `${found}/${total}`;
-  };
+  const getStationsLeft = (): string =>
+    `${clickedStations.length}/${totalStations}`;
 
   const getScore = (): string => {
     const found = clickedStations.length;
@@ -68,7 +66,11 @@ export default function Game({ gameType }: GameProps) {
 
   const getNewStation = useCallback(() => {
     setUnseenStations((prev) => {
-      if (prev.length === 0) return prev;
+      if (prev.length === 0) {
+        // No more stations — clear current so the game-end effect fires
+        setCurrentStation("");
+        return prev;
+      }
       const idx = Math.floor(Math.random() * prev.length);
       setCurrentStation(prev[idx]);
       return prev.filter((_, i) => i !== idx);
@@ -115,14 +117,18 @@ export default function Game({ gameType }: GameProps) {
     setCurrentScore(0);
     setModalOpen(false);
     setGuessStats({ inOneTry: 0, inTwoTries: 0, inThreeTries: 0, afterThreeTries: 0 });
-    setUnseenStations(getInitialStations(gameType));
+    const stations = getInitialStations(gameType);
+    setTotalStations(stations.length);
+    setUnseenStations(stations);
   };
 
   // ── Effects ────────────────────────────────────────────────────────────────
 
   // Initialise stations on mount / game type change
   useEffect(() => {
-    setUnseenStations(getInitialStations(gameType));
+    const stations = getInitialStations(gameType);
+    setTotalStations(stations.length);
+    setUnseenStations(stations);
   }, [gameType]);
 
   // Advance to the next station whenever the current one is cleared
