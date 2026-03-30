@@ -74,12 +74,12 @@ const MrtMapController = (props: any) => {
           return;
         }
 
-        // Pan the map to center the correct station before showing the circle
+        // Pan the map to center the correct station, keeping current zoom level
         try {
           const api = transformRef.current;
           if (api) {
-            // zoomToElement pans + optionally zooms to center the element
-            api.zoomToElement(correctButtonElement, undefined, 500, "easeOut");
+            const currentScale = api.instance.transformState.scale;
+            api.zoomToElement(correctButtonElement, currentScale, 500, "easeOut");
           }
         } catch (_) {
           // If pan fails for any reason, just skip it — the circle will still show

@@ -4,6 +4,7 @@
     min-height: 0;
     background-color: #DAEEF5;
     overflow: hidden;
+    touch-action: none;
 }
 
 .mapTools {
