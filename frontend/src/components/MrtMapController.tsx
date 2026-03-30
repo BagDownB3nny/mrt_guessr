@@ -14,9 +14,16 @@ import Controls from "./Controls";
 const getStationName = (id: string): string =>
   id.slice(0, -7).replace(/_/g, " ");
 
+interface WrongLabel {
+  id: number;
+  label: string;
+  contentX: number;
+  contentY: number;
+}
+
 interface Props {
   onCorrectClick: (station: string, tries: number) => void;
-  onWrongClick: (stationName: string, x: number, y: number) => void;
+  onWrongClick: (stationName: string) => void;
   currentStation: string;
   newlyCorrectStation: string;
   tries: number;
@@ -35,6 +42,8 @@ export default function MrtMapController({
   const currentTriesRef = useRef(tries);
   const transformRef = useRef<ReactZoomPanPinchRef | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const wrongLabelCounter = useRef(0);
+  const [wrongLabels, setWrongLabels] = useState<WrongLabel[]>([]);
   // Tracks whether a touch moved before a click fires, so panning doesn't
   // accidentally trigger station selection.
   const touchMovedRef = useRef(false);
@@ -180,11 +189,20 @@ export default function MrtMapController({
         if (station === currentStationRef.current) {
           onCorrectClick(station, currentTriesRef.current);
         } else {
-          // Use the centre of the clicked element for the floating label position
+          onWrongClick(station);
+          // Convert screen position → content space so the label moves with the map
           const rect = (el as Element).getBoundingClientRect();
-          const cx = rect.left + rect.width / 2;
-          const cy = rect.top;
-          onWrongClick(station, cx, cy);
+          const screenCx = rect.left + rect.width / 2;
+          const screenCy = rect.top;
+          const api = transformRef.current;
+          if (api) {
+            const { positionX, positionY, scale } = api.instance.transformState;
+            const contentX = (screenCx - positionX) / scale;
+            const contentY = (screenCy - positionY) / scale;
+            const id = ++wrongLabelCounter.current;
+            setWrongLabels((prev) => [...prev, { id, label: station, contentX, contentY }]);
+            setTimeout(() => setWrongLabels((prev) => prev.filter((l) => l.id !== id)), 800);
+          }
         }
       });
     });
@@ -210,7 +228,7 @@ export default function MrtMapController({
       >
         <TransformComponent
           wrapperStyle={{ width: "100%", height: "100%", touchAction: "none" }}
-          contentStyle={{ width: "100%", height: "100%", touchAction: "none" }}
+          contentStyle={{ width: "100%", height: "100%", touchAction: "none", position: "relative" }}
         >
           <SVG
             src="/full-mrt-map.svg"
@@ -219,6 +237,17 @@ export default function MrtMapController({
             title="MRT map"
             onLoad={setupSvg}
           />
+          {/* Wrong-guess labels live in content space so they pan with the map */}
+          {wrongLabels.map(({ id, label, contentX, contentY }) => (
+            <div
+              key={id}
+              className={styles.wrongLabel}
+              style={{ left: contentX, top: contentY }}
+              aria-hidden="true"
+            >
+              {label}
+            </div>
+          ))}
         </TransformComponent>
         <div className={styles.mapTools}>
           <Controls />

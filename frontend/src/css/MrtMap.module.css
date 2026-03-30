@@ -84,6 +84,26 @@
     display: none;
 }
 
+/* Wrong-guess floating label — lives in content/transform space */
+.wrongLabel {
+    position: absolute;
+    pointer-events: none;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #262627;
+    white-space: nowrap;
+    transform: translate(-50%, -100%);
+    transform-origin: center bottom;
+    animation: wrongLabelFloat 0.8s ease-out forwards;
+    z-index: 5;
+}
+
+@keyframes wrongLabelFloat {
+    0%   { opacity: 1;   transform: translate(-50%, -100%); }
+    60%  { opacity: 1;   transform: translate(-50%, calc(-100% - 1.25rem)); }
+    100% { opacity: 0;   transform: translate(-50%, calc(-100% - 1.75rem)); }
+}
+
 .circle {
     border-radius: 50%;
     border-style: solid;
