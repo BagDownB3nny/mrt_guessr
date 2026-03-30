@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import styles from "../css/Home.module.css";
 import Home from "./Home";
 import { Analytics } from "@vercel/analytics/react";
+import config from "../config/constants.json";
 
-// Fast visual handoff: once the veil is opaque, swap routes immediately.
-const VEIL_IN_DURATION = 600;
+const VEIL_IN_DURATION = config.transitions.landingVeilInMs;
 
 export default function Mainhome() {
   const navigate  = useNavigate();

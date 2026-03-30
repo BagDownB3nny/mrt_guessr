@@ -8,6 +8,7 @@ import {
 import SVG from "react-inlinesvg";
 import styles from "../css/MrtMap.module.css";
 import Controls from "./Controls";
+import config from "../config/constants.json";
 
 // SVG station element IDs follow the pattern "Station_Name_Button".
 // This strips the trailing "_Button" suffix and restores spaces.
@@ -158,12 +159,12 @@ export default function MrtMapController({
         const api = transformRef.current;
         if (api) {
           const scale = api.instance.transformState.scale;
-          api.zoomToElement(buttonEl, scale, 500, "easeOut");
+          api.zoomToElement(buttonEl, scale, config.transitions.stationPanDurationMs, "easeOut");
         }
       } catch {
         // Pan is best-effort
       }
-      setTimeout(spawnCircle, 550);
+      setTimeout(spawnCircle, config.transitions.revealCircleDelayMs);
     }
   }, [currentStation, isMobile, tries]);
 
@@ -228,7 +229,7 @@ export default function MrtMapController({
             const id = ++wrongLabelCounter.current;
             // Replace all previous labels — only show the latest wrong click
             setWrongLabels([{ id, label: station, contentX, contentY }]);
-            setTimeout(() => setWrongLabels((prev) => prev.filter((l) => l.id !== id)), 800);
+            setTimeout(() => setWrongLabels((prev) => prev.filter((l) => l.id !== id)), config.transitions.wrongLabelDurationMs);
           }
         }
       });

@@ -5,6 +5,7 @@ import MrtMapController from "../components/MrtMapController";
 import GameFinishModal from "../components/GameFinishModal";
 import { getAllStations, sampleStations } from "../data/stations";
 import styles from "../css/Game.module.css";
+import config from "../config/constants.json";
 
 export enum GameType {
   QUICKGAME,
@@ -24,8 +25,8 @@ interface GuessStats {
   missedStations: string[];
 }
 
-const TRIES_PER_STATION = 3;
-const QUICKGAME_STATION_COUNT = 5;
+const TRIES_PER_STATION = config.gameplay.triesPerStation;
+const QUICKGAME_STATION_COUNT = config.gameplay.quickgameStationCount;
 
 function getInitialStations(gameType: GameType): string[] {
   return gameType === GameType.QUICKGAME
@@ -95,7 +96,7 @@ export default function Game({ gameType }: GameProps) {
     setNewlyCorrectStation(station);
     setTries(TRIES_PER_STATION);
     setShowGreenFlash(true);
-    setTimeout(() => setShowGreenFlash(false), 500);
+    setTimeout(() => setShowGreenFlash(false), config.transitions.correctFlashMs);
     // getNewStation reads unseenStations from its own closure — call after state flush
     getNewStation();
   };
@@ -104,7 +105,7 @@ export default function Game({ gameType }: GameProps) {
     setTries((prev) => prev - 1);
     // Red edge glow
     setShowRedFlash(true);
-    setTimeout(() => setShowRedFlash(false), 450);
+    setTimeout(() => setShowRedFlash(false), config.transitions.wrongFlashMs);
   };
 
   const restartGame = () => {

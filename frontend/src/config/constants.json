@@ -1,0 +1,45 @@
+{
+  "_comment": "Central constants for MRT Guessr. Edit here — never hard-code values in components.",
+
+  "gameplay": {
+    "triesPerStation": 3,
+    "quickgameStationCount": 5,
+    "scoringPointsPerTry": {
+      "firstTry": 3,
+      "secondTry": 2,
+      "thirdTry": 1,
+      "missed": 0
+    }
+  },
+
+  "transitions": {
+    "landingVeilInMs": 600,
+    "landingTravelMs": 1400,
+    "gameVeilOutMs": 600,
+    "correctFlashMs": 450,
+    "wrongFlashMs": 450,
+    "wrongLabelDurationMs": 800,
+    "revealCircleDelayMs": 550,
+    "stationPanDurationMs": 500
+  },
+
+  "tierMessages": [
+    { "minPct": 1.0,        "message": "You are the MRT map!" },
+    { "minPct": 0.8667,     "message": "You basically live on the MRT" },
+    { "minPct": 0.7333,     "message": "Impressive. Most people can't do this" },
+    { "minPct": 0.5333,     "message": "Not bad, you know your way around town" },
+    { "minPct": 0.2667,     "message": "Stick to Google Maps" },
+    { "minPct": 0,          "message": "Are you really Singaporean?" }
+  ],
+
+  "palette": {
+    "bgApp":      "#E3E3E1",
+    "bgWhite":    "#ffffff",
+    "sea":        "#DAEEF5",
+    "ink":        "#262627",
+    "nsrl":       "#E2231A",
+    "ewl":        "#009645",
+    "ccl":        "#FA9E0D",
+    "grey":       "#8B8B8B"
+  }
+}
