@@ -2,12 +2,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     min-height: 100dvh;
     background-color: #E3E3E1;
-    font-family: 'Inter', sans-serif;
+    font-family: Arial, sans-serif;
     color: #262627;
-    padding: 1.5rem;
+    padding: 1.5rem 1.25rem 0;
     box-sizing: border-box;
 }
 
@@ -15,9 +15,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     width: min(100%, 64rem);
-    gap: 2rem;
+    min-height: 100%;
+    gap: 2.25rem;
 }
 
 .titleContainer {
@@ -26,15 +27,19 @@
     align-items: center;
     justify-content: flex-end;
     width: 100%;
-    gap: 0.6rem;
+    padding-top: 10dvh;
+    gap: 0.7rem;
 }
 
 .title {
     font-size: clamp(2.4rem, 5vw, 4.8rem);
-    font-weight: 300;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
 .subtitle {
+    max-width: 26rem;
     font-size: clamp(1rem, 1vw + 0.7rem, 1.35rem);
     opacity: 0.8;
     text-align: center;
@@ -48,32 +53,204 @@
 
 .track {
     position: relative;
-    width: min(100%, 28rem);
+    width: min(100%, 34rem);
     display: flex;
     flex-direction: column;
-    align-items: stretch;
-    justify-content: center;
-    gap: 1rem;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 1.45rem;
+    padding-top: 0.4rem;
+    padding-left: 5.2rem;
 }
 
 .trackLine {
+    position: absolute;
+    top: 1.75rem;
+    left: 1.72rem;
+    z-index: 0;
+    width: 0.35rem;
+    height: calc(100% + 52dvh);
+    background-color: #E53C30;
+    border-radius: 999px;
+}
+
+.lineTail {
+    width: 0.35rem;
+    flex: 1 0 42dvh;
+    min-height: 42dvh;
+    margin-left: -1.95rem;
+    background-color: #E53C30;
+    border-radius: 999px;
+}
+
+.scene {
+    position: relative;
+    height: 100dvh;
+    overflow: hidden;
+    background-color: #262627;
+}
+
+.overlayLayer {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background-color: #E3E3E1;
+    transition: transform 700ms cubic-bezier(0.72, 0, 0.2, 1);
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.overlayLayer::-webkit-scrollbar {
     display: none;
+}
+
+.overlayLifted {
+    transform: translateY(-100%);
+}
+
+.stationButton {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    min-height: 4.5rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #262627;
+    text-align: left;
+    cursor: pointer;
+}
+
+.stationButton:disabled {
+    cursor: default;
+}
+
+.stationMarker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border: 0.22rem solid #262627;
+    border-radius: 999px;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 0.28rem #E53C30;
+    flex-shrink: 0;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.stationCode {
+    font-size: 0.92rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+.stationLabelGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.18rem;
+}
+
+.stationName {
+    font-size: clamp(1.15rem, 1vw + 0.95rem, 1.7rem);
+    font-weight: 600;
+    transition: color 180ms ease;
+}
+
+.stationMeta {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(38, 38, 39, 0.62);
+}
+
+.stationButton:hover .stationName,
+.stationButton:focus-visible .stationName {
+    color: #E53C30;
+}
+
+.stationButton:hover .stationMarker,
+.stationButton:focus-visible .stationMarker {
+    transform: scale(1.04);
+}
+
+.stationButton:focus-visible {
+    outline: none;
+}
+
+.stationButton:focus-visible .stationMarker {
+    box-shadow: 0 0 0 0.28rem #E53C30, 0 0 0 0.55rem rgba(229, 60, 48, 0.18);
+}
+
+.stationButton:disabled .stationMarker {
+    opacity: 0.72;
+}
+
+.stationButton:disabled .stationName {
+    color: rgba(38, 38, 39, 0.72);
 }
 
 @media (max-width: 640px) {
     .home {
-        padding: 1rem;
+        min-height: 100dvh;
+        padding: 1rem 1rem 0;
     }
 
     .homeShell {
-        gap: 1.5rem;
+        gap: 1.6rem;
+    }
+
+    .titleContainer {
+        padding-top: 8dvh;
     }
 
     .track {
         width: 100%;
+        gap: 1.25rem;
+        padding-left: 4.5rem;
     }
 
     .trackLine {
-        left: 1.25rem;
+        top: 1.68rem;
+        left: 1.47rem;
+    }
+
+    .lineTail {
+        min-height: 40dvh;
+        margin-left: -1.6rem;
+    }
+
+    .stationButton {
+        gap: 0.85rem;
+        min-height: 4rem;
+    }
+
+    .stationMarker {
+        width: 3.15rem;
+        height: 3.15rem;
+    }
+
+    .stationCode {
+        font-size: 0.82rem;
+    }
+
+    .stationName {
+        font-size: clamp(1rem, 4.4vw, 1.28rem);
+    }
+
+    .stationMeta {
+        font-size: 0.72rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .overlayLayer,
+    .stationMarker,
+    .stationName {
+        transition: none;
     }
 }

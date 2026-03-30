@@ -1,26 +1,31 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import styles from "../css/Home.module.css";
 import Home from "./Home";
-import Subhome from "./Subhome";
 import { Analytics } from "@vercel/analytics/react";
 
 export default function Mainhome() {
-  const [buttonProps, setButtonProps] = useState([]);
+  const navigate = useNavigate();
+  const [isDeparting, setIsDeparting] = useState(false);
+  const timerRef = useRef<number | null>(null);
 
-  const scrollToNextPage = () => {
-    console.log("Scrolling");
-    window.scrollTo({
-      top: window.innerHeight,
-      behavior: "smooth",
-    });
+  const handleSelectStation = (route?: string) => {
+    if (isDeparting || !route) return;
+    setIsDeparting(true);
+    timerRef.current = window.setTimeout(() => {
+      navigate(route);
+    }, 700);
   };
 
   return (
-    <div>
-      <Home
-        scrollToNextPage={scrollToNextPage}
-        setButtonProps={setButtonProps}
-      />
-      <Subhome buttonProps={buttonProps} />
+    <div className={styles.scene}>
+      <div
+        className={`${styles.overlayLayer} ${
+          isDeparting ? styles.overlayLifted : ""
+        }`}
+      >
+        <Home onSelectStation={handleSelectStation} />
+      </div>
       <Analytics />
     </div>
   );

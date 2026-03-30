@@ -1,27 +1,39 @@
 import React from "react";
 import styles from "../css/Home.module.css";
 import TrackButtonContainer from "../components/TrackButtonContainer";
-import { useNavigate } from "react-router-dom";
 
-export default function Home(props: any) {
-  const { scrollToNextPage } = props;
+type StationConfig = {
+  code: string;
+  disabled?: boolean;
+  onClick: () => void;
+  text: string;
+};
 
-  const navigate = useNavigate();
+type HomeProps = {
+  onSelectStation: (route?: string) => void;
+};
 
-  const quickplayProps = {
-    text: "Quickplay",
-    onClick: () => navigate("/quickgame"),
-  };
+export default function Home(props: HomeProps) {
+  const { onSelectStation } = props;
 
-  const singaporeTourProps = {
-    text: "Singapore Tour",
-    onClick: () => navigate("/singaporetour"),
-  };
-
-  const customChallengeProps = {
-    text: "Custom Challenge",
-    onClick: scrollToNextPage,
-  };
+  const stations: StationConfig[] = [
+    {
+      code: "MG1",
+      onClick: () => onSelectStation("/quickgame"),
+      text: "Quickplay",
+    },
+    {
+      code: "MG2",
+      onClick: () => onSelectStation("/singaporetour"),
+      text: "Singapore Tour",
+    },
+    {
+      code: "MG3",
+      disabled: true,
+      onClick: () => onSelectStation(),
+      text: "Custom Challenge",
+    },
+  ];
 
   return (
     <div className={styles.home}>
@@ -32,12 +44,20 @@ export default function Home(props: any) {
         </div>
         <div className={styles.trackContainer}>
           <div className={styles.track}>
-            <TrackButtonContainer {...quickplayProps} />
-            <TrackButtonContainer {...singaporeTourProps} />
-            <TrackButtonContainer {...customChallengeProps} />
+            {stations.map((station) => (
+              <TrackButtonContainer
+                key={station.code}
+                code={station.code}
+                disabled={station.disabled}
+                onClick={station.onClick}
+                text={station.text}
+                variant="station"
+              />
+            ))}
             <div id={"trackLine"} className={styles.trackLine} />
           </div>
         </div>
+        <div className={styles.lineTail} aria-hidden="true" />
       </div>
     </div>
   );
