@@ -129,8 +129,13 @@ const MrtMapController = (props: any) => {
       }
 
       el.setAttribute("data-bound-click", "true");
-      el.addEventListener("click", (e) => {
-        e.stopPropagation();
+      // Use pointerup instead of click so we can distinguish tap vs drag/pinch
+      el.addEventListener("pointerup", (e) => {
+        // Only fire on single-touch taps — if it's a pinch/multi-touch, skip
+        const pe = e as PointerEvent;
+        if (pe.pointerType === "touch" && pe.isPrimary === false) {
+          return;
+        }
         // Pop feedback animation — use double rAF to reliably restart on SVG elements
         el.classList.remove(styles.stationPop);
         requestAnimationFrame(() => {
@@ -166,7 +171,7 @@ const MrtMapController = (props: any) => {
         centerOnInit
       >
         <TransformComponent
-          wrapperStyle={{ width: "100%", height: "100%" }}
+          wrapperStyle={{ width: "100%", height: "100%", touchAction: "none" }}
           contentStyle={{ width: "100%", height: "100%" }}
         >
           <SVG

@@ -58,6 +58,7 @@
     transform-origin: center;
     transform-box: fill-box;
     transform: scale(1.2);
+    touch-action: manipulation;
 }
 
 .station:hover {
