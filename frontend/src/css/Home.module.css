@@ -14,14 +14,7 @@
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: none;
-    /* Gradient fades from landing grey → map sea colour over 300dvh */
-    background: linear-gradient(
-        to bottom,
-        #E3E3E1 0%,
-        #E3E3E1 25%,
-        #daeaf0 55%,
-        #DAEEF5 100%
-    );
+    background-color: #E3E3E1;
     transition: transform 700ms cubic-bezier(0.72, 0, 0.2, 1);
 }
 
@@ -29,6 +22,17 @@
 
 /* Prevents user from scrolling before a button is tapped */
 .overlayLocked { overflow: hidden; }
+
+/* Sea-colour veil — fixed inside the overlay, fades in during scroll */
+.seaVeil {
+    position: fixed;
+    inset: 0;
+    background-color: #DAEEF5;
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0;
+    /* No CSS transition — opacity is driven directly by JS scroll progress */
+}
 
 /* Slide the entire overlay upward to reveal the game */
 .overlayLifted { transform: translateY(-100%); }

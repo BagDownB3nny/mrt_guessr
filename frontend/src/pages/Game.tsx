@@ -41,6 +41,8 @@ export default function Game({ gameType }: GameProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [totalStations, setTotalStations] = useState(0);
   const [showGreenFlash, setShowGreenFlash] = useState(false);
+  // Sea-colour entry veil — starts opaque, fades out once the SVG is ready
+  const [veilVisible, setVeilVisible] = useState(true);
   const [guessStats, setGuessStats] = useState<GuessStats>({
     inOneTry: 0,
     inTwoTries: 0,
@@ -156,7 +158,10 @@ export default function Game({ gameType }: GameProps) {
         currentStation={currentStation}
         newlyCorrectStation={newlyCorrectStation}
         tries={tries}
+        onMapReady={() => setTimeout(() => setVeilVisible(false), 200)}
       />
+      {/* Entry veil: sea colour, fades out after map loads */}
+      <div className={`${styles.seaVeil} ${veilVisible ? "" : styles.seaVeilHidden}`} aria-hidden="true" />
       <FixedBar
         currentStation={currentStation}
         tries={tries}

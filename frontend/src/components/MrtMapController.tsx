@@ -20,6 +20,7 @@ interface Props {
   currentStation: string;
   newlyCorrectStation: string;
   tries: number;
+  onMapReady?: () => void;
 }
 
 export default function MrtMapController({
@@ -28,6 +29,7 @@ export default function MrtMapController({
   currentStation,
   newlyCorrectStation,
   tries,
+  onMapReady,
 }: Props) {
   const currentStationRef = useRef(currentStation);
   const currentTriesRef = useRef(tries);
@@ -148,6 +150,7 @@ export default function MrtMapController({
   // touch-action does NOT cascade through SVG elements — must be set inline on
   // every node. We do this once after the SVG loads.
   const setupSvg = () => {
+    onMapReady?.();
     const svg = document.querySelector("svg#New_Map");
     if (svg) {
       (svg as HTMLElement).style.touchAction = "none";

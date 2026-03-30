@@ -8,6 +8,21 @@
   position: relative;
 }
 
+/* Entry veil — sea colour, fades out after map SVG is ready */
+.seaVeil {
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  background-color: #DAEEF5;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 1.5s ease;
+}
+
+.seaVeilHidden {
+  opacity: 0;
+}
+
 .greenFlash {
   position: absolute;
   inset: 0;
