@@ -260,10 +260,12 @@ export default function Game(props: any) {
   };
 
   const getScore = () => {
-    let totalStations = clickedStations.length + unseenStations.length;
-    if (currentStation) totalStations++;
-    const maxScore = totalStations * 3;
-    return `${currentScore}/${maxScore}`;
+    const stationsFound = clickedStations.length;
+    if (stationsFound === 0) return "0.0";
+    // Score is normalized 0–1 per station: tries/3, then average across all found
+    // e.g. guessed in 2 tries = 2/3 = 0.67 → floor to 1dp = 0.6
+    const normalized = currentScore / (stationsFound * 3);
+    return Math.floor(normalized * 10) / 10 + "";
   };
 
   const getNewStation = useCallback(() => {

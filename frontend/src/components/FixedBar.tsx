@@ -25,7 +25,15 @@ const FixedBar: React.FC<Props> = (props) => {
 
   return (
     <div className={styles.fixedBar}>
-      {/* Middle: station prompt + tries */}
+      {/* Left: score */}
+      <div className={styles.leftColumn}>
+        <div className={styles.statBlock}>
+          <div className={styles.statLabel}>Score</div>
+          <div className={styles.statValue}>{getScore()}</div>
+        </div>
+      </div>
+
+      {/* Middle: station name + tries */}
       <div className={styles.middleColumn}>
         {currentStation ? (
           <div className={styles.stationName}>{currentStation}</div>
@@ -47,15 +55,11 @@ const FixedBar: React.FC<Props> = (props) => {
         </div>
       </div>
 
-      {/* Right: score + stations found */}
+      {/* Right: stations found */}
       <div className={styles.rightColumn}>
         <div className={styles.statBlock}>
           <div className={styles.statLabel}>Found</div>
           <div className={styles.statValue}>{getStationsLeft()}</div>
-        </div>
-        <div className={styles.statBlock}>
-          <div className={styles.statLabel}>Score</div>
-          <div className={styles.statValue}>{getScore()}</div>
         </div>
       </div>
 
