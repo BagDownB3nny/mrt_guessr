@@ -1,4 +1,9 @@
-/** All Singapore MRT station names, grouped by line. */
+/**
+ * All playable MRT stations — must match the SVG button IDs exactly.
+ * Each entry here must have a corresponding `<g id="Station_Name_Button">` in
+ * the map SVG. Stations in the SVG without a `_Button` suffix (e.g. Tuas West
+ * Road) are not playable and are intentionally excluded.
+ */
 
 export const DowntownLine = [
   "Bukit Panjang", "Cashew", "Hillview", "Hume", "Beauty World",
@@ -12,7 +17,7 @@ export const DowntownLine = [
 ];
 
 export const EastWestLine = [
-  "Tuas Link", "Tuas West Road", "Tuas Crescent", "Gul Circle", "Joo Koon",
+  "Tuas Link", "Tuas Crescent", "Gul Circle", "Joo Koon",
   "Pioneer", "Boon Lay", "Lakeside", "Chinese Garden", "Jurong East",
   "Clementi", "Dover", "Buona Vista", "Commonwealth", "Queenstown",
   "Redhill", "Tiong Bahru", "Outram Park", "Tanjong Pagar", "Raffles Place",
@@ -55,7 +60,7 @@ export const ThomsonEastCoastLine = [
   "Marine Terrace", "Siglap", "Bayshore", "Bedok South", "Sungei Bedok",
 ];
 
-/** Returns the deduplicated set of all stations across all lines. */
+/** Returns the deduplicated set of all playable stations. */
 export function getAllStations(): string[] {
   return Array.from(new Set([
     ...DowntownLine,
