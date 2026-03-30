@@ -1,60 +1,35 @@
 .fixedBar {
-    flex-basis: auto;
-    min-height: 9rem;
+    position: relative;
+    flex-shrink: 0;
     background-color: #E3E3E1;
     color: #262627;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    align-items: stretch;
-    gap: 1rem;
-    padding: 1rem 1.25rem calc(1rem + env(safe-area-inset-bottom));
-    border-top: 0.55rem solid #E53C30;
-    box-sizing: border-box;
-}
-
-.leftColumn {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    align-items: flex-start;
-    flex: 1 1 14rem;
-}
-
-.actionButton {
-    min-height: 3rem;
-    padding: 0.7rem 1.1rem;
-    display: flex;
-    justify-content: center;
     align-items: center;
-    font-size: clamp(0.95rem, 1vw + 0.55rem, 1.2rem);
-    font-weight: 600;
-    border: 2px solid #262627;
-    border-radius: 999px;
-    background: transparent;
-    color: inherit;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.6rem 1rem calc(0.6rem + env(safe-area-inset-bottom));
+    padding-right: 6.5rem; /* room for floating icon buttons */
+    border-top: 0.45rem solid #E53C30;
+    box-sizing: border-box;
+    min-height: 5rem;
 }
 
-.actionButton:hover {
-    background-color: #262627;
-    color: #E3E3E1;
-    cursor: pointer;
-}
-
+/* ── Middle: station name + tries ──────────────────────────── */
 .middleColumn {
+    flex: 1 1 0;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    flex: 2 1 18rem;
-    gap: 0.75rem;
+    justify-content: center;
+    gap: 0.4rem;
     min-width: 0;
 }
 
 .stationName {
-    font-size: clamp(1.5rem, 2.6vw, 3.4rem);
-    font-weight: bold;
-    line-height: 1.05;
+    font-size: clamp(1.1rem, 2.4vw, 2rem);
+    font-weight: 700;
+    line-height: 1.1;
     text-align: center;
     text-wrap: balance;
 }
@@ -64,136 +39,120 @@
 }
 
 .viewScore button {
-    min-height: 3rem;
-    padding: 0.65rem 1.2rem;
-    font-size: clamp(1rem, 1.2vw + 0.7rem, 1.5rem);
+    padding: 0.45rem 1rem;
+    font-size: clamp(0.9rem, 1vw + 0.6rem, 1.2rem);
     font-weight: 700;
     border: 2px solid #262627;
     border-radius: 999px;
     background: transparent;
     color: inherit;
+    cursor: pointer;
 }
 
 .viewScore button:hover {
     background-color: #262627;
     color: #E3E3E1;
-    cursor: pointer;
 }
 
 .triesBox {
-    width: min(14rem, 100%);
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    gap: 0.75rem;
+    gap: 0.45rem;
+    justify-content: center;
 }
 
 .try {
-    width: clamp(1.6rem, 2.2vw, 2.5rem);
-    height: clamp(1.6rem, 2.2vw, 2.5rem);
+    width: clamp(1.3rem, 2vw, 1.8rem);
+    height: clamp(1.3rem, 2vw, 1.8rem);
 }
 
+/* ── Right: stats ───────────────────────────────────────────── */
 .rightColumn {
-    flex: 1 1 14rem;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    align-items: stretch;
-    gap: 0.75rem;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+    flex-shrink: 0;
 }
 
-.stationsLeftContainer {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-end;
-    min-width: 7rem;
-}
-
-.stationsLeftText {
-    font-size: clamp(0.85rem, 0.7vw + 0.6rem, 1rem);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-}
-
-.stationsLeftScore {
-    font-size: clamp(1.4rem, 2vw, 2.4rem);
-    font-weight: 700;
-}
-
-.scoreContainer {
+.statBlock {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: flex-end;
-    min-width: 7rem;
 }
 
-.scoreText {
-    font-size: clamp(0.85rem, 0.7vw + 0.6rem, 1rem);
+.statLabel {
+    font-size: 0.72rem;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
+    opacity: 0.6;
+    line-height: 1;
 }
 
-.score {
-    font-size: clamp(1.4rem, 2vw, 2.4rem);
+.statValue {
+    font-size: clamp(1.15rem, 1.8vw, 1.9rem);
     font-weight: 700;
+    line-height: 1.1;
 }
 
-@media (max-width: 960px) {
-    .fixedBar {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 0.9rem 1rem;
-    }
-
-    .middleColumn {
-        order: -1;
-        grid-column: 1 / -1;
-    }
-
-    .leftColumn,
-    .rightColumn {
-        flex: initial;
-    }
-
-    .rightColumn,
-    .stationsLeftContainer,
-    .scoreContainer {
-        align-items: flex-start;
-    }
+/* ── Floating icon buttons (bottom-right) ───────────────────── */
+.iconButtons {
+    position: absolute;
+    right: 0.75rem;
+    bottom: calc(0.55rem + env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: row;
+    gap: 0.45rem;
+    z-index: 10;
 }
 
+.iconBtn {
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 50%;
+    border: 2px solid #262627;
+    background: transparent;
+    color: #262627;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0.5rem;
+    box-sizing: border-box;
+    transition: background 150ms ease, color 150ms ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.iconBtn:hover,
+.iconBtn:active {
+    background: #262627;
+    color: #E3E3E1;
+}
+
+.iconBtn svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* ── Mobile ─────────────────────────────────────────────────── */
 @media (max-width: 640px) {
     .fixedBar {
-        grid-template-columns: 1fr;
-        padding: 0.9rem 0.9rem calc(0.9rem + env(safe-area-inset-bottom));
-        min-height: 0;
-    }
-
-    .leftColumn {
-        width: 100%;
-    }
-
-    .actionButton,
-    .viewScore button {
-        width: 100%;
-    }
-
-    .middleColumn {
-        align-items: stretch;
-    }
-
-    .stationName {
-        font-size: clamp(1.35rem, 5.7vw, 2.1rem);
-    }
-
-    .triesBox {
-        width: 100%;
-        justify-content: center;
+        padding-right: 6rem;
+        min-height: 4.5rem;
     }
 
     .rightColumn {
-        justify-content: flex-start;
+        gap: 0.65rem;
+    }
+
+    .iconButtons {
+        right: 0.6rem;
+        bottom: calc(0.45rem + env(safe-area-inset-bottom));
+        gap: 0.35rem;
+    }
+
+    .iconBtn {
+        width: 2.3rem;
+        height: 2.3rem;
     }
 }
