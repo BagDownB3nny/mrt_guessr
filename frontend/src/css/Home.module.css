@@ -1,34 +1,69 @@
+/* ── Scene wrapper ──────────────────────────────────────────────────────── */
+.scene {
+    position: relative;
+    height: 100dvh;
+    overflow: hidden;
+    background-color: #DAEEF5; /* map sea colour — revealed as overlay lifts */
+}
+
+/* ── Overlay: the landing page panel ────────────────────────────────────── */
+.overlayLayer {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    /* Gradient fades from landing grey → map sea colour over 300dvh */
+    background: linear-gradient(
+        to bottom,
+        #E3E3E1 0%,
+        #E3E3E1 25%,
+        #daeaf0 55%,
+        #DAEEF5 100%
+    );
+    transition: transform 700ms cubic-bezier(0.72, 0, 0.2, 1);
+}
+
+.overlayLayer::-webkit-scrollbar { display: none; }
+
+/* Prevents user from scrolling before a button is tapped */
+.overlayLocked { overflow: hidden; }
+
+/* Slide the entire overlay upward to reveal the game */
+.overlayLifted { transform: translateY(-100%); }
+
+/* ── Outer column — full-width container for the scrollable content ─────── */
+.homeColumn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    font-family: Arial, sans-serif;
+    color: #262627;
+}
+
+/* ── First viewport ─────────────────────────────────────────────────────── */
 .home {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    min-height: 100dvh;
-    background-color: #E3E3E1;
-    font-family: Arial, sans-serif;
-    color: #262627;
-    padding: 1.5rem 1.25rem 0;
+    /* Don't use height: 100dvh — let the content define the height naturally.
+       We pad the top so the title sits in the upper third of the screen. */
+    padding-top: 20dvh;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    width: 100%;
     box-sizing: border-box;
 }
 
-.homeShell {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    width: min(100%, 64rem);
-    min-height: 100%;
-    gap: 2.25rem;
-}
-
+/* ── Title ───────────────────────────────────────────────────────────────── */
 .titleContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-end;
-    width: 100%;
-    padding-top: 10dvh;
-    gap: 0.7rem;
+    margin-bottom: 3rem;
 }
 
 .title {
@@ -38,76 +73,51 @@
     text-transform: uppercase;
 }
 
-.subtitle {
-    max-width: 26rem;
-    font-size: clamp(1rem, 1vw + 0.7rem, 1.35rem);
-    opacity: 0.8;
-    text-align: center;
-}
-
+/* ── Track wrapper: centres the station column ──────────────────────────── */
 .trackContainer {
     display: flex;
     justify-content: center;
     width: 100%;
 }
 
+/* ── Track: shrink-wraps to buttons; line is absolute inside ──────────────
+ *
+ * The red line is positioned absolute within the track, centred on the
+ * station marker circles:
+ *   marker diameter = 3.5rem → centre = 1.75rem from button left edge
+ *   line width = 0.35rem → left = 1.75 - 0.175 = 1.575rem ≈ 1.58rem
+ *
+ * .lineTail is the last child of .track — it adds 200dvh of height so the
+ * line naturally extends that far (since trackLine has bottom: 0).
+ */
 .track {
     position: relative;
-    width: min(100%, 34rem);
-    display: flex;
+    display: inline-flex;
     flex-direction: column;
     align-items: flex-start;
-    justify-content: flex-start;
-    gap: 1.45rem;
-    padding-top: 0.4rem;
-    padding-left: 5.2rem;
+    gap: 1.2rem;
 }
 
 .trackLine {
     position: absolute;
-    top: 1.75rem;
-    left: 1.72rem;
+    top: 0;
+    bottom: 0;
+    left: 1.58rem;
+    width: 0.35rem;
+    background-color: #E53C30;
+    border-radius: 999px;
     z-index: 0;
-    width: 0.35rem;
-    height: calc(100% + 52dvh);
-    background-color: #E53C30;
-    border-radius: 999px;
 }
 
+/* Invisible spacer that extends the track height so trackLine continues
+   for ~2 screen lengths below the last button */
 .lineTail {
-    width: 0.35rem;
-    flex: 1 0 42dvh;
-    min-height: 42dvh;
-    margin-left: -1.95rem;
-    background-color: #E53C30;
-    border-radius: 999px;
+    height: 200dvh;
+    width: 1px; /* nearly invisible — just here to give the track height */
+    pointer-events: none;
 }
 
-.scene {
-    position: relative;
-    height: 100dvh;
-    overflow: hidden;
-    background-color: #262627;
-}
-
-.overlayLayer {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    background-color: #E3E3E1;
-    transition: transform 700ms cubic-bezier(0.72, 0, 0.2, 1);
-    overflow-y: auto;
-    scrollbar-width: none;
-}
-
-.overlayLayer::-webkit-scrollbar {
-    display: none;
-}
-
-.overlayLifted {
-    transform: translateY(-100%);
-}
-
+/* ── Station buttons ─────────────────────────────────────────────────────── */
 .stationButton {
     position: relative;
     z-index: 1;
@@ -121,11 +131,10 @@
     color: #262627;
     text-align: left;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.stationButton:disabled {
-    cursor: default;
-}
+.stationButton:disabled { cursor: default; }
 
 .stationMarker {
     display: inline-flex;
@@ -169,88 +178,44 @@
 }
 
 .stationButton:hover .stationName,
-.stationButton:focus-visible .stationName {
-    color: #E53C30;
-}
+.stationButton:focus-visible .stationName { color: #E53C30; }
 
 .stationButton:hover .stationMarker,
-.stationButton:focus-visible .stationMarker {
-    transform: scale(1.04);
-}
+.stationButton:focus-visible .stationMarker { transform: scale(1.04); }
 
-.stationButton:focus-visible {
-    outline: none;
-}
+.stationButton:focus-visible { outline: none; }
 
 .stationButton:focus-visible .stationMarker {
     box-shadow: 0 0 0 0.28rem #E53C30, 0 0 0 0.55rem rgba(229, 60, 48, 0.18);
 }
 
-.stationButton:disabled .stationMarker {
-    opacity: 0.72;
-}
+.stationButton:disabled .stationMarker { opacity: 0.72; }
+.stationButton:disabled .stationName   { color: rgba(38, 38, 39, 0.72); }
 
-.stationButton:disabled .stationName {
-    color: rgba(38, 38, 39, 0.72);
-}
-
+/* ── Mobile ──────────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
-    .home {
-        min-height: 100dvh;
-        padding: 1rem 1rem 0;
-    }
+    .home { padding: 0 1rem; }
 
-    .homeShell {
-        gap: 1.6rem;
-    }
+    .titleContainer { margin-bottom: 2.2rem; }
 
-    .titleContainer {
-        padding-top: 8dvh;
-    }
+    .track { gap: 1rem; }
 
-    .track {
-        width: 100%;
-        gap: 1.25rem;
-        padding-left: 4.5rem;
-    }
+    /* Mobile marker centre: 2.9rem/2 - 0.35rem/2 = 1.45 - 0.175 = 1.275rem */
+    .trackLine { left: 1.28rem; }
 
-    .trackLine {
-        top: 1.68rem;
-        left: 1.47rem;
-    }
+    .stationButton { gap: 0.85rem; min-height: 4rem; }
 
-    .lineTail {
-        min-height: 40dvh;
-        margin-left: -1.6rem;
-    }
+    .stationMarker { width: 2.9rem; height: 2.9rem; }
 
-    .stationButton {
-        gap: 0.85rem;
-        min-height: 4rem;
-    }
+    .stationCode { font-size: 0.8rem; }
 
-    .stationMarker {
-        width: 3.15rem;
-        height: 3.15rem;
-    }
+    .stationName { font-size: clamp(1rem, 4.4vw, 1.28rem); }
 
-    .stationCode {
-        font-size: 0.82rem;
-    }
-
-    .stationName {
-        font-size: clamp(1rem, 4.4vw, 1.28rem);
-    }
-
-    .stationMeta {
-        font-size: 0.72rem;
-    }
+    .stationMeta { font-size: 0.72rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .overlayLayer,
     .stationMarker,
-    .stationName {
-        transition: none;
-    }
+    .stationName { transition: none; }
 }

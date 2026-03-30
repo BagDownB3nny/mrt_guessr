@@ -13,37 +13,29 @@ type HomeProps = {
   onSelectStation: (route?: string) => void;
 };
 
-export default function Home(props: HomeProps) {
-  const { onSelectStation } = props;
-
+export default function Home({ onSelectStation }: HomeProps) {
   const stations: StationConfig[] = [
-    {
-      code: "MG1",
-      onClick: () => onSelectStation("/quickgame"),
-      text: "Quickplay",
-    },
-    {
-      code: "MG2",
-      onClick: () => onSelectStation("/singaporetour"),
-      text: "Singapore Tour",
-    },
-    {
-      code: "MG3",
-      disabled: true,
-      onClick: () => onSelectStation(),
-      text: "Custom Challenge",
-    },
+    { code: "MG1", text: "Quickplay",        onClick: () => onSelectStation("/quickgame") },
+    { code: "MG2", text: "Singapore Tour",   onClick: () => onSelectStation("/singaporetour") },
+    { code: "MG3", text: "Custom Challenge", onClick: () => onSelectStation(), disabled: true },
   ];
 
   return (
-    <div className={styles.home}>
-      <div className={styles.homeShell}>
+    // Full-width column layout so the track column + tail can share a reference point
+    <div className={styles.homeColumn}>
+
+      {/* ── First viewport: title + buttons ── */}
+      <div className={styles.home}>
         <div className={styles.titleContainer}>
           <div className={styles.title}>Mrt Guessr</div>
-          <div className={styles.subtitle}>Pick a route and start guessing.</div>
         </div>
+
+        {/* Track: line + station buttons.
+            The track is inline-flex so it shrink-wraps to button width.
+            The line is absolutely positioned inside the track. */}
         <div className={styles.trackContainer}>
-          <div className={styles.track}>
+          <div className={styles.track} id="stationTrack">
+            <div className={styles.trackLine} aria-hidden="true" />
             {stations.map((station) => (
               <TrackButtonContainer
                 key={station.code}
@@ -54,11 +46,13 @@ export default function Home(props: HomeProps) {
                 variant="station"
               />
             ))}
-            <div id={"trackLine"} className={styles.trackLine} />
+            {/* The tail extends the line 2 more screens below the last button,
+                still inside the track so it stays aligned */}
+            <div className={styles.lineTail} aria-hidden="true" />
           </div>
         </div>
-        <div className={styles.lineTail} aria-hidden="true" />
       </div>
+
     </div>
   );
 }
