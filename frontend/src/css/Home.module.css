@@ -16,8 +16,6 @@
     transition: transform 700ms cubic-bezier(0.72, 0, 0.2, 1);
 }
 
-/* Lifts the whole overlay upward after travel completes */
-.overlayLifted { transform: translateY(-100%); }
 
 /* ── Inner content wrapper ───────────────────────────────────────────────
  * Translates upward by 200dvh over 1.5s, simulating camera following the line.
@@ -52,11 +50,11 @@
 
 /* ── First viewport ─────────────────────────────────────────────────────── */
 .home {
+    --station-height: 4.5rem;
+    --station-gap: 1.2rem;
+    --second-station-center: calc(var(--station-height) + var(--station-gap) + (var(--station-height) / 2));
+
     position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     min-height: 100dvh;
     padding-left: 1.25rem;
     padding-right: 1.25rem;
@@ -83,8 +81,12 @@
     text-transform: uppercase;
 }
 
-/* ── Track wrapper: centres the station column ──────────────────────────── */
+/* ── Track wrapper: centre the Singapore Tour stop on the screen midpoint ─ */
 .trackContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, calc(-1 * var(--second-station-center)));
     display: flex;
     justify-content: center;
     width: 100%;
@@ -205,6 +207,10 @@
 /* ── Mobile ──────────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
     .home {
+        --station-height: 4rem;
+        --station-gap: 1rem;
+        --second-station-center: calc(var(--station-height) + var(--station-gap) + (var(--station-height) / 2));
+
         min-height: 100dvh;
         padding: 0 1rem;
     }
