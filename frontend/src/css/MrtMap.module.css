@@ -96,6 +96,12 @@
     transform-origin: center bottom;
     animation: wrongLabelFloat 0.8s ease-out forwards;
     z-index: 5;
+    text-shadow:
+        -1px -1px 0 #fff,
+         1px -1px 0 #fff,
+        -1px  1px 0 #fff,
+         1px  1px 0 #fff,
+         0    0   4px rgba(255,255,255,0.8);
 }
 
 @keyframes wrongLabelFloat {
