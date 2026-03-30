@@ -145,6 +145,14 @@ const MrtMapController = (props: any) => {
       el.setAttribute("data-bound-click", "true");
       el.addEventListener("click", (e) => {
         e.stopPropagation();
+        // Pop feedback animation
+        el.classList.remove(styles.stationPop);
+        // Force reflow so re-adding the class restarts the animation
+        void (el as HTMLElement).offsetWidth;
+        el.classList.add(styles.stationPop);
+        el.addEventListener("animationend", () => {
+          el.classList.remove(styles.stationPop);
+        }, { once: true });
         handleClick(el.id);
       });
     });

@@ -63,6 +63,22 @@
     cursor: pointer;
 }
 
+.stationPop {
+    animation: stationPop 0.3s ease forwards;
+}
+
+@keyframes stationPop {
+    0% {
+        transform: scale(1.2);
+    }
+    40% {
+        transform: scale(2.2);
+    }
+    100% {
+        transform: scale(1.2);
+    }
+}
+
 .stationText {
     display: none;
 }
