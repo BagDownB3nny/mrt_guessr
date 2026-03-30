@@ -44,6 +44,7 @@ export default function MrtMapController({
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const wrongLabelCounter = useRef(0);
   const [wrongLabels, setWrongLabels] = useState<WrongLabel[]>([]);
+  const lastClickTimeRef = useRef(0);
   // Tracks whether a touch moved before a click fires, so panning doesn't
   // accidentally trigger station selection.
   const touchMovedRef = useRef(false);
@@ -176,6 +177,11 @@ export default function MrtMapController({
       el.addEventListener("click", () => {
         if (touchMovedRef.current) return; // pan gesture, not a tap
 
+        // Debounce: ignore clicks within 200ms of the previous one
+        const now = Date.now();
+        if (now - lastClickTimeRef.current < 200) return;
+        lastClickTimeRef.current = now;
+
         // Pop animation — double rAF reliably restarts CSS animations on SVG
         el.classList.remove(styles.stationPop);
         requestAnimationFrame(() => {
@@ -200,7 +206,8 @@ export default function MrtMapController({
             const contentX = (screenCx - positionX) / scale;
             const contentY = (screenCy - positionY) / scale;
             const id = ++wrongLabelCounter.current;
-            setWrongLabels((prev) => [...prev, { id, label: station, contentX, contentY }]);
+            // Replace all previous labels — only show the latest wrong click
+            setWrongLabels([{ id, label: station, contentX, contentY }]);
             setTimeout(() => setWrongLabels((prev) => prev.filter((l) => l.id !== id)), 800);
           }
         }
