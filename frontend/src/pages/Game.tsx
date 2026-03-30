@@ -1,369 +1,149 @@
-"use client";
 import { useCallback, useEffect, useState } from "react";
+import { Analytics } from "@vercel/analytics/react";
 import FixedBar from "../components/FixedBar";
 import MrtMapController from "../components/MrtMapController";
-import styles from "../css/Game.module.css";
 import GameFinishModal from "../components/GameFinishModal";
-import { Analytics } from "@vercel/analytics/react";
-
-const DowntownLineStations = [
-  "Bukit Panjang",
-  "Cashew",
-  "Hillview",
-  "Hume",
-  "Beauty World",
-  "King Albert Park",
-  "Sixth Avenue",
-  "Tan Kah Kee",
-  "Botanic Gardens",
-  "Stevens",
-  "Newton",
-  "Little India",
-  "Rochor",
-  "Bugis",
-  "Promenade",
-  "Bayfront",
-  "Downtown",
-  "Telok Ayer",
-  "Chinatown",
-  "Fort Canning",
-  "Bencoolen",
-  "Jalan Besar",
-  "Bendemeer",
-  "Geylang Bahru",
-  "Mattar",
-  "MacPherson",
-  "Ubi",
-  "Kaki Bukit",
-  "Bedok North",
-  "Bedok Reservoir",
-  "Tampines West",
-  "Tampines",
-  "Tampines East",
-  "Upper Changi",
-  "Expo",
-  "Xilin",
-  "Sungei Bedok",
-];
-
-const EastWestLineStations = [
-  "Tuas Link",
-  "Tuas West Road",
-  "Tuas Crescent",
-  "Gul Circle",
-  "Joo Koon",
-  "Pioneer",
-  "Boon Lay",
-  "Lakeside",
-  "Chinese Garden",
-  "Jurong East",
-  "Clementi",
-  "Dover",
-  "Buona Vista",
-  "Commonwealth",
-  "Queenstown",
-  "Redhill",
-  "Tiong Bahru",
-  "Outram Park",
-  "Tanjong Pagar",
-  "Raffles Place",
-  "City Hall",
-  "Bugis",
-  "Lavender",
-  "Kallang",
-  "Aljunied",
-  "Paya Lebar",
-  "Eunos",
-  "Kembangan",
-  "Bedok",
-  "Tanah Merah",
-  "Expo",
-  "Changi Airport",
-  "Simei",
-  "Tampines",
-  "Pasir Ris",
-];
-
-const CircleLineStations = [
-  "Marina Bay",
-  "Bayfront",
-  "Dhoby Ghaut",
-  "Bras Basah",
-  "Esplanade",
-  "Promenade",
-  "Nicoll Highway",
-  "Stadium",
-  "Mountbatten",
-  "Dakota",
-  "Paya Lebar",
-  "MacPherson",
-  "Tai Seng",
-  "Bartley",
-  "Serangoon",
-  "Lorong Chuan",
-  "Bishan",
-  "Marymount",
-  "Caldecott",
-  "Botanic Gardens",
-  "Farrer Road",
-  "Holland Village",
-  "Buona Vista",
-  "one-north",
-  "Kent Ridge",
-  "Haw Par Villa",
-  "Pasir Panjang",
-  "Labrador Park",
-  "Telok Blangah",
-  "HarbourFront",
-];
-
-const NorthSouthLineStations = [
-  "Marina South Pier",
-  "Marina Bay",
-  "Raffles Place",
-  "City Hall",
-  "Dhoby Ghaut",
-  "Somerset",
-  "Orchard",
-  "Newton",
-  "Novena",
-  "Toa Payoh",
-  "Braddell",
-  "Bishan",
-  "Ang Mo Kio",
-  "Yio Chu Kang",
-  "Khatib",
-  "Yishun",
-  "Canberra",
-  "Sembawang",
-  "Admiralty",
-  "Woodlands",
-  "Marsiling",
-  "Kranji",
-  "Yew Tee",
-  "Choa Chu Kang",
-  "Bukit Gombak",
-  "Bukit Batok",
-  "Jurong East",
-];
-
-const NorthEastLineStations = [
-  "HarbourFront",
-  "Outram Park",
-  "Chinatown",
-  "Clarke Quay",
-  "Dhoby Ghaut",
-  "Little India",
-  "Farrer Park",
-  "Boon Keng",
-  "Potong Pasir",
-  "Woodleigh",
-  "Serangoon",
-  "Kovan",
-  "Hougang",
-  "Buangkok",
-  "Sengkang",
-  "Punggol",
-  "Punggol Coast",
-];
-
-const ThomsonEastCoastLineStations = [
-  "Woodlands North",
-  "Woodlands",
-  "Woodlands South",
-  "Springleaf",
-  "Lentor",
-  "Mayflower",
-  "Bright Hill",
-  "Upper Thomson",
-  "Caldecott",
-  "Stevens",
-  "Napier",
-  "Orchard Boulevard",
-  "Orchard",
-  "Great World",
-  "Havelock",
-  "Outram Park",
-  "Maxwell",
-  "Shenton Way",
-  "Marina Bay",
-  "Gardens by the Bay",
-  "Tanjong Rhu",
-  "Katong Park",
-  "Tanjong Katong",
-  "Marine Parade",
-  "Marine Terrace",
-  "Siglap",
-  "Bayshore",
-  "Bedok South",
-  "Sungei Bedok",
-];
-
-const getAllStations = (): String[] => {
-  const allStations = new Set<String>();
-  DowntownLineStations.forEach((station) => allStations.add(station));
-  EastWestLineStations.forEach((station) => allStations.add(station));
-  CircleLineStations.forEach((station) => allStations.add(station));
-  NorthSouthLineStations.forEach((station) => allStations.add(station));
-  NorthEastLineStations.forEach((station) => allStations.add(station));
-  ThomsonEastCoastLineStations.forEach((station) => allStations.add(station));
-  return Array.from(allStations);
-};
-
-const getNStations = (n: number) => {
-  const allStations = getAllStations();
-  const nStations = [];
-  for (let i = 0; i < n; i++) {
-    const index = getRandomInt(allStations.length);
-    nStations.push(allStations[index]);
-    allStations.splice(index, 1);
-  }
-  return nStations;
-};
-
-function getRandomInt(max: number) {
-  return Math.floor(Math.random() * max);
-}
+import { getAllStations, sampleStations } from "../data/stations";
+import styles from "../css/Game.module.css";
 
 export enum GameType {
   QUICKGAME,
   SINGAPORETOUR,
 }
 
-export default function Game(props: any) {
-  const { gameType } = props;
-  const [unseenStations, setUnseenStations] = useState<String[]>([]);
-  const [currentStation, setCurrentStation] = useState<String>("");
-  const [clickedStations, setClickedStations] = useState<String[]>([]);
-  const [newlyCorrectStation, setNewlyCorrectStation] = useState<String>("");
-  const [tries, setTries] = useState<number>(3);
-  const [currentScore, setCurrentScore] = useState<number>(0);
+interface GameProps {
+  gameType: GameType;
+}
+
+interface GuessStats {
+  inOneTry: number;
+  inTwoTries: number;
+  inThreeTries: number;
+  afterThreeTries: number;
+}
+
+const TRIES_PER_STATION = 3;
+const QUICKGAME_STATION_COUNT = 10;
+
+function getInitialStations(gameType: GameType): string[] {
+  return gameType === GameType.QUICKGAME
+    ? sampleStations(QUICKGAME_STATION_COUNT)
+    : getAllStations();
+}
+
+export default function Game({ gameType }: GameProps) {
+  const [unseenStations, setUnseenStations] = useState<string[]>([]);
+  const [currentStation, setCurrentStation] = useState("");
+  const [clickedStations, setClickedStations] = useState<string[]>([]);
+  const [newlyCorrectStation, setNewlyCorrectStation] = useState("");
+  const [tries, setTries] = useState(TRIES_PER_STATION);
+  const [currentScore, setCurrentScore] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
-
-  const [stationsGuessedInOneTry, setStationsGuessedInOneTry] = useState(0);
-  const [stationsGuessedInTwoTries, setStationsGuessedInTwoTries] = useState(0);
-  const [stationsGuessedInThreeTries, setStationsGuessedInThreeTries] =
-    useState(0);
-  const [stationsGuessedAfterThreeTries, setStationsGuessedAfterThreeTries] =
-    useState(0);
   const [showGreenFlash, setShowGreenFlash] = useState(false);
+  const [guessStats, setGuessStats] = useState<GuessStats>({
+    inOneTry: 0,
+    inTwoTries: 0,
+    inThreeTries: 0,
+    afterThreeTries: 0,
+  });
 
+  // ── Derived display values ─────────────────────────────────────────────────
 
-
-  const getStationsLeft = () => {
-    const stationsFound = clickedStations.length;
-    let totalStations = stationsFound + unseenStations.length;
-    if (currentStation) {
-      totalStations++;
-    }
-    return `${stationsFound}/${totalStations}`;
+  const getStationsLeft = (): string => {
+    const found = clickedStations.length;
+    const total = found + unseenStations.length + (currentStation ? 1 : 0);
+    return `${found}/${total}`;
   };
 
-  const getScore = () => {
-    const stationsFound = clickedStations.length;
-    if (stationsFound === 0) return "0.0";
-    // Score is normalized 0–1 per station: tries/3, then average across all found
-    // e.g. guessed in 2 tries = 2/3 = 0.67 → floor to 1dp = 0.6
-    const normalized = currentScore / (stationsFound * 3);
-    return Math.floor(normalized * 10) / 10 + "";
+  const getScore = (): string => {
+    const found = clickedStations.length;
+    if (found === 0) return "0.0";
+    // Normalised 0–1: average score per station (floor to 1dp)
+    // 1 try = 1.0, 2 tries = 0.6, 3 tries = 0.3, failed = 0.0
+    const normalized = currentScore / (found * TRIES_PER_STATION);
+    return String(Math.floor(normalized * 10) / 10);
   };
+
+  // ── Station progression ────────────────────────────────────────────────────
 
   const getNewStation = useCallback(() => {
     setUnseenStations((prev) => {
-      if (prev.length === 0) {
-        return prev;
-      }
-
-      const index = getRandomInt(prev.length);
-      const newStation = prev[index];
-      setCurrentStation(newStation);
-      return prev.filter((_, stationIndex) => stationIndex !== index);
+      if (prev.length === 0) return prev;
+      const idx = Math.floor(Math.random() * prev.length);
+      setCurrentStation(prev[idx]);
+      return prev.filter((_, i) => i !== idx);
     });
   }, []);
 
-  const updateStationsFoundInTries = (tries: number) => {
-    switch (tries) {
-      case 3:
-        setStationsGuessedInOneTry((prev) => prev + 1);
-        break;
-      case 2:
-        setStationsGuessedInTwoTries((prev) => prev + 1);
-        break;
-      case 1:
-        setStationsGuessedInThreeTries((prev) => prev + 1);
-        break;
-      case 0:
-        setStationsGuessedAfterThreeTries((prev) => prev + 1);
-        break;
-    }
+  const recordGuess = (triesUsed: number) => {
+    const t = Math.max(0, triesUsed);
+    setGuessStats((prev) => ({
+      inOneTry:          prev.inOneTry          + (t === 3 ? 1 : 0),
+      inTwoTries:        prev.inTwoTries         + (t === 2 ? 1 : 0),
+      inThreeTries:      prev.inThreeTries       + (t === 1 ? 1 : 0),
+      afterThreeTries:   prev.afterThreeTries    + (t === 0 ? 1 : 0),
+    }));
   };
 
-  const onCorrectClick = (station: String, tries: number) => {
-    if (tries < 0) {
-      tries = 0;
-    }
-    updateStationsFoundInTries(tries);
-    setCurrentScore((prev) => prev + tries);
+  // ── Event handlers ─────────────────────────────────────────────────────────
+
+  const onCorrectClick = (station: string, triesRemaining: number) => {
+    recordGuess(triesRemaining);
+    setCurrentScore((prev) => prev + Math.max(0, triesRemaining));
     setClickedStations((prev) => [...prev, station]);
-    getNewStation();
     setNewlyCorrectStation(station);
-    setTries(3);
-    // Flash green
+    setTries(TRIES_PER_STATION);
     setShowGreenFlash(true);
     setTimeout(() => setShowGreenFlash(false), 500);
-    if (unseenStations.length === 0) {
-      onGameEnd();
-    }
+    // getNewStation reads unseenStations from its own closure — call after state flush
+    getNewStation();
   };
 
   const onWrongClick = () => {
     setTries((prev) => prev - 1);
   };
 
-  const onGameEnd = () => {
-    setModalOpen(true);
-  };
-
   const restartGame = () => {
-    // Hide all revealed station text labels in the SVG
-    document.querySelectorAll('[id$="_Text"]').forEach((el) => {
-      (el as HTMLElement).style.display = "none";
+    // Hide all station name labels revealed in the SVG
+    document.querySelectorAll<HTMLElement>('[id$="_Text"]').forEach((el) => {
+      el.style.display = "none";
     });
-    // Reset all state
     setClickedStations([]);
     setCurrentStation("");
     setNewlyCorrectStation("");
-    setTries(3);
+    setTries(TRIES_PER_STATION);
     setCurrentScore(0);
     setModalOpen(false);
-    setStationsGuessedInOneTry(0);
-    setStationsGuessedInTwoTries(0);
-    setStationsGuessedInThreeTries(0);
-    setStationsGuessedAfterThreeTries(0);
-    if (gameType === GameType.QUICKGAME) {
-      setUnseenStations(getNStations(10));
-    } else if (gameType === GameType.SINGAPORETOUR) {
-      setUnseenStations(getAllStations());
-    }
+    setGuessStats({ inOneTry: 0, inTwoTries: 0, inThreeTries: 0, afterThreeTries: 0 });
+    setUnseenStations(getInitialStations(gameType));
   };
 
+  // ── Effects ────────────────────────────────────────────────────────────────
+
+  // Initialise stations on mount / game type change
   useEffect(() => {
-    if (gameType === GameType.QUICKGAME) {
-      setUnseenStations(getNStations(10));
-    } else if (gameType === GameType.SINGAPORETOUR) {
-      setUnseenStations(getAllStations());
-    }
+    setUnseenStations(getInitialStations(gameType));
   }, [gameType]);
 
+  // Advance to the next station whenever the current one is cleared
   useEffect(() => {
     if (!currentStation && unseenStations.length > 0) {
       getNewStation();
     }
   }, [currentStation, getNewStation, unseenStations]);
 
+  // End the game when all stations have been attempted
+  useEffect(() => {
+    if (clickedStations.length > 0 && unseenStations.length === 0 && !currentStation) {
+      setModalOpen(true);
+    }
+  }, [clickedStations.length, currentStation, unseenStations.length]);
+
+  // ── Render ─────────────────────────────────────────────────────────────────
+
   return (
     <div className={styles.GameContainer}>
-      {showGreenFlash && <div className={styles.greenFlash} />}
+      {showGreenFlash && <div className={styles.greenFlash} aria-hidden="true" />}
       <MrtMapController
         onCorrectClick={onCorrectClick}
         onWrongClick={onWrongClick}
@@ -382,10 +162,7 @@ export default function Game(props: any) {
       <GameFinishModal
         modalOpen={modalOpen}
         setModalOpen={setModalOpen}
-        stationsGuessedInOneTry={stationsGuessedInOneTry}
-        stationsGuessedInTwoTries={stationsGuessedInTwoTries}
-        stationsGuessedInThreeTries={stationsGuessedInThreeTries}
-        stationsGuessedAfterThreeTries={stationsGuessedAfterThreeTries}
+        guessStats={guessStats}
         getScore={getScore}
       />
       <Analytics />
