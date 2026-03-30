@@ -40,19 +40,31 @@ const MrtMapController = (props: any) => {
 
     const onTouchStart = (e: TouchEvent) => {
       touchMovedRef.current = false;
+      const api = transformRef.current;
       if (e.touches.length >= 2) {
         // Non-passive preventDefault blocks iOS from intercepting as a page pinch
         e.preventDefault();
+        // Work around a react-zoom-pan-pinch 3.6.1 bug:
+        // The library's onTouchStart checks if the PREVIOUS touchstart was within
+        // 200ms and treats it as a "double tap", skipping the entire handler.
+        // For a fast pinch, finger2 always arrives within 200ms of finger1, so
+        // the 2nd touchstart (with touches.length===2) never triggers pinch setup.
+        // Fix: clear lastTouch so the 2nd touchstart passes the double-tap guard.
+        // We use capture:true so our listener fires BEFORE the library's listener.
+        if (api && api.instance) {
+          (api.instance as any).lastTouch = null;
+        }
       }
     };
     const onTouchMove = (e: TouchEvent) => {
       touchMovedRef.current = true;
     };
 
-    container.addEventListener("touchstart", onTouchStart, { passive: false });
+    // capture:true ensures we run BEFORE the library's bubble-phase touchstart
+    container.addEventListener("touchstart", onTouchStart, { passive: false, capture: true });
     container.addEventListener("touchmove", onTouchMove, { passive: true });
     return () => {
-      container.removeEventListener("touchstart", onTouchStart);
+      container.removeEventListener("touchstart", onTouchStart, { capture: true });
       container.removeEventListener("touchmove", onTouchMove);
     };
   }, []);
