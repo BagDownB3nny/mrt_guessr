@@ -18,9 +18,24 @@ interface Props {
   onPlayAgain: () => void;
 }
 
+function getTierMessage(score: number, maxScore: number): string {
+  if (maxScore === 0) return "Are you really Singaporean?";
+  const pct = score / maxScore;
+  if (pct === 1)       return "You are the MRT map!";
+  if (pct >= 13 / 15)  return "You basically live on the MRT";
+  if (pct >= 11 / 15)  return "Impressive. Most people can't do this";
+  if (pct >= 8 / 15)   return "Not bad, you know your way around town";
+  if (pct >= 4 / 15)   return "Stick to Google Maps";
+  return "Are you really Singaporean?";
+}
+
 export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, onPlayAgain }: Props) {
   const navigate = useNavigate();
+
+  const score = guessStats.inOneTry * 3 + guessStats.inTwoTries * 2 + guessStats.inThreeTries * 1;
   const total = guessStats.inOneTry + guessStats.inTwoTries + guessStats.inThreeTries + guessStats.afterThreeTries;
+  const maxScore = total * 3;
+  const tierMessage = getTierMessage(score, maxScore);
 
   return (
     <Modal
@@ -31,11 +46,9 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
       onRequestClose={() => setModalOpen(false)}
     >
       <div className={styles.modalContainer}>
-        {/* Header */}
+        {/* Tier message headline */}
         <div className={styles.header}>
-          <img src="/mrt-cartoon.jpg" alt="MRT train" className={styles.headerImg} />
-          <div className={styles.headline}>You finished!</div>
-          <div className={styles.subline}>You found {total} station{total !== 1 ? "s" : ""}</div>
+          <div className={styles.headline}>{tierMessage}</div>
         </div>
 
         {/* Stats grid */}
