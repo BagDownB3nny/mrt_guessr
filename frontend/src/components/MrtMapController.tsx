@@ -75,28 +75,14 @@ const MrtMapController = (props: any) => {
         }
 
         // Pan the map to center the correct station before showing the circle
-        const api = transformRef.current;
-        if (api) {
-          // Get the wrapper (visible viewport) and the content (transformed SVG layer)
-          const wrapper = api.instance.wrapperComponent;
-          const content = api.instance.contentComponent;
-          if (wrapper && content) {
-            const wrapperRect = wrapper.getBoundingClientRect();
-            const contentRect = content.getBoundingClientRect();
-            const stationRect = correctButtonElement.getBoundingClientRect();
-
-            // Station centre relative to the content element (at current scale)
-            const stationCxInContent = stationRect.left + stationRect.width / 2 - contentRect.left;
-            const stationCyInContent = stationRect.top + stationRect.height / 2 - contentRect.top;
-
-            const currentScale = api.state.scale;
-
-            // Desired pan so the station ends up at the centre of the wrapper
-            const targetX = wrapperRect.width / 2 - stationCxInContent;
-            const targetY = wrapperRect.height / 2 - stationCyInContent;
-
-            api.setTransform(targetX, targetY, currentScale, 500, "easeOut");
+        try {
+          const api = transformRef.current;
+          if (api) {
+            // zoomToElement pans + optionally zooms to center the element
+            api.zoomToElement(correctButtonElement, undefined, 500, "easeOut");
           }
+        } catch (_) {
+          // If pan fails for any reason, just skip it — the circle will still show
         }
 
         // Show the highlight circle after a short delay so the pan finishes first
@@ -145,14 +131,16 @@ const MrtMapController = (props: any) => {
       el.setAttribute("data-bound-click", "true");
       el.addEventListener("click", (e) => {
         e.stopPropagation();
-        // Pop feedback animation
+        // Pop feedback animation — use double rAF to reliably restart on SVG elements
         el.classList.remove(styles.stationPop);
-        // Force reflow so re-adding the class restarts the animation
-        void (el as HTMLElement).offsetWidth;
-        el.classList.add(styles.stationPop);
-        el.addEventListener("animationend", () => {
-          el.classList.remove(styles.stationPop);
-        }, { once: true });
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            el.classList.add(styles.stationPop);
+            el.addEventListener("animationend", () => {
+              el.classList.remove(styles.stationPop);
+            }, { once: true });
+          });
+        });
         handleClick(el.id);
       });
     });
