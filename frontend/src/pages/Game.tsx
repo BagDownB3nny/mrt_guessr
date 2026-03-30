@@ -23,7 +23,7 @@ interface GuessStats {
 }
 
 const TRIES_PER_STATION = 3;
-const QUICKGAME_STATION_COUNT = 10;
+const QUICKGAME_STATION_COUNT = 5;
 
 function getInitialStations(gameType: GameType): string[] {
   return gameType === GameType.QUICKGAME
