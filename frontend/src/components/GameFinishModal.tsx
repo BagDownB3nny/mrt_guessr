@@ -33,7 +33,7 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
       <div className={styles.modalContainer}>
         {/* Header */}
         <div className={styles.header}>
-          <div className={styles.emoji}>🗺️</div>
+          <img src="/mrt-cartoon.jpg" alt="MRT train" className={styles.headerImg} />
           <div className={styles.headline}>You finished!</div>
           <div className={styles.subline}>You found {total} station{total !== 1 ? "s" : ""}</div>
         </div>
