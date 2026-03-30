@@ -4,8 +4,7 @@ import styles from "../css/Home.module.css";
 import Home from "./Home";
 import { Analytics } from "@vercel/analytics/react";
 
-// Decouple motion from fade: slower travel, faster visual handoff.
-const TRAVEL_DURATION = 1400;
+// Fast visual handoff: once the veil is opaque, swap routes immediately.
 const VEIL_IN_DURATION = 600;
 
 export default function Mainhome() {
@@ -16,7 +15,8 @@ export default function Mainhome() {
     if (phase !== "idle" || !route) return;
 
     setPhase("travelling");
-    setTimeout(() => navigate(route), TRAVEL_DURATION);
+    // Switch routes as soon as the veil is fully opaque.
+    setTimeout(() => navigate(route), VEIL_IN_DURATION);
   };
 
   return (

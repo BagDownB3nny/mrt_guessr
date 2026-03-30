@@ -75,14 +75,14 @@ async function run() {
     console.log(`   click → map visible  : ${mapVisibleMs}ms`);
     console.log(`   final veil opacity   : ${finalOpacity}\n`);
 
-    if (routeChangedMs <= 1800) pass('route change stays within slower travel budget', `${routeChangedMs}ms`);
-    else fail('route change stays within slower travel budget', `expected <= 1800ms, got ${routeChangedMs}ms`);
+    if (routeChangedMs <= 900) pass('route change happens right after veil reaches opacity', `${routeChangedMs}ms`);
+    else fail('route change happens right after veil reaches opacity', `expected <= 900ms, got ${routeChangedMs}ms`);
 
-    if (fadeStartedMs <= 2000) pass('game fade starts quickly', `${fadeStartedMs}ms`);
-    else fail('game fade starts quickly', `expected <= 2000ms, got ${fadeStartedMs}ms`);
+    if (fadeStartedMs <= 1200) pass('game fade starts quickly', `${fadeStartedMs}ms`);
+    else fail('game fade starts quickly', `expected <= 1200ms, got ${fadeStartedMs}ms`);
 
-    if (mapVisibleMs <= 2300) pass('map becomes visible quickly enough', `${mapVisibleMs}ms`);
-    else fail('map becomes visible quickly enough', `expected <= 2300ms, got ${mapVisibleMs}ms`);
+    if (mapVisibleMs <= 1600) pass('map becomes visible quickly enough', `${mapVisibleMs}ms`);
+    else fail('map becomes visible quickly enough', `expected <= 1600ms, got ${mapVisibleMs}ms`);
 
     if (finalOpacity < 0.1) pass('entry veil nearly fully cleared', `opacity=${finalOpacity}`);
     else fail('entry veil nearly fully cleared', `expected opacity < 0.1, got ${finalOpacity}`);
