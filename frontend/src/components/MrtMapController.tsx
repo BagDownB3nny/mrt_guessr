@@ -63,6 +63,15 @@ const MrtMapController = (props: any) => {
     // capture:true ensures we run BEFORE the library's bubble-phase touchstart
     container.addEventListener("touchstart", onTouchStart, { passive: false, capture: true });
     container.addEventListener("touchmove", onTouchMove, { passive: true });
+
+    // Expose rzpp instance for automated tests (dev/test only)
+    if (process.env.NODE_ENV !== "production") {
+      const api = transformRef.current;
+      if (api && api.instance) {
+        (window as any).__rzpp_test = api.instance;
+      }
+    }
+
     return () => {
       container.removeEventListener("touchstart", onTouchStart, { capture: true });
       container.removeEventListener("touchmove", onTouchMove);

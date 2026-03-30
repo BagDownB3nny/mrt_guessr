@@ -51,6 +51,7 @@
     "@types/react-bootstrap": "^0.32.37",
     "@types/react-inlinesvg": "^1.0.0",
     "@types/react-modal": "^3.16.3",
+    "playwright": "^1.58.2",
     "typescript": "^5.6.2"
   }
 }
