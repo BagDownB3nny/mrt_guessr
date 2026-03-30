@@ -26,7 +26,22 @@ const MrtMapController = (props: any) => {
   const currentStationRef = useRef(currentStation);
   const currentTries = useRef(tries);
   const transformRef = useRef<ReactZoomPanPinchRef | null>(null);
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  // Block iOS Safari from intercepting 2-finger pinch gestures on the map.
+  // Must be non-passive so preventDefault() actually works.
+  useEffect(() => {
+    const container = mapContainerRef.current;
+    if (!container) return;
+    const blockBrowserPinch = (e: TouchEvent) => {
+      if (e.touches.length >= 2) {
+        e.preventDefault();
+      }
+    };
+    container.addEventListener("touchstart", blockBrowserPinch, { passive: false });
+    return () => container.removeEventListener("touchstart", blockBrowserPinch);
+  }, []);
 
   useEffect(() => {
     currentStationRef.current = currentStation;
@@ -158,7 +173,7 @@ const MrtMapController = (props: any) => {
   };
 
   return (
-    <div className={styles.mapContainer}>
+    <div className={styles.mapContainer} ref={mapContainerRef}>
       <TransformWrapper
         ref={transformRef}
         initialScale={1}
