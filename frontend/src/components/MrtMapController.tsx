@@ -184,6 +184,7 @@ const MrtMapController = (props: any) => {
           />
         </TransformComponent>
         <div className={styles.mapTools}>
+          <Controls />
           <MiniMap
             width={isMobile ? 124 : 220}
             height={isMobile ? 88 : 156}
@@ -196,7 +197,6 @@ const MrtMapController = (props: any) => {
               title="React"
             />
           </MiniMap>
-          <Controls />
         </div>
       </TransformWrapper>
     </div>
