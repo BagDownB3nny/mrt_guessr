@@ -16,7 +16,7 @@
   background-color: #DAEEF5;
   pointer-events: none;
   opacity: 1;
-  transition: opacity 1000ms ease;
+  transition: opacity 600ms ease;
 }
 
 .seaVeilHidden {

@@ -4,8 +4,9 @@ import styles from "../css/Home.module.css";
 import Home from "./Home";
 import { Analytics } from "@vercel/analytics/react";
 
-// Keep this short: once the screen is fully sea-blue, navigate immediately.
-const TRAVEL_DURATION = 1000;
+// Decouple motion from fade: slower travel, faster visual handoff.
+const TRAVEL_DURATION = 1400;
+const VEIL_IN_DURATION = 600;
 
 export default function Mainhome() {
   const navigate  = useNavigate();
@@ -42,6 +43,7 @@ export default function Mainhome() {
             styles.seaVeil,
             phase === "travelling" ? styles.seaVeilVisible : "",
           ].filter(Boolean).join(" ")}
+          style={{ transitionDuration: `${VEIL_IN_DURATION}ms` }}
           aria-hidden="true"
         />
       </div>
