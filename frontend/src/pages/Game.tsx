@@ -161,6 +161,7 @@ export default function Game({ gameType }: GameProps) {
         modalOpen={modalOpen}
         setModalOpen={setModalOpen}
         guessStats={guessStats}
+        onPlayAgain={restartGame}
       />
       <Analytics />
     </div>

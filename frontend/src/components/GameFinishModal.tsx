@@ -1,7 +1,6 @@
 import Modal from "react-modal";
-import CloseButton from "react-bootstrap/CloseButton";
-import "bootstrap/dist/css/bootstrap.min.css";
 import styles from "../css/GameFinishModal.module.css";
+import { useNavigate } from "react-router-dom";
 
 Modal.setAppElement("#root");
 
@@ -16,16 +15,13 @@ interface Props {
   modalOpen: boolean;
   setModalOpen: (open: boolean) => void;
   guessStats: GuessStats;
+  onPlayAgain: () => void;
 }
 
-const ROWS: { label: string; key: keyof GuessStats }[] = [
-  { label: "Found in 1 try",      key: "inOneTry" },
-  { label: "Found in 2 tries",    key: "inTwoTries" },
-  { label: "Found in 3 tries",    key: "inThreeTries" },
-  { label: "Found after 3 tries", key: "afterThreeTries" },
-];
+export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, onPlayAgain }: Props) {
+  const navigate = useNavigate();
+  const total = guessStats.inOneTry + guessStats.inTwoTries + guessStats.inThreeTries + guessStats.afterThreeTries;
 
-export default function GameFinishModal({ modalOpen, setModalOpen, guessStats }: Props) {
   return (
     <Modal
       isOpen={modalOpen}
@@ -35,21 +31,41 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats }:
       onRequestClose={() => setModalOpen(false)}
     >
       <div className={styles.modalContainer}>
-        <div className={styles.closeButtonRow}>
-          <div className={styles.closeButtonContainer} />
-          <div className={styles.modalTitle}>Game Results</div>
-          <div className={styles.closeButtonContainer}>
-            <CloseButton onClick={() => setModalOpen(false)} />
+        {/* Header */}
+        <div className={styles.header}>
+          <div className={styles.emoji}>🗺️</div>
+          <div className={styles.headline}>You finished!</div>
+          <div className={styles.subline}>You found {total} station{total !== 1 ? "s" : ""}</div>
+        </div>
+
+        {/* Stats grid */}
+        <div className={styles.grid}>
+          <div className={`${styles.cell} ${styles.cellGreen}`}>
+            <div className={styles.cellNumber}>{guessStats.inOneTry}</div>
+            <div className={styles.cellLabel}>1st try</div>
+          </div>
+          <div className={`${styles.cell} ${styles.cellYellow}`}>
+            <div className={styles.cellNumber}>{guessStats.inTwoTries}</div>
+            <div className={styles.cellLabel}>2nd try</div>
+          </div>
+          <div className={`${styles.cell} ${styles.cellOrange}`}>
+            <div className={styles.cellNumber}>{guessStats.inThreeTries}</div>
+            <div className={styles.cellLabel}>3rd try</div>
+          </div>
+          <div className={`${styles.cell} ${styles.cellRed}`}>
+            <div className={styles.cellNumber}>{guessStats.afterThreeTries}</div>
+            <div className={styles.cellLabel}>Missed</div>
           </div>
         </div>
 
-        <div className={styles.rowContainer}>
-          {ROWS.map(({ label, key }) => (
-            <div key={key} className={styles.row}>
-              <div className={styles.text}>{label}:</div>
-              <div className={styles.number}>{guessStats[key]}</div>
-            </div>
-          ))}
+        {/* Actions */}
+        <div className={styles.actions}>
+          <button className={styles.btnPrimary} onClick={onPlayAgain} type="button">
+            Play again
+          </button>
+          <button className={styles.btnSecondary} onClick={() => navigate("/")} type="button">
+            Home
+          </button>
         </div>
       </div>
     </Modal>

@@ -4,16 +4,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1rem;
-    background: rgba(38, 38, 39, 0.55);
+    padding: 1.25rem;
+    background: rgba(38, 38, 39, 0.6);
     z-index: 1000;
 }
 
 .modalContent {
     position: relative;
-    width: min(46rem, calc(100vw - 2rem));
-    max-height: calc(100dvh - 2rem);
-    border: 0.55rem solid #E53C30;
+    width: min(38rem, calc(100vw - 2rem));
+    max-height: calc(100dvh - 2.5rem);
+    border: 0.45rem solid #E53C30;
     border-radius: 2rem;
     overflow: auto;
     outline: none;
@@ -22,92 +22,133 @@
 .modalContainer {
     display: flex;
     flex-direction: column;
+    gap: 1.4rem;
     background-color: #E3E3E1;
-    border-style: none;
     color: #262627;
-    padding: 1rem 1.2rem 1.4rem;
+    padding: 1.8rem 1.4rem 1.6rem;
 }
 
-.closeButtonRow {
+/* ── Header ─────────────────────────────────────────────────── */
+.header {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
-    min-height: 3rem;
-}
-
-.closeButtonContainer {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    flex: 0 0 2.75rem;
-}
-
-.modalTitle {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: clamp(1.5rem, 1.4vw + 1rem, 2.6rem);
-    font-weight: bold;
+    gap: 0.35rem;
     text-align: center;
 }
 
-.rowContainer {
+.emoji {
+    font-size: 2.8rem;
+    line-height: 1;
+    margin-bottom: 0.2rem;
+}
+
+.headline {
+    font-size: clamp(1.9rem, 4vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.05;
+}
+
+.subline {
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    opacity: 0.65;
+    font-weight: 500;
+}
+
+/* ── Stats grid ─────────────────────────────────────────────── */
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.cell {
+    border-radius: 1.25rem;
+    padding: 1rem 1rem 0.9rem;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 0.9rem;
-    padding: 1rem 0;
-}
-
-.row {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
     align-items: center;
-    gap: 1rem;
+    justify-content: center;
+    gap: 0.25rem;
+    text-align: center;
+}
+
+.cellNumber {
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1;
+}
+
+.cellLabel {
+    font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    opacity: 0.75;
+}
+
+.cellGreen  { background: rgba(34, 197, 94, 0.18);  color: #166534; }
+.cellYellow { background: rgba(234, 179, 8, 0.18);  color: #854d0e; }
+.cellOrange { background: rgba(249, 115, 22, 0.18); color: #9a3412; }
+.cellRed    { background: rgba(229, 60, 48, 0.12);  color: #991b1b; }
+
+/* ── Actions ────────────────────────────────────────────────── */
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.btnPrimary {
+    width: 100%;
     padding: 0.9rem 1rem;
-    border-radius: 1.25rem;
-    background: rgba(229, 60, 48, 0.08);
+    font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    border: none;
+    border-radius: 999px;
+    background: #262627;
+    color: #E3E3E1;
+    cursor: pointer;
+    transition: opacity 150ms ease;
 }
 
-.text {
-    font-size: clamp(1rem, 0.75vw + 0.85rem, 1.35rem);
-    font-weight: medium;
+.btnPrimary:hover { opacity: 0.85; }
+.btnPrimary:active { opacity: 0.7; }
+
+.btnSecondary {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+    font-weight: 700;
+    border: 2px solid rgba(38, 38, 39, 0.35);
+    border-radius: 999px;
+    background: transparent;
+    color: #262627;
+    cursor: pointer;
+    transition: background 150ms ease, border-color 150ms ease;
 }
 
-.number {
-    font-size: clamp(1.5rem, 1.4vw + 1rem, 2.4rem);
-    font-weight: bold;
+.btnSecondary:hover {
+    background: rgba(38, 38, 39, 0.06);
+    border-color: rgba(38, 38, 39, 0.55);
 }
 
+/* ── Mobile ─────────────────────────────────────────────────── */
 @media (max-width: 640px) {
-    .modalOverlay {
-        padding: 0.75rem;
-    }
+    .modalOverlay { padding: 0.75rem; }
 
     .modalContent {
         width: calc(100vw - 1.5rem);
-        max-height: calc(100dvh - 1.5rem);
         border-width: 0.35rem;
-        border-radius: 1.25rem;
+        border-radius: 1.5rem;
     }
 
     .modalContainer {
-        padding: 0.85rem 0.9rem 1.1rem;
+        padding: 1.4rem 1rem 1.3rem;
+        gap: 1.1rem;
     }
 
-    .closeButtonRow {
-        align-items: flex-start;
-    }
-
-    .row {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-
-    .number {
-        align-self: flex-end;
-    }
+    .emoji { font-size: 2.2rem; }
 }
