@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styles from "../css/Subhome.module.css";
 import TrackButtonContainer, {
   ButtonProp,
@@ -17,6 +17,7 @@ export default function Subhome(props: SubhomeProps) {
         <div className={styles.track}>
           {buttonProps.map((buttonProp) => (
             <TrackButtonContainer
+              key={buttonProp.text}
               text={buttonProp.text}
               onClick={buttonProp.onClick}
             />

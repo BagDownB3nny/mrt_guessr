@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Home from "./Home";
 import Subhome from "./Subhome";
 import { Analytics } from "@vercel/analytics/react";

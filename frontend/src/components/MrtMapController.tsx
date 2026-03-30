@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   TransformWrapper,
   TransformComponent,
@@ -23,6 +23,7 @@ const MrtMapController = (props: any) => {
 
   const currentStationRef = useRef(currentStation);
   const currentTries = useRef(tries);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
     currentStationRef.current = currentStation;
@@ -32,10 +33,25 @@ const MrtMapController = (props: any) => {
     currentTries.current = tries;
   }, [tries]);
 
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
+    const updateIsMobile = (event: MediaQueryListEvent | MediaQueryList) => {
+      setIsMobile(event.matches);
+    };
+
+    updateIsMobile(mediaQuery);
+
+    const handleChange = (event: MediaQueryListEvent) => updateIsMobile(event);
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => {
+      mediaQuery.removeEventListener("change", handleChange);
+    };
+  }, []);
+
   const handleClick = (e: any) => {
     const station = getStationName(e);
     if (station === currentStationRef.current) {
-      console.log(currentTries.current);
       onCorrectClick(station, currentTries.current);
     } else {
       onWrongClick();
@@ -59,11 +75,14 @@ const MrtMapController = (props: any) => {
         const circleElement = document.createElement("div");
         circleElement.id = "showButtonCircle";
         circleElement.className = styles.circle;
+        const circleSize = isMobile ? 96 : 160;
 
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
-        circleElement.style.left = `${centerX - 100}px`; // Subtract half the width (10px) to center
-        circleElement.style.top = `${centerY - 100}px`; // Subtract half the height (10px) to center
+        circleElement.style.width = `${circleSize}px`;
+        circleElement.style.height = `${circleSize}px`;
+        circleElement.style.left = `${centerX - circleSize / 2}px`;
+        circleElement.style.top = `${centerY - circleSize / 2}px`;
 
         circleElement.addEventListener("animationend", () => {
           circleElement.remove();
@@ -71,7 +90,7 @@ const MrtMapController = (props: any) => {
         document.body.appendChild(circleElement);
       }
     }
-  }, [tries]);
+  }, [currentStation, isMobile, tries]);
 
   useEffect(() => {
     const id = `${newlyCorrectStation.replaceAll(" ", "_")}`;
@@ -85,6 +104,11 @@ const MrtMapController = (props: any) => {
     const buttonElements = document.querySelectorAll('[id$="_Button"]');
     buttonElements.forEach((el) => {
       el.classList.add(styles.station);
+      if (el.getAttribute("data-bound-click") === "true") {
+        return;
+      }
+
+      el.setAttribute("data-bound-click", "true");
       el.addEventListener("click", (e) => {
         e.stopPropagation();
         handleClick(el.id);
@@ -104,6 +128,11 @@ const MrtMapController = (props: any) => {
         initialPositionX={0}
         initialPositionY={100}
         doubleClick={{ disabled: true }}
+        minScale={0.7}
+        maxScale={8}
+        pinch={{ step: 5 }}
+        panning={{ velocityDisabled: true }}
+        centerOnInit
       >
         <TransformComponent
           wrapperStyle={{ width: "100%", height: "100%" }}
@@ -117,15 +146,12 @@ const MrtMapController = (props: any) => {
             onLoad={addStyleToStationsAndText}
           />
         </TransformComponent>
-        <div
-          style={{
-            position: "absolute",
-            zIndex: 0,
-            top: "0px",
-            right: "0px",
-          }}
-        >
-          <MiniMap width={400}>
+        <div className={styles.mapTools}>
+          <MiniMap
+            width={isMobile ? 124 : 220}
+            height={isMobile ? 88 : 156}
+            borderColor="#262627"
+          >
             <SVG
               src="/full-mrt-map.svg"
               width="100%"

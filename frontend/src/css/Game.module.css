@@ -1,6 +1,8 @@
 .GameContainer {
-    display: flex;
+  display: flex;
   flex-direction: column;
   height: 100dvh;
-  touch-action: none;
+  width: 100%;
+  overflow: hidden;
+  touch-action: manipulation;
 }

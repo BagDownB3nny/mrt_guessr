@@ -1,18 +1,38 @@
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(38, 38, 39, 0.55);
+    z-index: 1000;
+}
+
+.modalContent {
+    position: relative;
+    width: min(46rem, calc(100vw - 2rem));
+    max-height: calc(100dvh - 2rem);
+    border: 0.55rem solid #E53C30;
+    border-radius: 2rem;
+    overflow: auto;
+    outline: none;
+}
+
 .modalContainer {
-    height: 60dvh;
-    width: 60dvw;
     display: flex;
     flex-direction: column;
     background-color: #E3E3E1;
     border-style: none;
     color: #262627;
+    padding: 1rem 1.2rem 1.4rem;
 }
 
 .closeButtonRow {
     display: flex;
     flex-direction: row;
     align-items: center;
-    flex-basis: 5dvh;
+    min-height: 3rem;
 }
 
 .closeButtonContainer {
@@ -20,55 +40,85 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    flex-basis: 6dvw;
+    flex: 0 0 2.75rem;
 }
 
 .modalTitle {
-    flex-basis: 48dvw;
-    width: 100%;
+    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 48px;
+    font-size: clamp(1.5rem, 1.4vw + 1rem, 2.6rem);
     font-weight: bold;
+    text-align: center;
 }
 
 .rowContainer {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
-    gap: 1.5rem;
-    flex-basis: 32dvh;
+    gap: 0.9rem;
+    padding: 1rem 0;
 }
 
 .row {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    gap: 1.5rem;
-    flex-basis: 8dvh;
+    gap: 1rem;
+    padding: 0.9rem 1rem;
+    border-radius: 1.25rem;
+    background: rgba(229, 60, 48, 0.08);
 }
 
 .text {
-    font-size: 28px;
+    font-size: clamp(1rem, 0.75vw + 0.85rem, 1.35rem);
     font-weight: medium;
 }
 
 .number {
-    font-size: 48px;
+    font-size: clamp(1.5rem, 1.4vw + 1rem, 2.4rem);
     font-weight: bold;
 }
 
 .scoresRow {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    gap: 1.5rem;
-    flex-basis: 13dvh;
+    gap: 1rem;
+    padding-top: 0.75rem;
+    border-top: 2px solid rgba(38, 38, 39, 0.15);
 }
 
-@media (max-width:800px){
+@media (max-width: 640px) {
+    .modalOverlay {
+        padding: 0.75rem;
+    }
+
+    .modalContent {
+        width: calc(100vw - 1.5rem);
+        max-height: calc(100dvh - 1.5rem);
+        border-width: 0.35rem;
+        border-radius: 1.25rem;
+    }
+
+    .modalContainer {
+        padding: 0.85rem 0.9rem 1.1rem;
+    }
+
+    .closeButtonRow {
+        align-items: flex-start;
+    }
+
+    .row,
+    .scoresRow {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .number {
+        align-self: flex-end;
+    }
 }

@@ -27,12 +27,20 @@ const FixedBar: React.FC<Props> = (props) => {
   return (
     <div className={styles.fixedBar}>
       <div className={styles.leftColumn}>
-        <div className={styles.quitButton} onClick={() => navigate("/")}>
+        <button
+          className={styles.actionButton}
+          onClick={() => navigate("/")}
+          type="button"
+        >
           Quit game
-        </div>
-        <div className={styles.restartGame} onClick={restartGame}>
+        </button>
+        <button
+          className={styles.actionButton}
+          onClick={restartGame}
+          type="button"
+        >
           Restart Game
-        </div>
+        </button>
       </div>
       <div className={styles.middleColumn}>
         {currentStation && (
@@ -40,15 +48,21 @@ const FixedBar: React.FC<Props> = (props) => {
         )}
         {!currentStation && (
           <div className={styles.viewScore}>
-            <div onClick={() => setModalOpen(true)}>View stats</div>
+            <button onClick={() => setModalOpen(true)} type="button">
+              View stats
+            </button>
           </div>
         )}
         <div className={styles.triesBox}>
           {arrayData.map((num) => {
             if (tries > num) {
-              return <img key={num} src="/greyX.png" className={styles.try} />;
+              return (
+                <img key={num} src="/greyX.png" className={styles.try} alt="" />
+              );
             } else {
-              return <img src="/redX.png" className={styles.try} />;
+              return (
+                <img key={num} src="/redX.png" className={styles.try} alt="" />
+              );
             }
           })}
         </div>

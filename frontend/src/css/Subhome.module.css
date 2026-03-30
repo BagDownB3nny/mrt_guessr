@@ -3,46 +3,51 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    min-height: 100dvh;
     background-color: #E3E3E1;
     font-family: 'Inter', sans-serif;
+    padding: 1.5rem;
+    box-sizing: border-box;
 }
 
 .trackContainer {
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     width: 100%;
-    flex: 1;
 }
 
 .track {
-    height: 100%;
-    width: calc(50vw + 10dvh);
+    position: relative;
+    width: min(100%, 34rem);
     display: flex;
     flex-direction: column;
-    align-items: start;
-    justify-self: start;
-    transform: translateX(calc(50vw - 10dvh));
+    align-items: stretch;
+    gap: 1rem;
+    padding-left: 4.25rem;
 }
 
 .buttonContainer {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    gap: 1.5rem;
-    flex-basis: calc(100dvh * 1/8);
+    gap: 1rem;
+    min-height: 4rem;
+    padding: 0.35rem 0;
     cursor: pointer;
+    user-select: none;
 }
 
 .trackButton {
-    height: 5dvh;
+    height: 2.75rem;
+    width: 3.6rem;
     aspect-ratio: 2 / 1;
     border-style: solid;
     border-radius: 2rem;
-    border-width: 0.5dvh;
+    border-width: 0.3rem;
     border-color: white;
     background-color: #E53C30;
+    flex-shrink: 0;
 }
 
 .buttonContainer:hover {
@@ -54,15 +59,46 @@
 }
 
 .trackText {
-    font-size: 28px;
-    font-weight: medium;
+    font-size: clamp(1.15rem, 1vw + 0.9rem, 1.7rem);
+    font-weight: 500;
 }
 
 .trackLine {
-    width: 1.5dvh;
-    height: 100dvh;
+    width: 0.65rem;
+    height: calc(100% - 2.5rem);
     position: absolute;
     z-index: -1;
     background-color: #E53C30;
-    transform: translateX(4.5dvh);
+    left: 1.65rem;
+    top: 1.25rem;
+    border-radius: 999px;
+}
+
+@media (max-width: 640px) {
+    .home {
+        padding: 1rem;
+    }
+
+    .track {
+        width: 100%;
+        padding-left: 3.4rem;
+    }
+
+    .buttonContainer {
+        gap: 0.8rem;
+        min-height: 3.4rem;
+    }
+
+    .trackButton {
+        height: 2.3rem;
+        width: 3rem;
+    }
+
+    .trackText {
+        font-size: clamp(1rem, 4.4vw, 1.3rem);
+    }
+
+    .trackLine {
+        left: 1.25rem;
+    }
 }

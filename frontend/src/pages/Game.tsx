@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import FixedBar from "../components/FixedBar";
 import MrtMapController from "../components/MrtMapController";
 import styles from "../css/Game.module.css";
@@ -250,22 +250,6 @@ export default function Game(props: any) {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const preventGesture = (event: any) => {
-      event.preventDefault(); // Prevent default iOS behavior
-    };
-
-    document.addEventListener("gesturestart", preventGesture);
-    document.addEventListener("gesturechange", preventGesture);
-    document.addEventListener("gestureend", preventGesture);
-
-    return () => {
-      document.removeEventListener("gesturestart", preventGesture);
-      document.removeEventListener("gesturechange", preventGesture);
-      document.removeEventListener("gestureend", preventGesture);
-    };
-  }, []);
-
   const getStationsLeft = () => {
     const stationsFound = clickedStations.length;
     let totalStations = stationsFound + unseenStations.length;
@@ -280,13 +264,18 @@ export default function Game(props: any) {
     return `${currentScore}/${stationsFound * 3}`;
   };
 
-  const getNewStation = () => {
-    const index = getRandomInt(unseenStations.length);
-    const newStation = unseenStations[index];
-    setCurrentStation(newStation);
-    unseenStations.splice(index, 1);
-    setUnseenStations(unseenStations);
-  };
+  const getNewStation = useCallback(() => {
+    setUnseenStations((prev) => {
+      if (prev.length === 0) {
+        return prev;
+      }
+
+      const index = getRandomInt(prev.length);
+      const newStation = prev[index];
+      setCurrentStation(newStation);
+      return prev.filter((_, stationIndex) => stationIndex !== index);
+    });
+  }, []);
 
   const updateStationsFoundInTries = (tries: number) => {
     switch (tries) {
@@ -342,13 +331,13 @@ export default function Game(props: any) {
     } else if (gameType === GameType.SINGAPORETOUR) {
       setUnseenStations(getAllStations());
     }
-  }, []);
+  }, [gameType]);
 
   useEffect(() => {
     if (!currentStation && unseenStations.length > 0) {
       getNewStation();
     }
-  }, [unseenStations]);
+  }, [currentStation, getNewStation, unseenStations]);
 
   return (
     <div className={styles.GameContainer}>
