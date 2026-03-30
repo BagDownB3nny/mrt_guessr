@@ -52,6 +52,7 @@
 
 /* ── First viewport ─────────────────────────────────────────────────────── */
 .home {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -65,10 +66,14 @@
 
 /* ── Title ───────────────────────────────────────────────────────────────── */
 .titleContainer {
+    position: absolute;
+    top: 8dvh;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 3rem;
+    width: max-content;
 }
 
 .title {
@@ -204,7 +209,9 @@
         padding: 0 1rem;
     }
 
-    .titleContainer { margin-bottom: 2.2rem; }
+    .titleContainer {
+        top: 6dvh;
+    }
 
     .track { gap: 1rem; }
 
