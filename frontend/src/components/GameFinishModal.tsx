@@ -16,17 +16,16 @@ interface Props {
   modalOpen: boolean;
   setModalOpen: (open: boolean) => void;
   guessStats: GuessStats;
-  getScore: () => string;
 }
 
-const ROWS: { label: string; key: keyof GuessStats; points: number }[] = [
-  { label: "Found in 1 try",          key: "inOneTry",        points: 3 },
-  { label: "Found in 2 tries",        key: "inTwoTries",      points: 2 },
-  { label: "Found in 3 tries",        key: "inThreeTries",    points: 1 },
-  { label: "Found after 3 tries",     key: "afterThreeTries", points: 0 },
+const ROWS: { label: string; key: keyof GuessStats }[] = [
+  { label: "Found in 1 try",      key: "inOneTry" },
+  { label: "Found in 2 tries",    key: "inTwoTries" },
+  { label: "Found in 3 tries",    key: "inThreeTries" },
+  { label: "Found after 3 tries", key: "afterThreeTries" },
 ];
 
-export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, getScore }: Props) {
+export default function GameFinishModal({ modalOpen, setModalOpen, guessStats }: Props) {
   return (
     <Modal
       isOpen={modalOpen}
@@ -45,19 +44,12 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, g
         </div>
 
         <div className={styles.rowContainer}>
-          {ROWS.map(({ label, key, points }) => (
+          {ROWS.map(({ label, key }) => (
             <div key={key} className={styles.row}>
-              <div className={styles.text}>
-                {label} ({points} {points === 1 ? "point" : "points"} each):
-              </div>
+              <div className={styles.text}>{label}:</div>
               <div className={styles.number}>{guessStats[key]}</div>
             </div>
           ))}
-        </div>
-
-        <div className={styles.scoresRow}>
-          <div className={styles.text}>Score:</div>
-          <div className={styles.number}>{getScore()}</div>
         </div>
       </div>
     </Modal>

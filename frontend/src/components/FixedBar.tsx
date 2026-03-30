@@ -3,7 +3,7 @@ import styles from "../css/FixedBar.module.css";
 import { useNavigate } from "react-router-dom";
 
 interface Props {
-  currentStation: String;
+  currentStation: string;
   tries: number;
   getStationsLeft: () => string;
   setModalOpen: Dispatch<SetStateAction<boolean>>;

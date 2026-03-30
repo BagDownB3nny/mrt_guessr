@@ -3,8 +3,8 @@
  *
  * Plays through the entire Singapore Tour game (all ~145 deduplicated stations)
  * with a deterministic strategy, verifying:
- *   1. Final score is mathematically correct
- *   2. Guess stat counters (1 try / 2 tries / 3 tries / failed) are correct
+ *   1. Guess stat counters (1 try / 2 tries / 3 tries / failed) are correct
+ *   2. Results modal appears after the last station
  *   3. Restart resets all state cleanly
  *
  * Strategy cycles every 4 stations:
@@ -135,10 +135,7 @@ async function run() {
       if (strategy === STRATEGY.FAIL)   { expectedAfterThreeTries++; expectedRawScore += 0; }
     }
 
-    const expectedNormalized = expectedRawScore / (totalStations * 3);
-    const expectedScoreDisplay = String(Math.floor(expectedNormalized * 10) / 10);
-
-    console.log(`   Expected: score=${expectedScoreDisplay} | 1-try=${expectedInOneTry} | 2-try=${expectedInTwoTries} | 3-try=${expectedInThreeTries} | failed=${expectedAfterThreeTries}\n`);
+    console.log(`   Expected: 1-try=${expectedInOneTry} | 2-try=${expectedInTwoTries} | 3-try=${expectedInThreeTries} | failed=${expectedAfterThreeTries}\n`);
     console.log('   Playing through all stations...\n');
 
     // ── Play through the game ─────────────────────────────────────────────────
@@ -207,12 +204,10 @@ async function run() {
     const modalStats = await page.evaluate(() => {
       const rows = Array.from(document.querySelectorAll('[class*="row"] [class*="number"]'));
       const numbers = rows.map(el => parseInt(el.textContent.trim(), 10)).filter(n => !isNaN(n));
-      const scoreEl = document.querySelector('[class*="scoresRow"] [class*="number"]');
-      const score = scoreEl ? scoreEl.textContent.trim() : null;
-      return { numbers, score };
+      return { numbers };
     });
 
-    console.log(`   Modal stats: numbers=${JSON.stringify(modalStats.numbers)} score=${modalStats.score}`);
+    console.log(`   Modal stats: numbers=${JSON.stringify(modalStats.numbers)}`);
 
     const [actualOneTry, actualTwoTries, actualThreeTries, actualAfterThree] = modalStats.numbers;
 
@@ -236,11 +231,6 @@ async function run() {
     else
       fail('failed count', `got ${actualAfterThree}, expected ${expectedAfterThreeTries}`);
 
-    if (modalStats.score === expectedScoreDisplay)
-      pass(`score display correct (${modalStats.score})`);
-    else
-      fail('score display', `got "${modalStats.score}", expected "${expectedScoreDisplay}"`);
-
     // ── Test restart ──────────────────────────────────────────────────────────
 
     // Close modal
@@ -259,8 +249,7 @@ async function run() {
     // Verify state reset
     const afterRestart = await page.evaluate(() => {
       const stationName = document.querySelector('[class*="stationName"]');
-      const scoreEl = document.querySelector('[class*="statValue"]');
-      const foundEl = document.querySelectorAll('[class*="statValue"]')[1];
+      const foundEl = document.querySelector('[class*="statValue"]');
       const tries = document.querySelectorAll('[class*="try"]');
       // Count grey X images (tries remaining — grey = available, red = used)
       const redX = Array.from(tries).filter(img => img.src && img.src.includes('greyX'));
@@ -275,7 +264,6 @@ async function run() {
 
       return {
         hasStationName: !!stationName && stationName.textContent.trim().length > 0,
-        scoreText: scoreEl ? scoreEl.textContent.trim() : null,
         foundText: foundEl ? foundEl.textContent.trim() : null,
         redXCount: redX.length,
         visibleLabelCount: visibleLabels,
@@ -287,11 +275,6 @@ async function run() {
       pass('restart: new station prompt is shown');
     else
       fail('restart: station shown', 'no station name visible after restart');
-
-    if (afterRestart.scoreText === '0.0')
-      pass(`restart: score reset to 0.0`);
-    else
-      fail('restart: score reset', `score shows "${afterRestart.scoreText}" after restart`);
 
     if (afterRestart.foundText && afterRestart.foundText.startsWith('0/'))
       pass(`restart: found counter reset (${afterRestart.foundText})`);

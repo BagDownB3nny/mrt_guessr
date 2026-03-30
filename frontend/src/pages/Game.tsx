@@ -37,7 +37,6 @@ export default function Game({ gameType }: GameProps) {
   const [clickedStations, setClickedStations] = useState<string[]>([]);
   const [newlyCorrectStation, setNewlyCorrectStation] = useState("");
   const [tries, setTries] = useState(TRIES_PER_STATION);
-  const [currentScore, setCurrentScore] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
   const [totalStations, setTotalStations] = useState(0);
   const [showGreenFlash, setShowGreenFlash] = useState(false);
@@ -54,15 +53,6 @@ export default function Game({ gameType }: GameProps) {
 
   const getStationsLeft = (): string =>
     `${clickedStations.length}/${totalStations}`;
-
-  const getScore = (): string => {
-    const found = clickedStations.length;
-    if (found === 0) return "0.0";
-    // Normalised 0–1: average score per station (floor to 1dp)
-    // 1 try = 1.0, 2 tries = 0.6, 3 tries = 0.3, failed = 0.0
-    const normalized = currentScore / (found * TRIES_PER_STATION);
-    return String(Math.floor(normalized * 10) / 10);
-  };
 
   // ── Station progression ────────────────────────────────────────────────────
 
@@ -93,7 +83,6 @@ export default function Game({ gameType }: GameProps) {
 
   const onCorrectClick = (station: string, triesRemaining: number) => {
     recordGuess(triesRemaining);
-    setCurrentScore((prev) => prev + Math.max(0, triesRemaining));
     setClickedStations((prev) => [...prev, station]);
     setNewlyCorrectStation(station);
     setTries(TRIES_PER_STATION);
@@ -116,7 +105,6 @@ export default function Game({ gameType }: GameProps) {
     setCurrentStation("");
     setNewlyCorrectStation("");
     setTries(TRIES_PER_STATION);
-    setCurrentScore(0);
     setModalOpen(false);
     setGuessStats({ inOneTry: 0, inTwoTries: 0, inThreeTries: 0, afterThreeTries: 0 });
     const stations = getInitialStations(gameType);
@@ -173,7 +161,6 @@ export default function Game({ gameType }: GameProps) {
         modalOpen={modalOpen}
         setModalOpen={setModalOpen}
         guessStats={guessStats}
-        getScore={getScore}
       />
       <Analytics />
     </div>
