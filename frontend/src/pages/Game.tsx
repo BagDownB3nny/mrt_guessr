@@ -4,7 +4,6 @@ import FixedBar from "../components/FixedBar";
 import MrtMapController from "../components/MrtMapController";
 import styles from "../css/Game.module.css";
 import GameFinishModal from "../components/GameFinishModal";
-import { useNavigate } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 
 const DowntownLineStations = [
@@ -247,8 +246,9 @@ export default function Game(props: any) {
     useState(0);
   const [stationsGuessedAfterThreeTries, setStationsGuessedAfterThreeTries] =
     useState(0);
+  const [showGreenFlash, setShowGreenFlash] = useState(false);
 
-  const navigate = useNavigate();
+
 
   const getStationsLeft = () => {
     const stationsFound = clickedStations.length;
@@ -260,8 +260,10 @@ export default function Game(props: any) {
   };
 
   const getScore = () => {
-    const stationsFound = clickedStations.length;
-    return `${currentScore}/${stationsFound * 3}`;
+    let totalStations = clickedStations.length + unseenStations.length;
+    if (currentStation) totalStations++;
+    const maxScore = totalStations * 3;
+    return `${currentScore}/${maxScore}`;
   };
 
   const getNewStation = useCallback(() => {
@@ -304,6 +306,9 @@ export default function Game(props: any) {
     getNewStation();
     setNewlyCorrectStation(station);
     setTries(3);
+    // Flash green
+    setShowGreenFlash(true);
+    setTimeout(() => setShowGreenFlash(false), 500);
     if (unseenStations.length === 0) {
       onGameEnd();
     }
@@ -318,10 +323,21 @@ export default function Game(props: any) {
   };
 
   const restartGame = () => {
+    // Reset all state to restart
+    setClickedStations([]);
+    setCurrentStation("");
+    setNewlyCorrectStation("");
+    setTries(3);
+    setCurrentScore(0);
+    setModalOpen(false);
+    setStationsGuessedInOneTry(0);
+    setStationsGuessedInTwoTries(0);
+    setStationsGuessedInThreeTries(0);
+    setStationsGuessedAfterThreeTries(0);
     if (gameType === GameType.QUICKGAME) {
-      navigate("/quickgame");
+      setUnseenStations(getNStations(10));
     } else if (gameType === GameType.SINGAPORETOUR) {
-      navigate("/singaporetour");
+      setUnseenStations(getAllStations());
     }
   };
 
@@ -341,6 +357,7 @@ export default function Game(props: any) {
 
   return (
     <div className={styles.GameContainer}>
+      {showGreenFlash && <div className={styles.greenFlash} />}
       <MrtMapController
         onCorrectClick={onCorrectClick}
         onWrongClick={onWrongClick}
