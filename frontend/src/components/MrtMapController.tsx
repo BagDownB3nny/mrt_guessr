@@ -9,14 +9,6 @@ import SVG from "react-inlinesvg";
 import styles from "../css/MrtMap.module.css";
 import Controls from "./Controls";
 
-const WEBHOOK = "https://webhook.site/ca776205-69c1-40c2-94e6-8d093223c4e5";
-const logEvent = (type: string, data: object) => {
-  fetch(WEBHOOK, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ type, ts: Date.now(), ...data }),
-  }).catch(() => {});
-};
 
 const getStationName = (id: String) => {
   return id.substring(0, id.length - 7).replace(/_/g, " ");
@@ -166,12 +158,7 @@ const MrtMapController = (props: any) => {
   };
 
   return (
-    <div
-      className={styles.mapContainer}
-      onTouchStart={(e) => logEvent("container_touchstart", { touches: e.touches.length })}
-      onTouchMove={(e) => logEvent("container_touchmove", { touches: e.touches.length })}
-      onTouchEnd={(e) => logEvent("container_touchend", { touches: e.touches.length })}
-    >
+    <div className={styles.mapContainer}>
       <TransformWrapper
         ref={transformRef}
         initialScale={1}
@@ -183,11 +170,6 @@ const MrtMapController = (props: any) => {
         pinch={{ step: 5 }}
         panning={{ velocityDisabled: true }}
         centerOnInit
-        onPinching={(ref) => logEvent("rzpp_pinching", { scale: ref.state.scale })}
-        onPinchingStart={() => logEvent("rzpp_pinch_start", {})}
-        onPinchingStop={() => logEvent("rzpp_pinch_stop", {})}
-        onPanning={(ref) => logEvent("rzpp_panning", { x: ref.state.positionX, y: ref.state.positionY })}
-        onZoom={(ref) => logEvent("rzpp_zoom", { scale: ref.state.scale })}
       >
         <TransformComponent
           wrapperStyle={{ width: "100%", height: "100%", touchAction: "none" }}
