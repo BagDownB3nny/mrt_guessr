@@ -9,6 +9,8 @@ interface GuessStats {
   inTwoTries: number;
   inThreeTries: number;
   afterThreeTries: number;
+  foundStations: string[];
+  missedStations: string[];
 }
 
 interface Props {
@@ -44,7 +46,7 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
       contentLabel="Game results"
       className={styles.modalContent}
       overlayClassName={styles.modalOverlay}
-      onRequestClose={() => setModalOpen(false)}
+      // No onRequestClose — user cannot dismiss by clicking outside
     >
       <div className={styles.modalContainer}>
         {/* Header */}
@@ -70,6 +72,30 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
           <div className={`${styles.cell} ${styles.cellRed}`}>
             <div className={styles.cellNumber}>{guessStats.afterThreeTries}</div>
             <div className={styles.cellLabel}>Missed</div>
+          </div>
+        </div>
+
+        {/* Station lists: found | missed */}
+        <div className={styles.stationLists}>
+          <div className={styles.stationListBox}>
+            <div className={styles.stationListTitle}>Found</div>
+            <div className={styles.stationListScroll}>
+              {guessStats.foundStations.length === 0
+                ? <span className={styles.stationListEmpty}>—</span>
+                : guessStats.foundStations.map((s) => (
+                    <div key={s} className={styles.stationPill}>{s}</div>
+                  ))}
+            </div>
+          </div>
+          <div className={styles.stationListBox}>
+            <div className={styles.stationListTitle}>Missed</div>
+            <div className={styles.stationListScroll}>
+              {guessStats.missedStations.length === 0
+                ? <span className={styles.stationListEmpty}>—</span>
+                : guessStats.missedStations.map((s) => (
+                    <div key={s} className={`${styles.stationPill} ${styles.stationPillMissed}`}>{s}</div>
+                  ))}
+            </div>
           </div>
         </div>
 

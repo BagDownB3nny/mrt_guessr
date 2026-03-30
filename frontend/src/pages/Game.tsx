@@ -20,6 +20,8 @@ interface GuessStats {
   inTwoTries: number;
   inThreeTries: number;
   afterThreeTries: number;
+  foundStations: string[];
+  missedStations: string[];
 }
 
 const TRIES_PER_STATION = 3;
@@ -48,6 +50,8 @@ export default function Game({ gameType }: GameProps) {
     inTwoTries: 0,
     inThreeTries: 0,
     afterThreeTries: 0,
+    foundStations: [],
+    missedStations: [],
   });
 
   // ── Derived display values ─────────────────────────────────────────────────
@@ -70,20 +74,23 @@ export default function Game({ gameType }: GameProps) {
     });
   }, []);
 
-  const recordGuess = (triesUsed: number) => {
+  const recordGuess = (station: string, triesUsed: number) => {
     const t = Math.max(0, triesUsed);
+    const isFound = t > 0;
     setGuessStats((prev) => ({
-      inOneTry:          prev.inOneTry          + (t === 3 ? 1 : 0),
-      inTwoTries:        prev.inTwoTries         + (t === 2 ? 1 : 0),
-      inThreeTries:      prev.inThreeTries       + (t === 1 ? 1 : 0),
-      afterThreeTries:   prev.afterThreeTries    + (t === 0 ? 1 : 0),
+      inOneTry:        prev.inOneTry        + (t === 3 ? 1 : 0),
+      inTwoTries:      prev.inTwoTries      + (t === 2 ? 1 : 0),
+      inThreeTries:    prev.inThreeTries    + (t === 1 ? 1 : 0),
+      afterThreeTries: prev.afterThreeTries + (t === 0 ? 1 : 0),
+      foundStations:   isFound ? [...prev.foundStations, station] : prev.foundStations,
+      missedStations:  isFound ? prev.missedStations : [...prev.missedStations, station],
     }));
   };
 
   // ── Event handlers ─────────────────────────────────────────────────────────
 
   const onCorrectClick = (station: string, triesRemaining: number) => {
-    recordGuess(triesRemaining);
+    recordGuess(station, triesRemaining);
     setClickedStations((prev) => [...prev, station]);
     setNewlyCorrectStation(station);
     setTries(TRIES_PER_STATION);
@@ -110,7 +117,7 @@ export default function Game({ gameType }: GameProps) {
     setNewlyCorrectStation("");
     setTries(TRIES_PER_STATION);
     setModalOpen(false);
-    setGuessStats({ inOneTry: 0, inTwoTries: 0, inThreeTries: 0, afterThreeTries: 0 });
+    setGuessStats({ inOneTry: 0, inTwoTries: 0, inThreeTries: 0, afterThreeTries: 0, foundStations: [], missedStations: [] });
     const stations = getInitialStations(gameType);
     setTotalStations(stations.length);
     setUnseenStations(stations);

@@ -88,7 +88,7 @@
 .wrongLabel {
     position: absolute;
     pointer-events: none;
-    font-size: 0.9rem;
+    font-size: 0.55rem;
     font-weight: 800;
     color: #262627;
     white-space: nowrap;
@@ -96,12 +96,9 @@
     transform-origin: center bottom;
     animation: wrongLabelFloat 0.8s linear forwards;
     z-index: 5;
-    text-shadow:
-        -1px -1px 0 #fff,
-         1px -1px 0 #fff,
-        -1px  1px 0 #fff,
-         1px  1px 0 #fff,
-         0    0   4px rgba(255,255,255,0.8);
+    /* White outline without text-shadow (avoids GPU composite layer / blur glitch on mobile) */
+    -webkit-text-stroke: 3px white;
+    paint-order: stroke fill;
 }
 
 @keyframes wrongLabelFloat {
