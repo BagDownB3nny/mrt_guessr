@@ -48,9 +48,10 @@ export default function MrtMapController({
   const wrongLabelCounter = useRef(0);
   const [wrongLabels, setWrongLabels] = useState<WrongLabel[]>([]);
   const lastClickTimeRef = useRef(0);
-  // Reveal circle rendered in a fixed portal (screen coords captured post-pan)
-  const [revealCircle, setRevealCircle] = useState<{ key: number; screenX: number; screenY: number; size: number } | null>(null);
+  // Reveal circle rendered in a fixed portal (tracks button position live)
+  const [revealCircle, setRevealCircle] = useState<{ key: number; buttonId: string; size: number } | null>(null);
   const revealCircleKey = useRef(0);
+  const revealCircleDivRef = useRef<HTMLDivElement | null>(null);
   // Tracks whether a touch moved before a click fires, so panning doesn't
   // accidentally trigger station selection.
   const touchMovedRef = useRef(false);
@@ -124,14 +125,10 @@ export default function MrtMapController({
       const el = document.getElementById(buttonId);
       if (!el) return;
 
-      // Use screen coords directly — circle is in a fixed portal outside TransformComponent
-      const rect = el.getBoundingClientRect();
-      const screenCx = rect.left + rect.width / 2;
-      const screenCy = rect.top + rect.height / 2;
       const size = isMobile ? 96 : 160;
 
       const key = ++revealCircleKey.current;
-      setRevealCircle({ key, screenX: screenCx, screenY: screenCy, size });
+      setRevealCircle({ key, buttonId, size });
       setTimeout(() => setRevealCircle((prev) => (prev?.key === key ? null : prev)), 1100);
     };
 
@@ -172,6 +169,26 @@ export default function MrtMapController({
       setTimeout(spawnCircle, config.transitions.revealCircleDelayMs);
     }
   }, [currentStation, isMobile, tries]);
+
+  // ── Reveal circle: track button position live so it follows panning ─────
+  useEffect(() => {
+    if (!revealCircle) return;
+    let rafId: number;
+    const track = () => {
+      const el = document.getElementById(revealCircle.buttonId);
+      const div = revealCircleDivRef.current;
+      if (el && div) {
+        const rect = el.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        div.style.left = `${cx - revealCircle.size / 2}px`;
+        div.style.top  = `${cy - revealCircle.size / 2}px`;
+      }
+      rafId = requestAnimationFrame(track);
+    };
+    rafId = requestAnimationFrame(track);
+    return () => cancelAnimationFrame(rafId);
+  }, [revealCircle]);
 
   // ── Reveal station name text when correctly guessed ───────────────────────
   useEffect(() => {
@@ -269,17 +286,18 @@ export default function MrtMapController({
             onLoad={setupSvg}
           />
         </TransformComponent>
-        {/* Reveal circle — fixed portal, isolated from TransformComponent to avoid iOS blur */}
+        {/* Reveal circle — fixed portal, tracks button live via rAF */}
         {revealCircle && (
           <div
             key={revealCircle.key}
+            ref={revealCircleDivRef}
             className={styles.circle}
             style={{
               position: "fixed",
               width: revealCircle.size,
               height: revealCircle.size,
-              left: revealCircle.screenX - revealCircle.size / 2,
-              top: revealCircle.screenY - revealCircle.size / 2,
+              left: 0,
+              top: 0,
             }}
           />
         )}
