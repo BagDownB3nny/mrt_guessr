@@ -52,6 +52,12 @@
     text-align: center;
 }
 
+.headlineTimer {
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+}
+
 /* ── Stats grid ─────────────────────────────────────────────── */
 .grid {
     display: grid;

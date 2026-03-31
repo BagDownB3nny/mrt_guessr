@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import FixedBar from "../components/FixedBar";
 import MrtMapController from "../components/MrtMapController";
@@ -10,6 +10,7 @@ import config from "../config/constants.json";
 export enum GameType {
   QUICKGAME,
   SINGAPORETOUR,
+  SPEEDRUN,
 }
 
 interface GameProps {
@@ -27,11 +28,12 @@ interface GuessStats {
 
 const TRIES_PER_STATION = config.gameplay.triesPerStation;
 const QUICKGAME_STATION_COUNT = config.gameplay.quickgameStationCount;
+const SPEEDRUN_STATION_COUNT = (config.gameplay as any).speedrunStationCount ?? 20;
 
 function getInitialStations(gameType: GameType): string[] {
-  return gameType === GameType.QUICKGAME
-    ? sampleStations(QUICKGAME_STATION_COUNT)
-    : getAllStations();
+  if (gameType === GameType.QUICKGAME) return sampleStations(QUICKGAME_STATION_COUNT);
+  if (gameType === GameType.SPEEDRUN)  return sampleStations(SPEEDRUN_STATION_COUNT);
+  return getAllStations();
 }
 
 export default function Game({ gameType }: GameProps) {
@@ -44,6 +46,12 @@ export default function Game({ gameType }: GameProps) {
   const [totalStations, setTotalStations] = useState(0);
   const [showGreenFlash, setShowGreenFlash] = useState(false);
   const [showRedFlash, setShowRedFlash] = useState(false);
+  // Speedrun timer
+  const timerStartRef = useRef<number | null>(null);
+  const timerRafRef   = useRef<number | null>(null);
+  const [elapsedMs, setElapsedMs]     = useState(0);
+  const [finalTimeMs, setFinalTimeMs] = useState<number | null>(null);
+  const isSpeedrun = gameType === GameType.SPEEDRUN;
   // Sea-colour entry veil — starts opaque, fades out once the SVG is ready
   const [veilVisible, setVeilVisible] = useState(true);
   const [guessStats, setGuessStats] = useState<GuessStats>({
@@ -59,6 +67,34 @@ export default function Game({ gameType }: GameProps) {
 
   const getStationsLeft = (): string =>
     `${clickedStations.length}/${totalStations}`;
+
+  // ── Speedrun timer ────────────────────────────────────────────────────────
+
+  const startTimer = useCallback(() => {
+    if (!isSpeedrun || timerStartRef.current !== null) return;
+    timerStartRef.current = performance.now();
+    const tick = () => {
+      setElapsedMs(Math.floor(performance.now() - timerStartRef.current!));
+      timerRafRef.current = requestAnimationFrame(tick);
+    };
+    timerRafRef.current = requestAnimationFrame(tick);
+  }, [isSpeedrun]);
+
+  const stopTimer = useCallback(() => {
+    if (timerRafRef.current !== null) {
+      cancelAnimationFrame(timerRafRef.current);
+      timerRafRef.current = null;
+    }
+    if (timerStartRef.current !== null) {
+      const ms = Math.floor(performance.now() - timerStartRef.current);
+      setFinalTimeMs(ms);
+    }
+  }, []);
+
+  // Clean up on unmount
+  useEffect(() => () => {
+    if (timerRafRef.current !== null) cancelAnimationFrame(timerRafRef.current);
+  }, []);
 
   // ── Station progression ────────────────────────────────────────────────────
 
@@ -91,6 +127,7 @@ export default function Game({ gameType }: GameProps) {
   // ── Event handlers ─────────────────────────────────────────────────────────
 
   const onCorrectClick = (station: string, triesRemaining: number) => {
+    startTimer();
     recordGuess(station, triesRemaining);
     setClickedStations((prev) => [...prev, station]);
     setNewlyCorrectStation(station);
@@ -102,6 +139,7 @@ export default function Game({ gameType }: GameProps) {
   };
 
   const onWrongClick = (_stationName: string) => {
+    startTimer();
     setTries((prev) => prev - 1);
     // Red edge glow
     setShowRedFlash(true);
@@ -109,6 +147,10 @@ export default function Game({ gameType }: GameProps) {
   };
 
   const restartGame = () => {
+    if (timerRafRef.current !== null) { cancelAnimationFrame(timerRafRef.current); timerRafRef.current = null; }
+    timerStartRef.current = null;
+    setElapsedMs(0);
+    setFinalTimeMs(null);
     // Hide all station name labels revealed in the SVG
     document.querySelectorAll<HTMLElement>('[id$="_Text"]').forEach((el) => {
       el.style.display = "none";
@@ -143,9 +185,10 @@ export default function Game({ gameType }: GameProps) {
   // End the game when all stations have been attempted
   useEffect(() => {
     if (clickedStations.length > 0 && unseenStations.length === 0 && !currentStation) {
+      stopTimer();
       setModalOpen(true);
     }
-  }, [clickedStations.length, currentStation, unseenStations.length]);
+  }, [clickedStations.length, currentStation, stopTimer, unseenStations.length]);
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
@@ -169,12 +212,15 @@ export default function Game({ gameType }: GameProps) {
         getStationsLeft={getStationsLeft}
         setModalOpen={setModalOpen}
         restartGame={restartGame}
+        isSpeedrun={isSpeedrun}
+        elapsedMs={elapsedMs}
       />
       <GameFinishModal
         modalOpen={modalOpen}
         setModalOpen={setModalOpen}
         guessStats={guessStats}
         onPlayAgain={restartGame}
+        finalTimeMs={isSpeedrun ? finalTimeMs : null}
       />
       <Analytics />
     </div>

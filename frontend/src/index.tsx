@@ -19,6 +19,10 @@ const router = createBrowserRouter([
     path: "/singaporetour",
     element: <Game gameType={GameType.SINGAPORETOUR} />,
   },
+  {
+    path: "/speedrun",
+    element: <Game gameType={GameType.SPEEDRUN} />,
+  },
 ]);
 
 const root = ReactDOM.createRoot(

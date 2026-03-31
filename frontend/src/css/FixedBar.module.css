@@ -152,6 +152,11 @@
     line-height: 1.1;
 }
 
+.timerValue {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+}
+
 .iconButtons {
     display: flex;
     flex-direction: row;

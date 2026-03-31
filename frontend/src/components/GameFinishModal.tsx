@@ -19,6 +19,7 @@ interface Props {
   setModalOpen: (open: boolean) => void;
   guessStats: GuessStats;
   onPlayAgain: () => void;
+  finalTimeMs?: number | null;
 }
 
 function getTierMessage(score: number, maxScore: number): string {
@@ -28,7 +29,14 @@ function getTierMessage(score: number, maxScore: number): string {
   return tier ? tier.message : config.tierMessages[config.tierMessages.length - 1].message;
 }
 
-export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, onPlayAgain }: Props) {
+function formatFinalTime(ms: number): string {
+  const m = Math.floor(ms / 60000);
+  const s = Math.floor((ms % 60000) / 1000).toString().padStart(2, "0");
+  const ms3 = (ms % 1000).toString().padStart(3, "0");
+  return m > 0 ? `${m}:${s}.${ms3}` : `${s}.${ms3}`;
+}
+
+export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, onPlayAgain, finalTimeMs }: Props) {
   const navigate = useNavigate();
 
   const score = guessStats.inOneTry * 3 + guessStats.inTwoTries * 2 + guessStats.inThreeTries * 1;
@@ -36,6 +44,7 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
   const found = guessStats.inOneTry + guessStats.inTwoTries + guessStats.inThreeTries;
   const maxScore = total * 3;
   const tierMessage = getTierMessage(score, maxScore);
+  const isSpeedrun = finalTimeMs != null;
 
   return (
     <Modal
@@ -48,8 +57,19 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
       <div className={styles.modalContainer}>
         {/* Header */}
         <div className={styles.header}>
-          <div className={styles.headline}>Found {found}/{total} stations</div>
-          <div className={styles.subline}>{tierMessage}</div>
+          {isSpeedrun ? (
+            <>
+              <div className={styles.subline}>Speedrun — {found}/{total} stations</div>
+              <div className={`${styles.headline} ${styles.headlineTimer}`}>
+                {formatFinalTime(finalTimeMs!)}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className={styles.headline}>Found {found}/{total} stations</div>
+              <div className={styles.subline}>{tierMessage}</div>
+            </>
+          )}
         </div>
 
         {/* Stats grid */}

@@ -4,6 +4,7 @@
   "gameplay": {
     "triesPerStation": 3,
     "quickgameStationCount": 5,
+    "speedrunStationCount": 20,
     "scoringPointsPerTry": {
       "firstTry": 3,
       "secondTry": 2,
