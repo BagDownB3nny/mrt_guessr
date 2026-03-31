@@ -1,0 +1,79 @@
+/* ── Hint circle (unrevealed) ─────────────────────────────────────────── */
+.hintCircle {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 50;
+  width: 2.8rem;
+  height: 2.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0.18rem solid var(--color-ink);
+  border-radius: 999px;
+  background-color: var(--color-bg-white);
+  color: var(--color-ink);
+  font-size: 1.3rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hintCircle:hover,
+.hintCircle:focus-visible {
+  transform: scale(1.08);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+  outline: none;
+}
+
+.hintCircle:active {
+  transform: scale(0.95);
+}
+
+/* ── Capsule container (revealed) ────────────────────────────────────── */
+.capsuleContainer {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  pointer-events: none;
+}
+
+/* ── Line capsule ────────────────────────────────────────────────────── */
+.lineCapsule {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  animation: capsuleFadeIn 200ms ease forwards;
+}
+
+@keyframes capsuleFadeIn {
+  0%   { opacity: 0; transform: translateX(-8px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .hintCircle {
+    width: 2.4rem;
+    height: 2.4rem;
+    font-size: 1.1rem;
+  }
+
+  .lineCapsule {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.7rem;
+  }
+}

@@ -4,6 +4,7 @@ import FixedBar from "../components/FixedBar";
 import MrtMapController from "../components/MrtMapController";
 import GameFinishModal from "../components/GameFinishModal";
 import InstructionCard, { hasSeenInstructions } from "../components/InstructionCard";
+import HintButton from "../components/HintButton";
 import { getAllStations, sampleStations } from "../data/stations";
 import styles from "../css/Game.module.css";
 import config from "../config/constants.json";
@@ -268,6 +269,11 @@ export default function Game({ gameType }: GameProps) {
       />
       <Analytics />
     </div>
+    {/* Hint button — fixed portal outside GameContainer (iOS blur safety).
+        Hidden during speedrun (hints would be unfair) and when modal/instructions are showing. */}
+    {!isSpeedrun && !modalOpen && !showInstructions && (
+      <HintButton currentStation={currentStation} />
+    )}
     {/* Penalty labels rendered outside GameContainer in a fixed portal so they
         never trigger GPU re-compositing of the map layer (fixes iOS blur) */}
     {isSpeedrun && penaltyLabels.map(({ id, dx }) => (

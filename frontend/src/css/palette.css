@@ -21,6 +21,9 @@
   --color-nsrl:         #E2231A;   /* North–South Line red (map accent / HUD border) */
   --color-ewl:          #009645;   /* East–West Line green                   */
   --color-ccl:          #FA9E0D;   /* Circle Line orange                     */
+  --color-nel:          #9900AA;   /* North-East Line purple                 */
+  --color-dtl:          #005EC4;   /* Downtown Line blue                     */
+  --color-tel:          #9D5B25;   /* Thomson-East Coast Line brown          */
   --color-grey:         #8B8B8B;   /* missed / neutral                       */
 
   /* ── Semantic stat cell colours ───────────────────────────────────────── */
