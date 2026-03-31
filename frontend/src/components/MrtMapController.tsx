@@ -18,9 +18,8 @@ const getStationName = (id: string): string =>
 interface WrongLabel {
   id: number;
   label: string;
-  contentX: number;
-  contentY: number;
-  scale: number;
+  screenX: number;  // viewport px — label is rendered in a fixed overlay
+  screenY: number;
 }
 
 interface Props {
@@ -136,18 +135,23 @@ export default function MrtMapController({
       document.body.appendChild(circle);
     };
 
-    // Check if the station button is already visible within the map container
+    // Only skip the pan if the station is near the viewport centre.
+    // "Near centre" = within the inner 40% of each dimension.
+    // Stations on the edge still get panned to so they're easier to tap.
     const container = mapContainerRef.current;
     const isAlreadyVisible = (() => {
       if (!container) return false;
-      const containerRect = container.getBoundingClientRect();
-      const buttonRect = buttonEl.getBoundingClientRect();
-      const margin = 40; // px — a small inset so edge-clipped stations still pan
+      const cr = container.getBoundingClientRect();
+      const br = buttonEl.getBoundingClientRect();
+      const cx = (br.left + br.right) / 2;
+      const cy = (br.top + br.bottom) / 2;
+      const insetX = cr.width  * 0.30;   // 30% inset = station must be in centre 40%
+      const insetY = cr.height * 0.30;
       return (
-        buttonRect.left   >= containerRect.left   + margin &&
-        buttonRect.right  <= containerRect.right  - margin &&
-        buttonRect.top    >= containerRect.top    + margin &&
-        buttonRect.bottom <= containerRect.bottom - margin
+        cx >= cr.left   + insetX &&
+        cx <= cr.right  - insetX &&
+        cy >= cr.top    + insetY &&
+        cy <= cr.bottom - insetY
       );
     })();
 
@@ -218,20 +222,14 @@ export default function MrtMapController({
           onCorrectClick(station, currentTriesRef.current);
         } else {
           onWrongClick(station);
-          // Convert screen position → content space so the label moves with the map
+          // Label lives in a fixed overlay — use raw screen coords directly
           const rect = (el as Element).getBoundingClientRect();
           const screenCx = rect.left + rect.width / 2;
           const screenCy = rect.top;
-          const api = transformRef.current;
-          if (api) {
-            const { positionX, positionY, scale } = api.instance.transformState;
-            const contentX = (screenCx - positionX) / scale;
-            const contentY = (screenCy - positionY) / scale;
-            const id = ++wrongLabelCounter.current;
-            // Replace all previous labels — only show the latest wrong click
-            setWrongLabels([{ id, label: station, contentX, contentY, scale: api.instance.transformState.scale }]);
-            setTimeout(() => setWrongLabels((prev) => prev.filter((l) => l.id !== id)), config.transitions.wrongLabelDurationMs);
-          }
+          const id = ++wrongLabelCounter.current;
+          // Replace all previous labels — only show the latest wrong click
+          setWrongLabels([{ id, label: station, screenX: screenCx, screenY: screenCy }]);
+          setTimeout(() => setWrongLabels((prev) => prev.filter((l) => l.id !== id)), config.transitions.wrongLabelDurationMs);
         }
       });
     });
@@ -257,7 +255,7 @@ export default function MrtMapController({
       >
         <TransformComponent
           wrapperStyle={{ width: "100%", height: "100%", touchAction: "none" }}
-          contentStyle={{ width: "100%", height: "100%", touchAction: "none", position: "relative" }}
+          contentStyle={{ width: "100%", height: "100%", touchAction: "none" }}
         >
           <SVG
             src="/full-mrt-map.svg"
@@ -266,22 +264,18 @@ export default function MrtMapController({
             title="MRT map"
             onLoad={setupSvg}
           />
-          {/* Wrong-guess labels live in content space so they pan with the map */}
-          {wrongLabels.map(({ id, label, contentX, contentY, scale }) => (
-            <div
-              key={id}
-              className={styles.wrongLabel}
-              style={{
-                left: contentX,
-                top: contentY,
-                ["--label-inv-scale" as any]: 1 / scale,
-              }}
-              aria-hidden="true"
-            >
-              {label}
-            </div>
-          ))}
         </TransformComponent>
+        {/* Wrong-guess labels — fixed overlay, isolated from TransformComponent to avoid iOS blur */}
+        {wrongLabels.map(({ id, label, screenX, screenY }) => (
+          <div
+            key={id}
+            className={styles.wrongLabel}
+            style={{ left: screenX, top: screenY }}
+            aria-hidden="true"
+          >
+            {label}
+          </div>
+        ))}
         <div className={styles.mapTools}>
           <Controls />
           <MiniMap

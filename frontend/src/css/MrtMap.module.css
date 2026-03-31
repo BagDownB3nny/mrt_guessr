@@ -84,11 +84,12 @@
     display: none;
 }
 
-/* Wrong-guess floating label — lives in content/transform space.
-   --label-inv-scale is set inline by MrtMapController to 1/currentZoom so the
-   label stays the same visual size regardless of zoom level. */
+/* Wrong-guess floating label.
+   Rendered in a fixed sibling overlay (outside TransformComponent) so it
+   never triggers GPU re-compositing of the map layer — fixes the iOS Safari
+   blur glitch. Size is always constant regardless of zoom. */
 .wrongLabel {
-    position: absolute;
+    position: fixed;
     pointer-events: none;
     font-size: 14px;
     font-weight: 800;
@@ -96,15 +97,15 @@
     white-space: nowrap;
     transform-origin: center bottom;
     animation: wrongLabelFloat 0.8s linear forwards;
-    z-index: 5;
+    z-index: 50;
     -webkit-text-stroke: 3px white;
     paint-order: stroke fill;
 }
 
 @keyframes wrongLabelFloat {
-    0%   { opacity: 1;   transform: translate(-50%, -100%)               scale(var(--label-inv-scale, 1)); }
-    60%  { opacity: 1;   transform: translate(-50%, -100%)               scale(var(--label-inv-scale, 1)); }
-    100% { opacity: 0;   transform: translate(-50%, calc(-100% - 28px))  scale(var(--label-inv-scale, 1)); }
+    0%   { opacity: 1;   transform: translate(-50%, -100%); }
+    60%  { opacity: 1;   transform: translate(-50%, -100%); }
+    100% { opacity: 0;   transform: translate(-50%, calc(-100% - 28px)); }
 }
 
 .circle {
