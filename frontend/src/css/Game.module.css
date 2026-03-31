@@ -96,9 +96,9 @@
 /* "+1s" penalty — fixed portal outside GameContainer, avoids iOS blur */
 .penaltyLabelFixed {
   position: fixed;
-  /* anchor near the timer capsule: ~1rem top + capsule height ~2.8rem */
-  top: calc(1rem + 2.8rem);
-  left: calc(1rem + var(--penalty-dx, 0px));
+  /* vertically centred on the timer capsule; to the right of it (~9rem offset) */
+  top: calc(1rem + 0.9rem);
+  left: calc(9rem + var(--penalty-dx, 0px));
   font-size: 1.1rem;
   font-weight: 800;
   color: var(--color-nsrl);
