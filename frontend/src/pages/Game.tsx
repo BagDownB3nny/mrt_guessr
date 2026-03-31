@@ -29,11 +29,11 @@ interface GuessStats {
 const TRIES_PER_STATION = config.gameplay.triesPerStation;
 
 function formatMsParts(ms: number): { main: string; sub: string } {
-  const m = Math.floor(ms / 60000);
+  const m = Math.floor(ms / 60000).toString().padStart(2, "0");
   const s = Math.floor((ms % 60000) / 1000).toString().padStart(2, "0");
   const cs = Math.floor((ms % 1000) / 10).toString().padStart(2, "0");
   return {
-    main: m > 0 ? `${m}:${s}` : s,
+    main: `${m}:${s}`,
     sub: `.${cs}`,
   };
 }
