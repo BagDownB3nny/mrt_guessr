@@ -18,8 +18,7 @@ const getStationName = (id: string): string =>
 interface WrongLabel {
   id: number;
   label: string;
-  screenX: number;  // viewport px — label is rendered in a fixed overlay
-  screenY: number;
+  buttonId: string;  // track live position via rAF
 }
 
 interface Props {
@@ -47,6 +46,7 @@ export default function MrtMapController({
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const wrongLabelCounter = useRef(0);
   const [wrongLabels, setWrongLabels] = useState<WrongLabel[]>([]);
+  const wrongLabelDivRef = useRef<HTMLDivElement | null>(null);
   const lastClickTimeRef = useRef(0);
   // Reveal circle rendered in a fixed portal (tracks button position live)
   const [revealCircle, setRevealCircle] = useState<{ key: number; buttonId: string; size: number } | null>(null);
@@ -170,6 +170,25 @@ export default function MrtMapController({
     }
   }, [currentStation, isMobile, tries]);
 
+  // ── Wrong label: track button position live so it follows panning ────────
+  useEffect(() => {
+    const label = wrongLabels[0];
+    if (!label) return;
+    let rafId: number;
+    const track = () => {
+      const el = document.getElementById(label.buttonId);
+      const div = wrongLabelDivRef.current;
+      if (el && div) {
+        const rect = el.getBoundingClientRect();
+        div.style.left = `${rect.left + rect.width / 2}px`;
+        div.style.top  = `${rect.top}px`;
+      }
+      rafId = requestAnimationFrame(track);
+    };
+    rafId = requestAnimationFrame(track);
+    return () => cancelAnimationFrame(rafId);
+  }, [wrongLabels]);
+
   // ── Reveal circle: track button position live so it follows panning ─────
   useEffect(() => {
     if (!revealCircle) return;
@@ -239,13 +258,10 @@ export default function MrtMapController({
           onCorrectClick(station, currentTriesRef.current);
         } else {
           onWrongClick(station);
-          // Label lives in a fixed overlay — use raw screen coords directly
-          const rect = (el as Element).getBoundingClientRect();
-          const screenCx = rect.left + rect.width / 2;
-          const screenCy = rect.top;
           const id = ++wrongLabelCounter.current;
+          const buttonId = el.id;
           // Replace all previous labels — only show the latest wrong click
-          setWrongLabels([{ id, label: station, screenX: screenCx, screenY: screenCy }]);
+          setWrongLabels([{ id, label: station, buttonId }]);
           setTimeout(() => setWrongLabels((prev) => prev.filter((l) => l.id !== id)), config.transitions.wrongLabelDurationMs);
         }
       });
@@ -301,12 +317,13 @@ export default function MrtMapController({
             }}
           />
         )}
-        {/* Wrong-guess labels — fixed overlay, isolated from TransformComponent to avoid iOS blur */}
-        {wrongLabels.map(({ id, label, screenX, screenY }) => (
+        {/* Wrong-guess label — fixed overlay, tracks button live via rAF */}
+        {wrongLabels.map(({ id, label }) => (
           <div
             key={id}
+            ref={wrongLabelDivRef}
             className={styles.wrongLabel}
-            style={{ left: screenX, top: screenY }}
+            style={{ left: 0, top: 0 }}
             aria-hidden="true"
           >
             {label}
