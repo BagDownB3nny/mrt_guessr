@@ -36,7 +36,7 @@
   "speedrun": {
     "leaderboardThresholdMs": 60000,
     "topScoresLimit": 10,
-    "apiBase": "https://remarkable-satisfactory-llc-seo.trycloudflare.com"
+    "apiBase": "https://mrt.eiti.dev"
   },
 
   "palette": {
