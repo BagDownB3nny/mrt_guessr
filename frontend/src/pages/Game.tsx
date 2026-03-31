@@ -241,6 +241,7 @@ export default function Game({ gameType }: GameProps) {
         newlyCorrectStation={newlyCorrectStation}
         tries={tries}
         onMapReady={() => setVeilVisible(false)}
+        blocked={modalOpen}
       />
       {/* Entry veil: sea colour, fades out after map loads */}
       <div className={`${styles.seaVeil} ${veilVisible ? "" : styles.seaVeilHidden}`} aria-hidden="true" />

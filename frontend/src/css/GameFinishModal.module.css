@@ -52,10 +52,31 @@
     text-align: center;
 }
 
-.headlineTimer {
-    font-size: clamp(2.2rem, 5vw, 3.4rem);
+/* Speedrun end-card timer — mirrors the in-game capsule */
+.timerCapsule {
+    display: inline-flex;
+    align-items: baseline;
+    background: #000000;
+    border-radius: 0.7rem;
+    padding: 0.4rem 1rem 0.45rem;
+}
+
+.timerMain {
+    font-size: clamp(2.2rem, 5vw, 3rem);
+    font-weight: 800;
     font-variant-numeric: tabular-nums;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
+    color: var(--color-ewl);
+    line-height: 1;
+}
+
+.timerSub {
+    font-size: clamp(1.3rem, 3vw, 1.8rem);
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ewl);
+    opacity: 0.85;
+    line-height: 1;
 }
 
 /* ── Stats grid ─────────────────────────────────────────────── */

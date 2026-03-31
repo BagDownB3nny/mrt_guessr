@@ -29,6 +29,7 @@ interface Props {
   newlyCorrectStation: string;
   tries: number;
   onMapReady?: () => void;
+  blocked?: boolean;  // when true, map is non-interactive (e.g. modal open)
 }
 
 export default function MrtMapController({
@@ -38,6 +39,7 @@ export default function MrtMapController({
   newlyCorrectStation,
   tries,
   onMapReady,
+  blocked = false,
 }: Props) {
   const currentStationRef = useRef(currentStation);
   const currentTriesRef = useRef(tries);
@@ -238,7 +240,11 @@ export default function MrtMapController({
   };
 
   return (
-    <div className={styles.mapContainer} ref={mapContainerRef}>
+    <div
+      className={styles.mapContainer}
+      ref={mapContainerRef}
+      style={blocked ? { pointerEvents: "none", touchAction: "none" } : undefined}
+    >
       <TransformWrapper
         ref={transformRef}
         initialScale={1}

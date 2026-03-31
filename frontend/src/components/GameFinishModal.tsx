@@ -52,12 +52,10 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
         {/* Header */}
         <div className={styles.header}>
           {isSpeedrun ? (
-            <>
-              <div className={styles.subline}>Speedrun — {found}/{total} stations</div>
-              <div className={`${styles.headline} ${styles.headlineTimer}`}>
-                {formatMs(finalTimeMs!)}
-              </div>
-            </>
+            <div className={styles.timerCapsule}>
+              <span className={styles.timerMain}>{formatMs(finalTimeMs!).split('.')[0]}</span>
+              <span className={styles.timerSub}>.{formatMs(finalTimeMs!).split('.')[1]}</span>
+            </div>
           ) : (
             <>
               <div className={styles.headline}>Found {found}/{total} stations</div>
