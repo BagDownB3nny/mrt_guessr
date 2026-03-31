@@ -24,7 +24,7 @@
 }
 
 .greenFlash {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 100;
   pointer-events: none;
@@ -37,7 +37,7 @@
 }
 
 .redFlash {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 100;
   pointer-events: none;
@@ -93,24 +93,26 @@
   opacity: 0.85;
 }
 
-/* "+1s" label — pops upward at a random angle, then falls back down */
-.penaltyLabel {
+/* "+1s" penalty — fixed portal outside GameContainer, avoids iOS blur */
+.penaltyLabelFixed {
+  position: fixed;
+  /* anchor near the timer capsule: ~1rem top + capsule height ~2.8rem */
+  top: calc(1rem + 2.8rem);
+  left: calc(1rem + var(--penalty-dx, 0px));
   font-size: 1.1rem;
   font-weight: 800;
   color: var(--color-nsrl);
   -webkit-text-stroke: 2px #ffffff;
   paint-order: stroke fill;
-  animation: penaltyPopcorn 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-  align-self: flex-start;
   pointer-events: none;
-  position: relative;
-  left: calc(50% + var(--penalty-dx, 0px));
+  z-index: 9999;
+  animation: penaltyPopcorn 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 @keyframes penaltyPopcorn {
-  0%   { opacity: 1;   transform: translate(-50%, 0)           scale(1); }
-  25%  { opacity: 1;   transform: translate(-50%, -2.2rem)     scale(1.15); }
-  55%  { opacity: 1;   transform: translate(-50%, -1.8rem)     scale(1); }
-  80%  { opacity: 0.6; transform: translate(-50%, 1.5rem)      scale(0.95); }
-  100% { opacity: 0;   transform: translate(-50%, 3rem)        scale(0.85); }
+  0%   { opacity: 1;   transform: translate(-50%, 0)       scale(1); }
+  25%  { opacity: 1;   transform: translate(-50%, -2.2rem) scale(1.15); }
+  55%  { opacity: 1;   transform: translate(-50%, -1.8rem) scale(1); }
+  80%  { opacity: 0.6; transform: translate(-50%, 1.5rem)  scale(0.95); }
+  100% { opacity: 0;   transform: translate(-50%, 3rem)    scale(0.85); }
 }

@@ -221,24 +221,17 @@ export default function Game({ gameType }: GameProps) {
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
+    <>
     <div className={styles.GameContainer}>
       {showGreenFlash && <div className={styles.greenFlash} aria-hidden="true" />}
       {showRedFlash && <div className={styles.redFlash} aria-hidden="true" />}
-      {/* Speedrun timer overlay — top-left, above the map */}
+      {/* Timer capsule only — no animations inside GameContainer */}
       {isSpeedrun && (
         <div className={styles.timerOverlay} aria-live="off">
           <div className={styles.timerCapsule}>
             <span className={styles.timerMain}>{formatMsParts(elapsedMs).main}</span>
             <span className={styles.timerSub}>{formatMsParts(elapsedMs).sub}</span>
           </div>
-          {penaltyLabels.map(({ id, dx }) => (
-            <span
-              key={id}
-              className={styles.penaltyLabel}
-              style={{ ["--penalty-dx" as any]: `${dx}px` }}
-              aria-hidden="true"
-            >+1s</span>
-          ))}
         </div>
       )}
       <MrtMapController
@@ -267,5 +260,16 @@ export default function Game({ gameType }: GameProps) {
       />
       <Analytics />
     </div>
+    {/* Penalty labels rendered outside GameContainer in a fixed portal so they
+        never trigger GPU re-compositing of the map layer (fixes iOS blur) */}
+    {isSpeedrun && penaltyLabels.map(({ id, dx }) => (
+      <span
+        key={id}
+        className={styles.penaltyLabelFixed}
+        style={{ ["--penalty-dx" as any]: `${dx}px` }}
+        aria-hidden="true"
+      >+1s</span>
+    ))}
+    </>
   );
 }
