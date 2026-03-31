@@ -18,7 +18,6 @@ import config from "../config/constants.json";
 Modal.setAppElement("#root");
 
 const API = (config as any).speedrun.apiBase as string;
-const THRESHOLD_MS = (config as any).speedrun.leaderboardThresholdMs as number;
 const TOP_LIMIT = (config as any).speedrun.topScoresLimit as number;
 
 interface ScoreRow {
