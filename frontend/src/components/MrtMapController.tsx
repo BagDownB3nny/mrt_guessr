@@ -20,6 +20,7 @@ interface WrongLabel {
   label: string;
   contentX: number;
   contentY: number;
+  scale: number;
 }
 
 interface Props {
@@ -228,7 +229,7 @@ export default function MrtMapController({
             const contentY = (screenCy - positionY) / scale;
             const id = ++wrongLabelCounter.current;
             // Replace all previous labels — only show the latest wrong click
-            setWrongLabels([{ id, label: station, contentX, contentY }]);
+            setWrongLabels([{ id, label: station, contentX, contentY, scale: api.instance.transformState.scale }]);
             setTimeout(() => setWrongLabels((prev) => prev.filter((l) => l.id !== id)), config.transitions.wrongLabelDurationMs);
           }
         }
@@ -266,11 +267,15 @@ export default function MrtMapController({
             onLoad={setupSvg}
           />
           {/* Wrong-guess labels live in content space so they pan with the map */}
-          {wrongLabels.map(({ id, label, contentX, contentY }) => (
+          {wrongLabels.map(({ id, label, contentX, contentY, scale }) => (
             <div
               key={id}
               className={styles.wrongLabel}
-              style={{ left: contentX, top: contentY }}
+              style={{
+                left: contentX,
+                top: contentY,
+                ["--label-inv-scale" as any]: 1 / scale,
+              }}
               aria-hidden="true"
             >
               {label}

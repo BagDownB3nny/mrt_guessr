@@ -84,27 +84,27 @@
     display: none;
 }
 
-/* Wrong-guess floating label — lives in content/transform space */
+/* Wrong-guess floating label — lives in content/transform space.
+   --label-inv-scale is set inline by MrtMapController to 1/currentZoom so the
+   label stays the same visual size regardless of zoom level. */
 .wrongLabel {
     position: absolute;
     pointer-events: none;
-    font-size: 0.55rem;
+    font-size: 14px;
     font-weight: 800;
     color: var(--color-ink);
     white-space: nowrap;
-    transform: translate(-50%, -100%);
     transform-origin: center bottom;
     animation: wrongLabelFloat 0.8s linear forwards;
     z-index: 5;
-    /* White outline without text-shadow (avoids GPU composite layer / blur glitch on mobile) */
     -webkit-text-stroke: 3px white;
     paint-order: stroke fill;
 }
 
 @keyframes wrongLabelFloat {
-    0%   { opacity: 1;   transform: translate(-50%, -100%); }
-    60%  { opacity: 1; }
-    100% { opacity: 0;   transform: translate(-50%, calc(-100% - 1.75rem)); }
+    0%   { opacity: 1;   transform: translate(-50%, -100%)               scale(var(--label-inv-scale, 1)); }
+    60%  { opacity: 1;   transform: translate(-50%, -100%)               scale(var(--label-inv-scale, 1)); }
+    100% { opacity: 0;   transform: translate(-50%, calc(-100% - 28px))  scale(var(--label-inv-scale, 1)); }
 }
 
 .circle {
