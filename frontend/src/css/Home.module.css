@@ -204,6 +204,36 @@
 .stationButton:disabled .stationMarker { opacity: 0.72; }
 .stationButton:disabled .stationName   { color: rgba(38, 38, 39, 0.72); }
 
+/* ── Ko-fi button ────────────────────────────────────────────────────────── */
+.kofiButton {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    margin-left: 0.55rem; /* align with station labels (marker width / 2 offset) */
+    border: 0.15rem solid var(--color-ink);
+    border-radius: 999px;
+    background-color: var(--color-bg-white);
+    color: var(--color-ink);
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.kofiButton:hover,
+.kofiButton:focus-visible {
+    background-color: #FF5E5B;
+    color: #fff;
+    border-color: #FF5E5B;
+    transform: scale(1.03);
+    outline: none;
+}
+
 /* ── Mobile ──────────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
     .home {

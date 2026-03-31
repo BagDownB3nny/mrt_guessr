@@ -2,6 +2,8 @@ import React from "react";
 import styles from "../css/Home.module.css";
 import TrackButtonContainer from "../components/TrackButtonContainer";
 
+const KOFI_URL = "https://ko-fi.com/ratdownr3my";
+
 type StationConfig = {
   code?: string;
   disabled?: boolean;
@@ -46,6 +48,15 @@ export default function Home({ onSelectStation }: HomeProps) {
                 variant="station"
               />
             ))}
+            {/* Ko-fi button — sits on the line below all station buttons */}
+            <a
+              href={KOFI_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.kofiButton}
+            >
+              ☕ Buy the devs a coffee
+            </a>
             {/* The tail extends the line 2 more screens below the last button,
                 still inside the track so it stays aligned */}
             <div className={styles.lineTail} aria-hidden="true" />
