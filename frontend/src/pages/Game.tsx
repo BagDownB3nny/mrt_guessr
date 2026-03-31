@@ -28,11 +28,20 @@ interface GuessStats {
 
 const TRIES_PER_STATION = config.gameplay.triesPerStation;
 
-function formatMs(ms: number): string {
+function formatMsParts(ms: number): { main: string; sub: string } {
   const m = Math.floor(ms / 60000);
   const s = Math.floor((ms % 60000) / 1000).toString().padStart(2, "0");
-  const ms3 = (ms % 1000).toString().padStart(3, "0");
-  return m > 0 ? `${m}:${s}.${ms3}` : `${s}.${ms3}`;
+  const cs = Math.floor((ms % 1000) / 10).toString().padStart(2, "0");
+  return {
+    main: m > 0 ? `${m}:${s}` : s,
+    sub: `.${cs}`,
+  };
+}
+
+// Keep a simple version for the end-card modal
+function formatMs(ms: number): string {
+  const { main, sub } = formatMsParts(ms);
+  return `${main}${sub}`;
 }
 const QUICKGAME_STATION_COUNT = config.gameplay.quickgameStationCount;
 const SPEEDRUN_STATION_COUNT = (config.gameplay as any).speedrunStationCount ?? 20;
@@ -218,7 +227,10 @@ export default function Game({ gameType }: GameProps) {
       {/* Speedrun timer overlay — top-left, above the map */}
       {isSpeedrun && (
         <div className={styles.timerOverlay} aria-live="off">
-          <span className={styles.timerDisplay}>{formatMs(elapsedMs)}</span>
+          <div className={styles.timerCapsule}>
+            <span className={styles.timerMain}>{formatMsParts(elapsedMs).main}</span>
+            <span className={styles.timerSub}>{formatMsParts(elapsedMs).sub}</span>
+          </div>
           {penaltyLabels.map(({ id }) => (
             <span key={id} className={styles.penaltyLabel} aria-hidden="true">+1s</span>
           ))}
