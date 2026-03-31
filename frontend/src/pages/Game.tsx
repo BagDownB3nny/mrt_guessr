@@ -68,7 +68,7 @@ export default function Game({ gameType }: GameProps) {
   const penaltyMsRef   = useRef(0);   // accumulated +1s penalties (affects displayed time)
   const [elapsedMs, setElapsedMs]     = useState(0);
   const [finalTimeMs, setFinalTimeMs] = useState<number | null>(null);
-  const [penaltyLabels, setPenaltyLabels] = useState<{ id: number }[]>([]);
+  const [penaltyLabels, setPenaltyLabels] = useState<{ id: number; dx: number }[]>([]);
   const penaltyLabelKey = useRef(0);
   const isSpeedrun = gameType === GameType.SPEEDRUN;
   // Sea-colour entry veil — starts opaque, fades out once the SVG is ready
@@ -167,8 +167,9 @@ export default function Game({ gameType }: GameProps) {
     if (isSpeedrun) {
       penaltyMsRef.current += 1000;
       const id = ++penaltyLabelKey.current;
-      setPenaltyLabels((prev) => [...prev, { id }]);
-      setTimeout(() => setPenaltyLabels((prev) => prev.filter((l) => l.id !== id)), 900);
+      const dx = (Math.random() - 0.5) * 40; // random horizontal drift in px
+      setPenaltyLabels((prev) => [...prev, { id, dx }]);
+      setTimeout(() => setPenaltyLabels((prev) => prev.filter((l) => l.id !== id)), 1000);
     }
   };
 
@@ -231,8 +232,13 @@ export default function Game({ gameType }: GameProps) {
             <span className={styles.timerMain}>{formatMsParts(elapsedMs).main}</span>
             <span className={styles.timerSub}>{formatMsParts(elapsedMs).sub}</span>
           </div>
-          {penaltyLabels.map(({ id }) => (
-            <span key={id} className={styles.penaltyLabel} aria-hidden="true">+1s</span>
+          {penaltyLabels.map(({ id, dx }) => (
+            <span
+              key={id}
+              className={styles.penaltyLabel}
+              style={{ ["--penalty-dx" as any]: `${dx}px` }}
+              aria-hidden="true"
+            >+1s</span>
           ))}
         </div>
       )}
