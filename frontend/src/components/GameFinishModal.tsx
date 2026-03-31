@@ -2,6 +2,7 @@ import Modal from "react-modal";
 import styles from "../css/GameFinishModal.module.css";
 import { useNavigate } from "react-router-dom";
 import config from "../config/constants.json";
+import { formatMs } from "../pages/Game";
 
 Modal.setAppElement("#root");
 
@@ -29,13 +30,6 @@ function getTierMessage(score: number, maxScore: number): string {
   return tier ? tier.message : config.tierMessages[config.tierMessages.length - 1].message;
 }
 
-function formatFinalTime(ms: number): string {
-  const m = Math.floor(ms / 60000);
-  const s = Math.floor((ms % 60000) / 1000).toString().padStart(2, "0");
-  const ms3 = (ms % 1000).toString().padStart(3, "0");
-  return m > 0 ? `${m}:${s}.${ms3}` : `${s}.${ms3}`;
-}
-
 export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, onPlayAgain, finalTimeMs }: Props) {
   const navigate = useNavigate();
 
@@ -61,7 +55,7 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
             <>
               <div className={styles.subline}>Speedrun — {found}/{total} stations</div>
               <div className={`${styles.headline} ${styles.headlineTimer}`}>
-                {formatFinalTime(finalTimeMs!)}
+                {formatMs(finalTimeMs!)}
               </div>
             </>
           ) : (

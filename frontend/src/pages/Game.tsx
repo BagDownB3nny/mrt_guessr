@@ -38,8 +38,7 @@ function formatMsParts(ms: number): { main: string; sub: string } {
   };
 }
 
-// Keep a simple version for the end-card modal
-function formatMs(ms: number): string {
+export function formatMs(ms: number): string {
   const { main, sub } = formatMsParts(ms);
   return `${main}${sub}`;
 }
