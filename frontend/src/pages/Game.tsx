@@ -27,6 +27,13 @@ interface GuessStats {
 }
 
 const TRIES_PER_STATION = config.gameplay.triesPerStation;
+
+function formatMs(ms: number): string {
+  const m = Math.floor(ms / 60000);
+  const s = Math.floor((ms % 60000) / 1000).toString().padStart(2, "0");
+  const ms3 = (ms % 1000).toString().padStart(3, "0");
+  return m > 0 ? `${m}:${s}.${ms3}` : `${s}.${ms3}`;
+}
 const QUICKGAME_STATION_COUNT = config.gameplay.quickgameStationCount;
 const SPEEDRUN_STATION_COUNT = (config.gameplay as any).speedrunStationCount ?? 20;
 
@@ -47,10 +54,13 @@ export default function Game({ gameType }: GameProps) {
   const [showGreenFlash, setShowGreenFlash] = useState(false);
   const [showRedFlash, setShowRedFlash] = useState(false);
   // Speedrun timer
-  const timerStartRef = useRef<number | null>(null);
-  const timerRafRef   = useRef<number | null>(null);
+  const timerStartRef  = useRef<number | null>(null);
+  const timerRafRef    = useRef<number | null>(null);
+  const penaltyMsRef   = useRef(0);   // accumulated +1s penalties (affects displayed time)
   const [elapsedMs, setElapsedMs]     = useState(0);
   const [finalTimeMs, setFinalTimeMs] = useState<number | null>(null);
+  const [penaltyLabels, setPenaltyLabels] = useState<{ id: number }[]>([]);
+  const penaltyLabelKey = useRef(0);
   const isSpeedrun = gameType === GameType.SPEEDRUN;
   // Sea-colour entry veil — starts opaque, fades out once the SVG is ready
   const [veilVisible, setVeilVisible] = useState(true);
@@ -74,7 +84,7 @@ export default function Game({ gameType }: GameProps) {
     if (!isSpeedrun || timerStartRef.current !== null) return;
     timerStartRef.current = performance.now();
     const tick = () => {
-      setElapsedMs(Math.floor(performance.now() - timerStartRef.current!));
+      setElapsedMs(Math.floor(performance.now() - timerStartRef.current! + penaltyMsRef.current));
       timerRafRef.current = requestAnimationFrame(tick);
     };
     timerRafRef.current = requestAnimationFrame(tick);
@@ -86,7 +96,7 @@ export default function Game({ gameType }: GameProps) {
       timerRafRef.current = null;
     }
     if (timerStartRef.current !== null) {
-      const ms = Math.floor(performance.now() - timerStartRef.current);
+      const ms = Math.floor(performance.now() - timerStartRef.current + penaltyMsRef.current);
       setFinalTimeMs(ms);
     }
   }, []);
@@ -144,13 +154,22 @@ export default function Game({ gameType }: GameProps) {
     // Red edge glow
     setShowRedFlash(true);
     setTimeout(() => setShowRedFlash(false), config.transitions.wrongFlashMs);
+    // Speedrun: add 1s penalty
+    if (isSpeedrun) {
+      penaltyMsRef.current += 1000;
+      const id = ++penaltyLabelKey.current;
+      setPenaltyLabels((prev) => [...prev, { id }]);
+      setTimeout(() => setPenaltyLabels((prev) => prev.filter((l) => l.id !== id)), 900);
+    }
   };
 
   const restartGame = () => {
     if (timerRafRef.current !== null) { cancelAnimationFrame(timerRafRef.current); timerRafRef.current = null; }
     timerStartRef.current = null;
+    penaltyMsRef.current = 0;
     setElapsedMs(0);
     setFinalTimeMs(null);
+    setPenaltyLabels([]);
     // Hide all station name labels revealed in the SVG
     document.querySelectorAll<HTMLElement>('[id$="_Text"]').forEach((el) => {
       el.style.display = "none";
@@ -196,6 +215,15 @@ export default function Game({ gameType }: GameProps) {
     <div className={styles.GameContainer}>
       {showGreenFlash && <div className={styles.greenFlash} aria-hidden="true" />}
       {showRedFlash && <div className={styles.redFlash} aria-hidden="true" />}
+      {/* Speedrun timer overlay — top-left, above the map */}
+      {isSpeedrun && (
+        <div className={styles.timerOverlay} aria-live="off">
+          <span className={styles.timerDisplay}>{formatMs(elapsedMs)}</span>
+          {penaltyLabels.map(({ id }) => (
+            <span key={id} className={styles.penaltyLabel} aria-hidden="true">+1s</span>
+          ))}
+        </div>
+      )}
       <MrtMapController
         onCorrectClick={onCorrectClick}
         onWrongClick={onWrongClick}
@@ -212,8 +240,6 @@ export default function Game({ gameType }: GameProps) {
         getStationsLeft={getStationsLeft}
         setModalOpen={setModalOpen}
         restartGame={restartGame}
-        isSpeedrun={isSpeedrun}
-        elapsedMs={elapsedMs}
       />
       <GameFinishModal
         modalOpen={modalOpen}

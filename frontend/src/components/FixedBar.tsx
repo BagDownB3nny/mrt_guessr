@@ -8,8 +8,6 @@ interface Props {
   getStationsLeft: () => string;
   setModalOpen: Dispatch<SetStateAction<boolean>>;
   restartGame: () => void;
-  isSpeedrun?: boolean;
-  elapsedMs?: number;
 }
 
 const FixedBar: React.FC<Props> = (props) => {
@@ -19,34 +17,18 @@ const FixedBar: React.FC<Props> = (props) => {
     getStationsLeft,
     setModalOpen,
     restartGame,
-    isSpeedrun = false,
-    elapsedMs = 0,
   } = props;
-
-  const formatMs = (ms: number) => {
-    const m = Math.floor(ms / 60000);
-    const s = Math.floor((ms % 60000) / 1000).toString().padStart(2, "0");
-    const ms3 = (ms % 1000).toString().padStart(3, "0");
-    return m > 0 ? `${m}:${s}.${ms3}` : `${s}.${ms3}`;
-  };
   const arrayData = [2, 1, 0];
   const navigate = useNavigate();
 
   return (
     <div className={styles.fixedBar}>
-      {/* Left: found + optional speedrun timer */}
+      {/* Left: found */}
       <div className={styles.leftColumn}>
-        {isSpeedrun ? (
-          <div className={styles.statBlock}>
-            <div className={styles.statLabel}>Time</div>
-            <div className={`${styles.statValue} ${styles.timerValue}`}>{formatMs(elapsedMs)}</div>
-          </div>
-        ) : (
-          <div className={styles.statBlock}>
-            <div className={styles.statLabel}>Found</div>
-            <div className={styles.statValue}>{getStationsLeft()}</div>
-          </div>
-        )}
+        <div className={styles.statBlock}>
+          <div className={styles.statLabel}>Found</div>
+          <div className={styles.statValue}>{getStationsLeft()}</div>
+        </div>
       </div>
 
       {/* Middle: station name + tries */}
