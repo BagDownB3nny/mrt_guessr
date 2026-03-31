@@ -14,8 +14,9 @@
 
 /* Minimal mode: single column, just station capsule centred */
 .fixedBarMinimal {
-    grid-template-columns: 1fr;
-    justify-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .middleColumnFull {
