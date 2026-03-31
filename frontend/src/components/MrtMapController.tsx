@@ -46,8 +46,8 @@ export default function MrtMapController({
   const wrongLabelCounter = useRef(0);
   const [wrongLabels, setWrongLabels] = useState<WrongLabel[]>([]);
   const lastClickTimeRef = useRef(0);
-  // Reveal circle rendered in content-space so it pans with the map
-  const [revealCircle, setRevealCircle] = useState<{ key: number; contentX: number; contentY: number; size: number } | null>(null);
+  // Reveal circle rendered in a fixed portal (screen coords captured post-pan)
+  const [revealCircle, setRevealCircle] = useState<{ key: number; screenX: number; screenY: number; size: number } | null>(null);
   const revealCircleKey = useRef(0);
   // Tracks whether a touch moved before a click fires, so panning doesn't
   // accidentally trigger station selection.
@@ -122,21 +122,14 @@ export default function MrtMapController({
       const el = document.getElementById(buttonId);
       if (!el) return;
 
-      const api = transformRef.current;
-      if (!api) return;
-
+      // Use screen coords directly — circle is in a fixed portal outside TransformComponent
       const rect = el.getBoundingClientRect();
-      const { positionX, positionY, scale } = api.instance.transformState;
       const screenCx = rect.left + rect.width / 2;
       const screenCy = rect.top + rect.height / 2;
-      const contentX = (screenCx - positionX) / scale;
-      const contentY = (screenCy - positionY) / scale;
-      // Size in content-space pixels (will be transformed by the map scale naturally)
       const size = isMobile ? 96 : 160;
 
       const key = ++revealCircleKey.current;
-      setRevealCircle({ key, contentX, contentY, size });
-      // Clear after animation completes (1s)
+      setRevealCircle({ key, screenX: screenCx, screenY: screenCy, size });
       setTimeout(() => setRevealCircle((prev) => (prev?.key === key ? null : prev)), 1100);
     };
 
@@ -269,21 +262,21 @@ export default function MrtMapController({
             title="MRT map"
             onLoad={setupSvg}
           />
-          {/* Reveal circle lives in content-space so it stays on the station when the map pans */}
-          {revealCircle && (
-            <div
-              key={revealCircle.key}
-              className={styles.circle}
-              style={{
-                position: "absolute",
-                width: revealCircle.size,
-                height: revealCircle.size,
-                left: revealCircle.contentX - revealCircle.size / 2,
-                top: revealCircle.contentY - revealCircle.size / 2,
-              }}
-            />
-          )}
         </TransformComponent>
+        {/* Reveal circle — fixed portal, isolated from TransformComponent to avoid iOS blur */}
+        {revealCircle && (
+          <div
+            key={revealCircle.key}
+            className={styles.circle}
+            style={{
+              position: "fixed",
+              width: revealCircle.size,
+              height: revealCircle.size,
+              left: revealCircle.screenX - revealCircle.size / 2,
+              top: revealCircle.screenY - revealCircle.size / 2,
+            }}
+          />
+        )}
         {/* Wrong-guess labels — fixed overlay, isolated from TransformComponent to avoid iOS blur */}
         {wrongLabels.map(({ id, label, screenX, screenY }) => (
           <div
