@@ -22,6 +22,7 @@ interface Props {
   setModalOpen: (open: boolean) => void;
   guessStats: GuessStats;
   onPlayAgain: () => void;
+  onExploreMap?: () => void;
   finalTimeMs?: number | null;
 }
 
@@ -34,7 +35,7 @@ function getTierMessage(score: number, maxScore: number): string {
 
 const LEADERBOARD_THRESHOLD_MS = (config as any).speedrun.leaderboardThresholdMs as number;
 
-export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, onPlayAgain, finalTimeMs }: Props) {
+export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, onPlayAgain, onExploreMap, finalTimeMs }: Props) {
   const navigate = useNavigate();
   const [showLeaderboard, setShowLeaderboard] = useState(false);
 
@@ -54,6 +55,17 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
       // No onRequestClose — user cannot dismiss by clicking outside
     >
       <div className={styles.modalContainer}>
+        {/* Close button — lets player explore the map */}
+        {onExploreMap && (
+          <button
+            className={styles.closeButton}
+            onClick={onExploreMap}
+            aria-label="Close and explore map"
+            type="button"
+          >
+            ✕
+          </button>
+        )}
         {/* Header */}
         <div className={styles.header}>
           {isSpeedrun ? (

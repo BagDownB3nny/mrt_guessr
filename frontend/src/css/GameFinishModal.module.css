@@ -20,12 +20,39 @@
 }
 
 .modalContainer {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 1.4rem;
     background-color: var(--color-bg-app);
     color: var(--color-ink);
     padding: 1.8rem 1.4rem 1.6rem;
+}
+
+.closeButton {
+    position: absolute;
+    top: 0.7rem;
+    right: 0.7rem;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-ink-muted);
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: color 160ms ease, background-color 160ms ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.closeButton:hover,
+.closeButton:focus-visible {
+    background-color: rgba(0, 0, 0, 0.06);
+    color: var(--color-ink);
+    outline: none;
 }
 
 /* ── Header ─────────────────────────────────────────────────── */

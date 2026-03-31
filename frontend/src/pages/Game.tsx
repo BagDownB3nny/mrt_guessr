@@ -198,6 +198,15 @@ export default function Game({ gameType }: GameProps) {
     setUnseenStations(stations);
   };
 
+  // ── Explore map: dismiss modal, reveal all station names, unblock map ───
+  const onExploreMap = () => {
+    setModalOpen(false);
+    // Reveal all station name labels
+    document.querySelectorAll<HTMLElement>('[id$="_Text"]').forEach((el) => {
+      el.style.display = "block";
+    });
+  };
+
   // ── Effects ────────────────────────────────────────────────────────────────
 
   // Initialise stations on mount / game type change
@@ -214,11 +223,12 @@ export default function Game({ gameType }: GameProps) {
     }
   }, [currentStation, getNewStation, unseenStations]);
 
-  // End the game when all stations have been attempted
+  // End the game when all stations have been attempted (1s delay for breathing room)
   useEffect(() => {
     if (clickedStations.length > 0 && unseenStations.length === 0 && !currentStation) {
       stopTimer();
-      setModalOpen(true);
+      const delay = setTimeout(() => setModalOpen(true), 1000);
+      return () => clearTimeout(delay);
     }
   }, [clickedStations.length, currentStation, stopTimer, unseenStations.length]);
 
@@ -265,6 +275,7 @@ export default function Game({ gameType }: GameProps) {
         setModalOpen={setModalOpen}
         guessStats={guessStats}
         onPlayAgain={restartGame}
+        onExploreMap={onExploreMap}
         finalTimeMs={isSpeedrun ? finalTimeMs : null}
       />
       <Analytics />
