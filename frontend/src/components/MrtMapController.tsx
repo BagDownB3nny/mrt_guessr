@@ -46,6 +46,9 @@ export default function MrtMapController({
   const wrongLabelCounter = useRef(0);
   const [wrongLabels, setWrongLabels] = useState<WrongLabel[]>([]);
   const lastClickTimeRef = useRef(0);
+  // Reveal circle rendered in content-space so it pans with the map
+  const [revealCircle, setRevealCircle] = useState<{ key: number; contentX: number; contentY: number; size: number } | null>(null);
+  const revealCircleKey = useRef(0);
   // Tracks whether a touch moved before a click fires, so panning doesn't
   // accidentally trigger station selection.
   const touchMovedRef = useRef(false);
@@ -117,22 +120,24 @@ export default function MrtMapController({
 
     const spawnCircle = () => {
       const el = document.getElementById(buttonId);
-      if (!el || document.getElementById("showButtonCircle")) return;
+      if (!el) return;
+
+      const api = transformRef.current;
+      if (!api) return;
 
       const rect = el.getBoundingClientRect();
+      const { positionX, positionY, scale } = api.instance.transformState;
+      const screenCx = rect.left + rect.width / 2;
+      const screenCy = rect.top + rect.height / 2;
+      const contentX = (screenCx - positionX) / scale;
+      const contentY = (screenCy - positionY) / scale;
+      // Size in content-space pixels (will be transformed by the map scale naturally)
       const size = isMobile ? 96 : 160;
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
 
-      const circle = document.createElement("div");
-      circle.id = "showButtonCircle";
-      circle.className = styles.circle;
-      circle.style.width = `${size}px`;
-      circle.style.height = `${size}px`;
-      circle.style.left = `${cx - size / 2}px`;
-      circle.style.top = `${cy - size / 2}px`;
-      circle.addEventListener("animationend", () => circle.remove());
-      document.body.appendChild(circle);
+      const key = ++revealCircleKey.current;
+      setRevealCircle({ key, contentX, contentY, size });
+      // Clear after animation completes (1s)
+      setTimeout(() => setRevealCircle((prev) => (prev?.key === key ? null : prev)), 1100);
     };
 
     // Only skip the pan if the station is near the viewport centre.
@@ -255,7 +260,7 @@ export default function MrtMapController({
       >
         <TransformComponent
           wrapperStyle={{ width: "100%", height: "100%", touchAction: "none" }}
-          contentStyle={{ width: "100%", height: "100%", touchAction: "none" }}
+          contentStyle={{ width: "100%", height: "100%", touchAction: "none", position: "relative" }}
         >
           <SVG
             src="/full-mrt-map.svg"
@@ -264,6 +269,20 @@ export default function MrtMapController({
             title="MRT map"
             onLoad={setupSvg}
           />
+          {/* Reveal circle lives in content-space so it stays on the station when the map pans */}
+          {revealCircle && (
+            <div
+              key={revealCircle.key}
+              className={styles.circle}
+              style={{
+                position: "absolute",
+                width: revealCircle.size,
+                height: revealCircle.size,
+                left: revealCircle.contentX - revealCircle.size / 2,
+                top: revealCircle.contentY - revealCircle.size / 2,
+              }}
+            />
+          )}
         </TransformComponent>
         {/* Wrong-guess labels — fixed overlay, isolated from TransformComponent to avoid iOS blur */}
         {wrongLabels.map(({ id, label, screenX, screenY }) => (
