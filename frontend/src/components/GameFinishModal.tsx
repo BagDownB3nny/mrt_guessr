@@ -1,8 +1,10 @@
+import React, { useState } from "react";
 import Modal from "react-modal";
 import styles from "../css/GameFinishModal.module.css";
 import { useNavigate } from "react-router-dom";
 import config from "../config/constants.json";
 import { formatMs } from "../pages/Game";
+import SpeedrunLeaderboard from "./SpeedrunLeaderboard";
 
 Modal.setAppElement("#root");
 
@@ -30,8 +32,11 @@ function getTierMessage(score: number, maxScore: number): string {
   return tier ? tier.message : config.tierMessages[config.tierMessages.length - 1].message;
 }
 
+const LEADERBOARD_THRESHOLD_MS = (config as any).speedrun.leaderboardThresholdMs as number;
+
 export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, onPlayAgain, finalTimeMs }: Props) {
   const navigate = useNavigate();
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   const score = guessStats.inOneTry * 3 + guessStats.inTwoTries * 2 + guessStats.inThreeTries * 1;
   const total = guessStats.inOneTry + guessStats.inTwoTries + guessStats.inThreeTries + guessStats.afterThreeTries;
@@ -112,6 +117,16 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
 
         {/* Actions */}
         <div className={styles.actions}>
+          {/* Leaderboard button for qualifying speedrun times */}
+          {isSpeedrun && finalTimeMs !== null && finalTimeMs! <= LEADERBOARD_THRESHOLD_MS && (
+            <button
+              className={styles.btnLeaderboard}
+              onClick={() => setShowLeaderboard(true)}
+              type="button"
+            >
+              🏆 Leaderboard
+            </button>
+          )}
           <button className={styles.btnPrimary} onClick={onPlayAgain} type="button">
             Play again
           </button>
@@ -120,6 +135,11 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
           </button>
         </div>
       </div>
+      <SpeedrunLeaderboard
+        isOpen={showLeaderboard}
+        playerTimeMs={finalTimeMs ?? 0}
+        onClose={() => setShowLeaderboard(false)}
+      />
     </Modal>
   );
 }

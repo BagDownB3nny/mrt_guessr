@@ -183,6 +183,23 @@
     gap: 0.65rem;
 }
 
+.btnLeaderboard {
+    width: 100%;
+    padding: 0.9rem 1rem;
+    font-size: 1.05rem;
+    font-weight: 800;
+    border: 2.5px solid var(--color-ewl);
+    border-radius: 999px;
+    background: rgba(0, 150, 69, 0.1);
+    color: var(--color-ewl);
+    cursor: pointer;
+    transition: background 150ms ease;
+}
+
+.btnLeaderboard:hover {
+    background: rgba(0, 150, 69, 0.2);
+}
+
 .btnPrimary {
     width: 100%;
     padding: 0.9rem 1rem;

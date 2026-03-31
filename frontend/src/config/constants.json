@@ -33,6 +33,12 @@
     { "minPct": 0,          "message": "Are you really Singaporean?" }
   ],
 
+  "speedrun": {
+    "leaderboardThresholdMs": 60000,
+    "topScoresLimit": 10,
+    "apiBase": "https://mrt-guessr-backend.up.railway.app"
+  },
+
   "palette": {
     "bgApp":      "#E3E3E1",
     "bgWhite":    "#ffffff",
