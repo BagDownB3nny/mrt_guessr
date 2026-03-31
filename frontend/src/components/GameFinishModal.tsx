@@ -84,29 +84,31 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
           </div>
         </div>
 
-        {/* Station lists: found | missed */}
-        <div className={styles.stationLists}>
-          <div className={styles.stationListBox}>
-            <div className={styles.stationListTitle}>Found</div>
-            <div className={styles.stationListScroll}>
-              {guessStats.foundStations.length === 0
-                ? <span className={styles.stationListEmpty}>—</span>
-                : guessStats.foundStations.map((s) => (
-                    <div key={s} className={styles.stationPill}>{s}</div>
-                  ))}
+        {/* Station lists: found | missed — hidden for speedrun */}
+        {!isSpeedrun && (
+          <div className={styles.stationLists}>
+            <div className={styles.stationListBox}>
+              <div className={styles.stationListTitle}>Found</div>
+              <div className={styles.stationListScroll}>
+                {guessStats.foundStations.length === 0
+                  ? <span className={styles.stationListEmpty}>—</span>
+                  : guessStats.foundStations.map((s) => (
+                      <div key={s} className={styles.stationPill}>{s}</div>
+                    ))}
+              </div>
+            </div>
+            <div className={styles.stationListBox}>
+              <div className={styles.stationListTitle}>Missed</div>
+              <div className={styles.stationListScroll}>
+                {guessStats.missedStations.length === 0
+                  ? <span className={styles.stationListEmpty}>—</span>
+                  : guessStats.missedStations.map((s) => (
+                      <div key={s} className={`${styles.stationPill} ${styles.stationPillMissed}`}>{s}</div>
+                    ))}
+              </div>
             </div>
           </div>
-          <div className={styles.stationListBox}>
-            <div className={styles.stationListTitle}>Missed</div>
-            <div className={styles.stationListScroll}>
-              {guessStats.missedStations.length === 0
-                ? <span className={styles.stationListEmpty}>—</span>
-                : guessStats.missedStations.map((s) => (
-                    <div key={s} className={`${styles.stationPill} ${styles.stationPillMissed}`}>{s}</div>
-                  ))}
-            </div>
-          </div>
-        </div>
+        )}
 
         {/* Actions */}
         <div className={styles.actions}>

@@ -93,10 +93,13 @@
   opacity: 0.85;
 }
 
-/* "+1s" penalty — fixed portal outside GameContainer, avoids iOS blur */
+/* "+1s" penalty — fixed portal outside GameContainer, avoids iOS blur.
+   Physics: constant-gravity projectile sampled at each keyframe.
+   v₀ = 3.2rem upward, g = 6.4rem downward.
+   y(t) = -3.2t + 3.2t²  (rem, positive = downward, t ∈ [0,1])
+   Fades out from t=0.55 → t=1.0 */
 .penaltyLabelFixed {
   position: fixed;
-  /* vertically centred on the timer capsule; to the right of it (~9rem offset) */
   top: calc(1rem + 0.9rem);
   left: calc(9rem + var(--penalty-dx, 0px));
   font-size: 1.1rem;
@@ -106,13 +109,19 @@
   paint-order: stroke fill;
   pointer-events: none;
   z-index: 9999;
-  animation: penaltyPopcorn 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: penaltyProjectile 1s linear forwards;
 }
 
-@keyframes penaltyPopcorn {
-  0%   { opacity: 1;   transform: translate(-50%, 0)       scale(1); }
-  25%  { opacity: 1;   transform: translate(-50%, -2.2rem) scale(1.15); }
-  55%  { opacity: 1;   transform: translate(-50%, -1.8rem) scale(1); }
-  80%  { opacity: 0.6; transform: translate(-50%, 1.5rem)  scale(0.95); }
-  100% { opacity: 0;   transform: translate(-50%, 3rem)    scale(0.85); }
+@keyframes penaltyProjectile {
+  0%   { opacity: 1;    transform: translate(-50%,  0rem);      }
+  10%  { opacity: 1;    transform: translate(-50%, -0.288rem);  }
+  20%  { opacity: 1;    transform: translate(-50%, -0.512rem);  }
+  30%  { opacity: 1;    transform: translate(-50%, -0.672rem);  }
+  40%  { opacity: 1;    transform: translate(-50%, -0.768rem);  }
+  50%  { opacity: 1;    transform: translate(-50%, -0.800rem);  } /* apex */
+  60%  { opacity: 0.85; transform: translate(-50%, -0.768rem);  }
+  70%  { opacity: 0.55; transform: translate(-50%, -0.672rem);  }
+  80%  { opacity: 0.30; transform: translate(-50%, -0.512rem);  }
+  90%  { opacity: 0.12; transform: translate(-50%, -0.288rem);  }
+  100% { opacity: 0;    transform: translate(-50%,  0rem);      }
 }
