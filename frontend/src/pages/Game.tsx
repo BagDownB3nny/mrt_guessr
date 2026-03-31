@@ -3,6 +3,7 @@ import { Analytics } from "@vercel/analytics/react";
 import FixedBar from "../components/FixedBar";
 import MrtMapController from "../components/MrtMapController";
 import GameFinishModal from "../components/GameFinishModal";
+import InstructionCard, { hasSeenInstructions } from "../components/InstructionCard";
 import { getAllStations, sampleStations } from "../data/stations";
 import styles from "../css/Game.module.css";
 import config from "../config/constants.json";
@@ -72,6 +73,8 @@ export default function Game({ gameType }: GameProps) {
   const isSpeedrun = gameType === GameType.SPEEDRUN;
   // Sea-colour entry veil — starts opaque, fades out once the SVG is ready
   const [veilVisible, setVeilVisible] = useState(true);
+  // Instruction card — shown once for new players (cookie-gated)
+  const [showInstructions, setShowInstructions] = useState(!hasSeenInstructions());
   const [guessStats, setGuessStats] = useState<GuessStats>({
     inOneTry: 0,
     inTwoTries: 0,
@@ -240,11 +243,15 @@ export default function Game({ gameType }: GameProps) {
         currentStation={currentStation}
         newlyCorrectStation={newlyCorrectStation}
         tries={tries}
-        onMapReady={() => setVeilVisible(false)}
+        onMapReady={() => { if (!showInstructions) setVeilVisible(false); }}
         blocked={modalOpen}
       />
       {/* Entry veil: sea colour, fades out after map loads */}
       <div className={`${styles.seaVeil} ${veilVisible ? "" : styles.seaVeilHidden}`} aria-hidden="true" />
+      {/* Instruction card for first-time players — sits above the veil */}
+      {showInstructions && (
+        <InstructionCard onStart={() => { setShowInstructions(false); setVeilVisible(false); }} />
+      )}
       <FixedBar
         currentStation={currentStation}
         tries={tries}

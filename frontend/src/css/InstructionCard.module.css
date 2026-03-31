@@ -1,0 +1,170 @@
+/* ── Overlay ──────────────────────────────────────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300; /* above sea veil (200) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-sea);
+  padding: 1.5rem;
+}
+
+/* ── Card ─────────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--color-bg-white);
+  border-radius: 1.2rem;
+  padding: 2rem 1.8rem 1.8rem;
+  max-width: 380px;
+  width: 100%;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.4rem;
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--color-ink);
+  margin: 0;
+}
+
+/* ── Steps ────────────────────────────────────────────────────────────────── */
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  width: 100%;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.stepNumber {
+  flex-shrink: 0;
+  width: 1.8rem;
+  height: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background-color: var(--color-nsrl);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.stepText {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: var(--color-ink);
+  padding-top: 0.15rem;
+}
+
+/* ── Example marker ──────────────────────────────────────────────────────── */
+.exampleSection {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--color-ink-faint);
+  border-bottom: 1px solid var(--color-ink-faint);
+}
+
+.exampleLabel {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.exampleMarker {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.markerOuter {
+  width: 2.6rem;
+  height: 2.6rem;
+  border: 0.18rem solid var(--color-ink);
+  border-radius: 999px;
+  background-color: var(--color-bg-white);
+  box-shadow: 0 0 0 0.22rem var(--color-nsrl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.markerInner {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 999px;
+  background-color: var(--color-ink);
+}
+
+.exampleName {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+/* ── Tip ──────────────────────────────────────────────────────────────────── */
+.tip {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-ink-muted);
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+/* ── Start button ─────────────────────────────────────────────────────────── */
+.startButton {
+  width: 100%;
+  padding: 0.85rem 0;
+  border: none;
+  border-radius: 0.7rem;
+  background-color: var(--color-nsrl);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+
+.startButton:hover,
+.startButton:focus-visible {
+  background-color: #c91e17;
+  transform: scale(1.02);
+  outline: none;
+}
+
+.startButton:active {
+  transform: scale(0.98);
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .card {
+    padding: 1.5rem 1.3rem 1.4rem;
+    gap: 1.1rem;
+  }
+
+  .title {
+    font-size: 1.35rem;
+  }
+
+  .stepText {
+    font-size: 0.88rem;
+  }
+}
