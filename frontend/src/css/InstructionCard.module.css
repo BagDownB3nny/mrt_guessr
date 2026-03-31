@@ -1,14 +1,17 @@
-/* ── Overlay ──────────────────────────────────────────────────────────────── */
+/* ── Overlay — leaves bottom bar visible ──────────────────────────────────── */
 .overlay {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 7.5rem; /* matches FixedBar min-height so the real bar peeks through */
   z-index: 300; /* above sea veil (200) */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   background-color: var(--color-sea);
-  padding: 1.5rem 1.5rem 0;
+  padding: 1.5rem;
 }
 
 /* ── Card ─────────────────────────────────────────────────────────────────── */
@@ -94,34 +97,12 @@
   transform: scale(0.98);
 }
 
-/* ── Bottom bar preview ───────────────────────────────────────────────────── */
-.previewBar {
-  width: 100%;
-  max-width: 420px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem 0 1.2rem;
-}
-
-.previewCapsule {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.45rem 1.1rem;
-  border-radius: 999px;
-  background-color: var(--color-bg-white);
-  border: 0.14rem solid var(--color-ink);
-}
-
-.previewStation {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--color-ink);
-  white-space: nowrap;
-}
-
 /* ── Mobile ──────────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
+  .overlay {
+    bottom: 6.5rem; /* matches mobile FixedBar min-height */
+  }
+
   .card {
     padding: 1.8rem 1.5rem 1.6rem;
     gap: 1.4rem;

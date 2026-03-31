@@ -12,6 +12,21 @@
     min-height: 7.5rem;
 }
 
+/* Minimal mode: single column, just station capsule centred */
+.fixedBarMinimal {
+    grid-template-columns: 1fr;
+    justify-items: center;
+}
+
+.middleColumnFull {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
 .leftColumn {
     display: flex;
     align-items: center;

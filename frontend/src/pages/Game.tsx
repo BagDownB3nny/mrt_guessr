@@ -261,10 +261,7 @@ export default function Game({ gameType }: GameProps) {
       <div className={`${styles.seaVeil} ${veilVisible ? "" : styles.seaVeilHidden}`} aria-hidden="true" />
       {/* Instruction card for first-time players — sits above the veil */}
       {showInstructions && (
-        <InstructionCard
-          onStart={() => { setShowInstructions(false); setVeilVisible(false); }}
-          currentStation={currentStation}
-        />
+        <InstructionCard onStart={() => { setShowInstructions(false); setVeilVisible(false); }} />
       )}
       <FixedBar
         currentStation={currentStation}
@@ -272,6 +269,7 @@ export default function Game({ gameType }: GameProps) {
         getStationsLeft={getStationsLeft}
         setModalOpen={setModalOpen}
         restartGame={restartGame}
+        minimal={showInstructions}
       />
       <GameFinishModal
         modalOpen={modalOpen}

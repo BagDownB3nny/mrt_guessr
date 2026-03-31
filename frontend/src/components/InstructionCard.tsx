@@ -24,10 +24,9 @@ function setInstructionCookie(): void {
 
 interface Props {
   onStart: () => void;
-  currentStation?: string;
 }
 
-export default function InstructionCard({ onStart, currentStation }: Props) {
+export default function InstructionCard({ onStart }: Props) {
   const handleStart = () => {
     setInstructionCookie();
     onStart();
@@ -35,7 +34,6 @@ export default function InstructionCard({ onStart, currentStation }: Props) {
 
   return (
     <div className={styles.overlay}>
-      {/* Main card — vertically centred, leaves room for bottom bar */}
       <div className={styles.card}>
         <h1 className={styles.title}>How to Play</h1>
 
@@ -66,15 +64,6 @@ export default function InstructionCard({ onStart, currentStation }: Props) {
           Start Game
         </button>
       </div>
-
-      {/* Bottom bar preview — shows only the station capsule */}
-      {currentStation && (
-        <div className={styles.previewBar}>
-          <div className={styles.previewCapsule}>
-            <span className={styles.previewStation}>{currentStation}</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
