@@ -24,9 +24,10 @@ function setInstructionCookie(): void {
 
 interface Props {
   onStart: () => void;
+  currentStation?: string;
 }
 
-export default function InstructionCard({ onStart }: Props) {
+export default function InstructionCard({ onStart, currentStation }: Props) {
   const handleStart = () => {
     setInstructionCookie();
     onStart();
@@ -34,6 +35,7 @@ export default function InstructionCard({ onStart }: Props) {
 
   return (
     <div className={styles.overlay}>
+      {/* Main card — vertically centred, leaves room for bottom bar */}
       <div className={styles.card}>
         <h1 className={styles.title}>How to Play</h1>
 
@@ -60,25 +62,19 @@ export default function InstructionCard({ onStart }: Props) {
           </div>
         </div>
 
-        {/* Visual example: station marker */}
-        <div className={styles.exampleSection}>
-          <div className={styles.exampleLabel}>Stations look like this:</div>
-          <div className={styles.exampleMarker}>
-            <div className={styles.markerOuter}>
-              <div className={styles.markerInner} />
-            </div>
-            <span className={styles.exampleName}>Bishan</span>
-          </div>
-        </div>
-
-        <div className={styles.tip}>
-          Pinch to zoom, drag to pan
-        </div>
-
         <button className={styles.startButton} onClick={handleStart}>
           Start Game
         </button>
       </div>
+
+      {/* Bottom bar preview — shows only the station capsule */}
+      {currentStation && (
+        <div className={styles.previewBar}>
+          <div className={styles.previewCapsule}>
+            <span className={styles.previewStation}>{currentStation}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

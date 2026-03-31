@@ -261,7 +261,10 @@ export default function Game({ gameType }: GameProps) {
       <div className={`${styles.seaVeil} ${veilVisible ? "" : styles.seaVeilHidden}`} aria-hidden="true" />
       {/* Instruction card for first-time players — sits above the veil */}
       {showInstructions && (
-        <InstructionCard onStart={() => { setShowInstructions(false); setVeilVisible(false); }} />
+        <InstructionCard
+          onStart={() => { setShowInstructions(false); setVeilVisible(false); }}
+          currentStation={currentStation}
+        />
       )}
       <FixedBar
         currentStation={currentStation}

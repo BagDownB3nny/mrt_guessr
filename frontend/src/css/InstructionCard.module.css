@@ -4,28 +4,29 @@
   inset: 0;
   z-index: 300; /* above sea veil (200) */
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   background-color: var(--color-sea);
-  padding: 1.5rem;
+  padding: 1.5rem 1.5rem 0;
 }
 
 /* ── Card ─────────────────────────────────────────────────────────────────── */
 .card {
   background: var(--color-bg-white);
   border-radius: 1.2rem;
-  padding: 2rem 1.8rem 1.8rem;
-  max-width: 380px;
+  padding: 2.2rem 2rem 2rem;
+  max-width: 420px;
   width: 100%;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.4rem;
+  gap: 1.8rem;
 }
 
 .title {
-  font-size: 1.6rem;
+  font-size: 2rem;
   font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--color-ink);
@@ -36,20 +37,20 @@
 .steps {
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
+  gap: 1.1rem;
   width: 100%;
 }
 
 .step {
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
+  gap: 0.9rem;
 }
 
 .stepNumber {
   flex-shrink: 0;
-  width: 1.8rem;
-  height: 1.8rem;
+  width: 2rem;
+  height: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -57,85 +58,25 @@
   background-color: var(--color-nsrl);
   color: #fff;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
 }
 
 .stepText {
-  font-size: 0.95rem;
-  line-height: 1.4;
-  color: var(--color-ink);
-  padding-top: 0.15rem;
-}
-
-/* ── Example marker ──────────────────────────────────────────────────────── */
-.exampleSection {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.8rem 0;
-  border-top: 1px solid var(--color-ink-faint);
-  border-bottom: 1px solid var(--color-ink-faint);
-}
-
-.exampleLabel {
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-ink-muted);
-}
-
-.exampleMarker {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-}
-
-.markerOuter {
-  width: 2.6rem;
-  height: 2.6rem;
-  border: 0.18rem solid var(--color-ink);
-  border-radius: 999px;
-  background-color: var(--color-bg-white);
-  box-shadow: 0 0 0 0.22rem var(--color-nsrl);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.markerInner {
-  width: 0.6rem;
-  height: 0.6rem;
-  border-radius: 999px;
-  background-color: var(--color-ink);
-}
-
-.exampleName {
   font-size: 1.1rem;
-  font-weight: 600;
+  line-height: 1.45;
   color: var(--color-ink);
-}
-
-/* ── Tip ──────────────────────────────────────────────────────────────────── */
-.tip {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--color-ink-muted);
-  text-align: center;
-  letter-spacing: 0.02em;
+  padding-top: 0.2rem;
 }
 
 /* ── Start button ─────────────────────────────────────────────────────────── */
 .startButton {
   width: 100%;
-  padding: 0.85rem 0;
+  padding: 0.95rem 0;
   border: none;
   border-radius: 0.7rem;
   background-color: var(--color-nsrl);
   color: #fff;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   cursor: pointer;
@@ -153,18 +94,48 @@
   transform: scale(0.98);
 }
 
+/* ── Bottom bar preview ───────────────────────────────────────────────────── */
+.previewBar {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0 1.2rem;
+}
+
+.previewCapsule {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 1.1rem;
+  border-radius: 999px;
+  background-color: var(--color-bg-white);
+  border: 0.14rem solid var(--color-ink);
+}
+
+.previewStation {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  white-space: nowrap;
+}
+
 /* ── Mobile ──────────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
   .card {
-    padding: 1.5rem 1.3rem 1.4rem;
-    gap: 1.1rem;
+    padding: 1.8rem 1.5rem 1.6rem;
+    gap: 1.4rem;
   }
 
   .title {
-    font-size: 1.35rem;
+    font-size: 1.6rem;
   }
 
   .stepText {
-    font-size: 0.88rem;
+    font-size: 1rem;
+  }
+
+  .startButton {
+    font-size: 1.05rem;
   }
 }
