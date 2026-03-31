@@ -257,8 +257,12 @@ export default function Game({ gameType }: GameProps) {
         onMapReady={() => { if (!showInstructions) setVeilVisible(false); }}
         blocked={modalOpen}
       />
-      {/* Entry veil: sea colour, fades out after map loads */}
-      <div className={`${styles.seaVeil} ${veilVisible ? "" : styles.seaVeilHidden}`} aria-hidden="true" />
+      {/* Entry veil: sea colour, fades out after map loads.
+          During instructions, shrink so the bottom bar peeks through. */}
+      <div
+        className={`${styles.seaVeil} ${veilVisible ? "" : styles.seaVeilHidden} ${showInstructions ? styles.seaVeilShort : ""}`}
+        aria-hidden="true"
+      />
       {/* Instruction card for first-time players — sits above the veil */}
       {showInstructions && (
         <InstructionCard onStart={() => { setShowInstructions(false); setVeilVisible(false); }} />

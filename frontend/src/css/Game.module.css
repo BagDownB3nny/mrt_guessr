@@ -23,6 +23,17 @@
   opacity: 0;
 }
 
+/* During instructions: shrink veil so FixedBar is visible */
+.seaVeilShort {
+  bottom: 7.5rem;
+}
+
+@media (max-width: 640px) {
+  .seaVeilShort {
+    bottom: 6.5rem;
+  }
+}
+
 .greenFlash {
   position: fixed;
   inset: 0;
