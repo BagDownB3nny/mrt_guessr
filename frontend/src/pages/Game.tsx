@@ -191,7 +191,7 @@ export default function Game({ gameType }: GameProps) {
     document.querySelectorAll<HTMLElement>('[id$="_Text"]').forEach((el) => {
       el.style.display = "none";
     });
-    setVeilVisible(true);  // re-trigger veil fade-out → timer start on next map ready
+
     setClickedStations([]);
     setCurrentStation("");
     setNewlyCorrectStation("");
@@ -201,6 +201,10 @@ export default function Game({ gameType }: GameProps) {
     const stations = getInitialStations(gameType);
     setTotalStations(stations.length);
     setUnseenStations(stations);
+    // Speedrun: start timer immediately on restart (map is already loaded)
+    if (isSpeedrun) {
+      setTimeout(() => startTimer(), 0);
+    }
   };
 
   // ── Explore map: dismiss modal, reveal all station names, unblock map ───
