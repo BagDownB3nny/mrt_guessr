@@ -84,6 +84,19 @@
     display: none;
 }
 
+/* Station name text pop — expand then contract, linear */
+.stationTextPop {
+    animation: stationTextPop 0.4s linear forwards;
+    transform-box: fill-box;
+    transform-origin: center;
+}
+
+@keyframes stationTextPop {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(2); }
+    100% { transform: scale(1); }
+}
+
 /* Wrong-guess floating label.
    Rendered in a fixed sibling overlay (outside TransformComponent) so it
    never triggers GPU re-compositing of the map layer — fixes the iOS Safari

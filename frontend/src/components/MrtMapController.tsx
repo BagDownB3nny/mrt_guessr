@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+// useState kept for other state; wrongLabels state removed — SVG text used directly
 import {
   TransformWrapper,
   TransformComponent,
@@ -14,12 +15,6 @@ import config from "../config/constants.json";
 // This strips the trailing "_Button" suffix and restores spaces.
 const getStationName = (id: string): string =>
   id.slice(0, -7).replace(/_/g, " ");
-
-interface WrongLabel {
-  id: number;
-  label: string;
-  buttonId: string;  // track live position via rAF
-}
 
 interface Props {
   onCorrectClick: (station: string, tries: number) => void;
@@ -44,9 +39,7 @@ export default function MrtMapController({
   const currentTriesRef = useRef(tries);
   const transformRef = useRef<ReactZoomPanPinchRef | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
-  const wrongLabelCounter = useRef(0);
-  const [wrongLabels, setWrongLabels] = useState<WrongLabel[]>([]);
-  const wrongLabelDivRef = useRef<HTMLDivElement | null>(null);
+
   // Station names currently shown as hints (SVG _Text elements unhidden)
   const hintStationsRef = useRef<Set<string>>(new Set());
   const lastClickTimeRef = useRef(0);
@@ -172,25 +165,6 @@ export default function MrtMapController({
     }
   }, [currentStation, isMobile, tries]);
 
-  // ── Wrong label: track button position live so it follows panning ────────
-  useEffect(() => {
-    const label = wrongLabels[0];
-    if (!label) return;
-    let rafId: number;
-    const track = () => {
-      const el = document.getElementById(label.buttonId);
-      const div = wrongLabelDivRef.current;
-      if (el && div) {
-        const rect = el.getBoundingClientRect();
-        div.style.left = `${rect.left + rect.width / 2}px`;
-        div.style.top  = `${rect.top}px`;
-      }
-      rafId = requestAnimationFrame(track);
-    };
-    rafId = requestAnimationFrame(track);
-    return () => cancelAnimationFrame(rafId);
-  }, [wrongLabels]);
-
   // ── Reveal circle: track button position live so it follows panning ─────
   useEffect(() => {
     if (!revealCircle) return;
@@ -216,12 +190,18 @@ export default function MrtMapController({
     if (!newlyCorrectStation) return;
     const id = newlyCorrectStation.replaceAll(" ", "_");
     const textEl = document.getElementById(`${id}_Text`);
-    if (textEl) textEl.style.display = "block";
-    // Hide any hints that were shown for wrong guesses on this station
+    if (textEl) {
+      textEl.style.display = "block";
+      textEl.classList.remove(styles.stationTextPop);
+      requestAnimationFrame(() => {
+        textEl.classList.add(styles.stationTextPop);
+        textEl.addEventListener("animationend", () => textEl.classList.remove(styles.stationTextPop), { once: true });
+      });
+    }
+    // Hide any wrong-guess hints for other stations
     hintStationsRef.current.forEach((station) => {
       const hintId = `${station.replaceAll(" ", "_")}_Text`;
       const el = document.getElementById(hintId);
-      // Only hide if it's not the correct station's text
       if (el && station !== newlyCorrectStation) el.style.display = "none";
     });
     hintStationsRef.current.clear();
@@ -268,20 +248,18 @@ export default function MrtMapController({
           onCorrectClick(station, currentTriesRef.current);
         } else {
           onWrongClick(station);
-          const id = ++wrongLabelCounter.current;
-          const buttonId = el.id;
-          // Replace all previous labels — only show the latest wrong click
-          setWrongLabels([{ id, label: station, buttonId }]);
-          setTimeout(() => {
-            setWrongLabels((prev) => prev.filter((l) => l.id !== id));
-            // Unhide the SVG text label as a persistent hint
-            if (!hintStationsRef.current.has(station)) {
-              hintStationsRef.current.add(station);
-              const textId = `${buttonId.replace("_Button", "_Text")}`;
-              const textEl = document.getElementById(textId);
-              if (textEl) textEl.style.display = "block";
-            }
-          }, config.transitions.wrongLabelDurationMs);
+          // Unhide and pop the SVG station name text immediately
+          const textId = `${el.id.replace("_Button", "_Text")}`;
+          const textEl = document.getElementById(textId);
+          if (textEl) {
+            textEl.style.display = "block";
+            textEl.classList.remove(styles.stationTextPop);
+            requestAnimationFrame(() => {
+              textEl.classList.add(styles.stationTextPop);
+              textEl.addEventListener("animationend", () => textEl.classList.remove(styles.stationTextPop), { once: true });
+            });
+            hintStationsRef.current.add(station);
+          }
         }
       });
     });
@@ -336,18 +314,6 @@ export default function MrtMapController({
             }}
           />
         )}
-        {/* Wrong-guess label — fixed overlay, tracks button live via rAF */}
-        {wrongLabels.map(({ id, label }) => (
-          <div
-            key={id}
-            ref={wrongLabelDivRef}
-            className={styles.wrongLabel}
-            style={{ left: 0, top: 0 }}
-            aria-hidden="true"
-          >
-            {label}
-          </div>
-        ))}
         <div className={styles.mapTools}>
           <Controls />
           <MiniMap
