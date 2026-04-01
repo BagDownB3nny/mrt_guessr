@@ -41,6 +41,14 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
   const navigate = useNavigate();
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [copied, setCopied] = useState(false);
+  const isSpeedrun = finalTimeMs != null;
+
+  // Auto-open leaderboard when modal first appears if player qualifies
+  useEffect(() => {
+    if (modalOpen && isSpeedrun && finalTimeMs !== null && finalTimeMs <= LEADERBOARD_THRESHOLD_MS) {
+      setShowLeaderboard(true);
+    }
+  }, [modalOpen, isSpeedrun, finalTimeMs]);
 
   const handleShare = async () => {
     const scoreStr = finalScore.toFixed(1);
@@ -70,7 +78,6 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
   const maxScore = total * 3;
   // Score out of 10, rounded to 1dp
   const finalScore = maxScore === 0 ? 0 : Math.round((rawScore / maxScore) * 100) / 10;
-  const isSpeedrun = finalTimeMs != null;
 
   // Animated score count-up
   const [displayScore, setDisplayScore] = useState(0);

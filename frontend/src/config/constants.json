@@ -39,7 +39,7 @@
   ],
 
   "speedrun": {
-    "leaderboardThresholdMs": 60000,
+    "leaderboardThresholdMs": 30000,
     "topScoresLimit": 10,
     "apiBase": "https://mrt.eiti.dev"
   },
