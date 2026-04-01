@@ -4,7 +4,7 @@
  * getToday: returns today's 5 stations (SGT).
  * Returns null if no challenge is queued for today.
  */
-import { query } from "./_generated/server";
+import { query, mutation } from "./_generated/server";
 
 /** Get today's daily challenge (SGT). */
 export const getToday = query({
@@ -29,3 +29,28 @@ function todaySGT(): string {
   const sgt = new Date(now.getTime() + 8 * 60 * 60 * 1000);
   return sgt.toISOString().slice(0, 10);
 }
+
+/** Debug: list all challenges in the queue. */
+export const listAll = query({
+  args: {},
+  handler: async (ctx) => {
+    const all = await ctx.db.query("challenge_queue").collect();
+    return all.map(c => ({ date: c.date, stationCount: c.stations.length, batch_id: c.batch_id }));
+  },
+});
+
+/** Admin: Delete challenges with empty stations. */
+export const deleteEmpty = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const all = await ctx.db.query("challenge_queue").collect();
+    let deleted = 0;
+    for (const challenge of all) {
+      if (!challenge.stations || challenge.stations.length === 0) {
+        await ctx.db.delete(challenge._id);
+        deleted++;
+      }
+    }
+    return { deleted };
+  },
+});

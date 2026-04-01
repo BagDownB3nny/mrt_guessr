@@ -121,6 +121,68 @@ export const generateNextBatch = mutation({
 // Admin alias for manual triggering
 export const generateBatchAdmin = generateNextBatch;
 
+/** Generate a batch starting from a specific date (for backfilling gaps). */
+export const generateBatchFrom = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const allStations = await ctx.db.query("stations").collect();
+    const batchId = `batch_${Date.now()}`;
+    const startDate = todaySGT();
+    const allInserted: string[] = [];
+
+    for (let i = 0; i < BATCH_SIZE; i++) {
+      const usedInBatch = new Set(allInserted);
+      let candidatePool: string[] = [];
+      let chosenTheme: ThemeFilter | null = null;
+
+      const shuffledThemes = [...THEMES].sort(() => Math.random() - 0.5);
+      for (const theme of shuffledThemes) {
+        const matching = allStations
+          .filter((s) => matchesTheme(s, theme))
+          .map((s) => s.name)
+          .filter((name) => !usedInBatch.has(name));
+
+        if (matching.length >= STATIONS_PER_DAY) {
+          candidatePool = matching;
+          chosenTheme = theme;
+          break;
+        }
+      }
+
+      if (!chosenTheme || candidatePool.length < STATIONS_PER_DAY) {
+        candidatePool = allStations
+          .map((s) => s.name)
+          .filter((name) => !usedInBatch.has(name));
+      }
+
+      const dayStations = sampleWithoutReplacement(candidatePool, STATIONS_PER_DAY);
+      allInserted.push(...dayStations);
+
+      const date = addDays(startDate, i);
+      
+      const existing = await ctx.db
+        .query("challenge_queue")
+        .withIndex("by_date", (q) => q.eq("date", date))
+        .unique();
+      
+      if (!existing) {
+        await ctx.db.insert("challenge_queue", {
+          date,
+          stations: dayStations,
+          batch_id: batchId,
+        });
+      }
+    }
+
+    return {
+      batchId,
+      startDate,
+      endDate: addDays(startDate, BATCH_SIZE - 1),
+      totalStations: allInserted.length,
+    };
+  },
+});
+
 // ── Theme matching ───────────────────────────────────────────────────────────
 
 function matchesTheme(
