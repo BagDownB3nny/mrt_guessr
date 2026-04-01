@@ -1,27 +1,27 @@
 /**
- * SpeedrunLeaderboard
+ * SpeedrunLeaderboard — Convex-backed
  *
- * Shown after the end-card when the player finishes a speedrun.
  * Flow:
- *  1. Fetch top 10 scores from the backend.
- *  2. If player's time beats any score (or board has < 10 entries), show a
- *     "You made the leaderboard!" prompt and let them submit their username.
- *  3. After submission (or if they don't qualify), show the full top-10 list.
+ *  1. Fetch top 10 scores via Convex query.
+ *  2. If player qualifies, show submit form.
+ *  3. After submit (or if not qualifying), show the top-10 board.
  */
 
 import React, { useEffect, useRef, useState } from "react";
 import Modal from "react-modal";
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "../convex/_generated/api";
 import styles from "../css/SpeedrunLeaderboard.module.css";
 import { formatMs } from "../pages/Game";
 import config from "../config/constants.json";
 
 Modal.setAppElement("#root");
 
-const API = (config as any).speedrun.apiBase as string;
+const CONVEX_URL = (config as any).convexUrl as string;
 const TOP_LIMIT = (config as any).speedrun.topScoresLimit as number;
 
 interface ScoreRow {
-  id: number;
+  id: string;
   username: string;
   score_ms: number;
   created_at: string;
@@ -41,6 +41,7 @@ export default function SpeedrunLeaderboard({ isOpen, playerTimeMs, onClose }: P
   const [username, setUsername] = useState("");
   const [submitError, setSubmitError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const client = useRef(CONVEX_URL ? new ConvexHttpClient(CONVEX_URL) : null);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -48,8 +49,9 @@ export default function SpeedrunLeaderboard({ isOpen, playerTimeMs, onClose }: P
     setUsername("");
     setSubmitError("");
 
-    fetch(`${API}/scores/speedrun/top?limit=${TOP_LIMIT}`)
-      .then((r) => r.json())
+    if (!client.current) { setPhase("error"); return; }
+
+    client.current.query(api.scores.getTop, { limit: TOP_LIMIT })
       .then((rows: ScoreRow[]) => {
         setTopScores(rows);
         const qualifies =
@@ -66,16 +68,12 @@ export default function SpeedrunLeaderboard({ isOpen, playerTimeMs, onClose }: P
   const handleSubmit = async () => {
     const name = username.trim();
     if (!name) { setSubmitError("Enter a username"); return; }
+    if (!client.current) { setSubmitError("Backend unavailable"); return; }
     setPhase("submitting");
     try {
-      await fetch(`${API}/scores/speedrun`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: name, score_ms: playerTimeMs }),
-      });
-      // Refresh leaderboard after submit
-      const r = await fetch(`${API}/scores/speedrun/top?limit=${TOP_LIMIT}`);
-      setTopScores(await r.json());
+      await client.current.mutation(api.scores.submit, { username: name, score_ms: playerTimeMs });
+      const rows = await client.current.query(api.scores.getTop, { limit: TOP_LIMIT });
+      setTopScores(rows);
       setPhase("board");
     } catch {
       setSubmitError("Failed to submit — try again");
