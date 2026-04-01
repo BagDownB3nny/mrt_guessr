@@ -189,6 +189,11 @@ export default function MrtMapController({
     return () => cancelAnimationFrame(rafId);
   }, [wrongLabels]);
 
+  // ── Clear wrong label when station changes or tries run out ─────────────
+  useEffect(() => {
+    setWrongLabels([]);
+  }, [currentStation, tries]);
+
   // ── Reveal circle: track button position live so it follows panning ─────
   useEffect(() => {
     if (!revealCircle) return;
@@ -260,9 +265,9 @@ export default function MrtMapController({
           onWrongClick(station);
           const id = ++wrongLabelCounter.current;
           const buttonId = el.id;
-          // Replace all previous labels — only show the latest wrong click
+          // Replace all previous labels — only show the latest wrong click.
+          // Label stays until the station changes (cleared in useEffect below).
           setWrongLabels([{ id, label: station, buttonId }]);
-          setTimeout(() => setWrongLabels((prev) => prev.filter((l) => l.id !== id)), config.transitions.wrongLabelDurationMs);
         }
       });
     });
