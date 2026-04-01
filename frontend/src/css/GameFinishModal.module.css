@@ -250,6 +250,23 @@
     background: rgba(0, 150, 69, 0.2);
 }
 
+.btnShare {
+    width: 100%;
+    padding: 0.9rem 1rem;
+    font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    color: #fff;
+    cursor: pointer;
+    transition: opacity 150ms ease;
+}
+
+.btnShare:hover { opacity: 0.88; }
+.btnShare:active { opacity: 0.7; }
+
 .btnPrimary {
     width: 100%;
     padding: 0.9rem 1rem;

@@ -26,11 +26,11 @@ interface Props {
   finalTimeMs?: number | null;
 }
 
-function getTierMessage(score: number, maxScore: number): string {
-  if (maxScore === 0) return config.tierMessages[config.tierMessages.length - 1].message;
-  const pct = score / maxScore;
-  const tier = config.tierMessages.find((t) => pct >= t.minPct);
-  return tier ? tier.message : config.tierMessages[config.tierMessages.length - 1].message;
+function buildShareText(scoreStr: string, isSpeedrun: boolean, timeStr?: string): string {
+  if (isSpeedrun && timeStr) {
+    return `I completed MRT Guessr Speedrun in ${timeStr}! 🚇\nPlay at mrt-guessr.vercel.app`;
+  }
+  return `I scored ${scoreStr}/10 on MRT Guessr! 🚇\nPlay at mrt-guessr.vercel.app`;
 }
 
 const LEADERBOARD_THRESHOLD_MS = (config as any).speedrun.leaderboardThresholdMs as number;
@@ -40,6 +40,29 @@ const SCORE_ANIM_MS = 2000; // total duration of score count-up
 export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, onPlayAgain, onExploreMap, finalTimeMs }: Props) {
   const navigate = useNavigate();
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = async () => {
+    const scoreStr = finalScore.toFixed(1);
+    const timeStr = finalTimeMs != null ? formatMs(finalTimeMs) : undefined;
+    const text = buildShareText(scoreStr, isSpeedrun, timeStr);
+    if (navigator.share) {
+      try {
+        await navigator.share({ text });
+      } catch {
+        // User cancelled or share failed — no-op
+      }
+    } else {
+      // Fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch {
+        // clipboard not available
+      }
+    }
+  };
 
   const rawScore = guessStats.inOneTry * 3 + guessStats.inTwoTries * 2 + guessStats.inThreeTries * 1;
   const total = guessStats.inOneTry + guessStats.inTwoTries + guessStats.inThreeTries + guessStats.afterThreeTries;
@@ -47,7 +70,6 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
   const maxScore = total * 3;
   // Score out of 10, rounded to 1dp
   const finalScore = maxScore === 0 ? 0 : Math.round((rawScore / maxScore) * 100) / 10;
-  const tierMessage = getTierMessage(rawScore, maxScore);
   const isSpeedrun = finalTimeMs != null;
 
   // Animated score count-up
@@ -110,7 +132,6 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
                 <span className={styles.scoreNumber}>{displayScore.toFixed(1)}</span>
                 <span className={styles.scoreOutOf}>/10</span>
               </div>
-              <div className={styles.subline}>{tierMessage}</div>
             </>
           )}
         </div>
@@ -173,6 +194,9 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
               🏆 Leaderboard
             </button>
           )}
+          <button className={styles.btnShare} onClick={handleShare} type="button">
+            {copied ? "Copied!" : "Share"}
+          </button>
           <button className={styles.btnPrimary} onClick={onPlayAgain} type="button">
             Play again
           </button>
