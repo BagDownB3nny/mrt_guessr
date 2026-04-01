@@ -19,7 +19,7 @@ export default function Home({ onSelectStation }: HomeProps) {
   const stations: StationConfig[] = [
     { text: "Quickplay",          onClick: () => onSelectStation("/quickgame") },
     { text: "Singapore Tour",     onClick: () => onSelectStation("/singaporetour") },
-    { text: "Speedrun",           onClick: () => onSelectStation("/speedrun"), disabled: true },
+    { text: "Speedrun",           onClick: () => onSelectStation("/speedrun") },
     { text: "Custom Challenges",  onClick: () => onSelectStation(), disabled: true },
   ];
 
