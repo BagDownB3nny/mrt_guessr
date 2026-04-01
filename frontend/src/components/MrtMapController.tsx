@@ -124,7 +124,7 @@ export default function MrtMapController({
 
       const key = ++revealCircleKey.current;
       setRevealCircle({ key, buttonId, size });
-      setTimeout(() => setRevealCircle((prev) => (prev?.key === key ? null : prev)), 1100);
+      setTimeout(() => setRevealCircle((prev) => (prev?.key === key ? null : prev)), config.transitions.revealCircleLifetimeMs);
     };
 
     // Only skip the pan if the station is near the viewport centre.
@@ -163,7 +163,7 @@ export default function MrtMapController({
           // Pan is best-effort
         }
         setTimeout(spawnCircle, config.transitions.revealCircleDelayMs);
-      }, 300);
+      }, config.transitions.stationPanDelayMs);
     }
   }, [currentStation, isMobile, tries]);
 
@@ -233,7 +233,7 @@ export default function MrtMapController({
 
         // Debounce: ignore clicks within 200ms of the previous one
         const now = Date.now();
-        if (now - lastClickTimeRef.current < 200) return;
+        if (now - lastClickTimeRef.current < config.transitions.clickDebounceMs) return;
         lastClickTimeRef.current = now;
 
         // Pop animation — double rAF reliably restarts CSS animations on SVG

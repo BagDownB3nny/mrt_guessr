@@ -135,7 +135,7 @@ export default function DailyChallenge() {
       const max = todayStations.length * 3;
       const scoreStr = max === 0 ? "0.0" : (Math.round((score / max) * 100) / 10).toFixed(1);
       setDailyCookie(`score:${scoreStr}`);
-      const delay = setTimeout(() => setModalOpen(true), 1000);
+      const delay = setTimeout(() => setModalOpen(true), config.transitions.gameEndModalDelayMs);
       return () => clearTimeout(delay);
     }
   }, [clickedStations.length, currentStation, unseenStations.length, guessStats, todayStations.length]);

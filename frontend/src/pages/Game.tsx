@@ -173,7 +173,7 @@ export default function Game({ gameType }: GameProps) {
       const id = ++penaltyLabelKey.current;
       const dx = (Math.random() - 0.5) * 40; // random horizontal drift in px
       setPenaltyLabels((prev) => [...prev, { id, dx }]);
-      setTimeout(() => setPenaltyLabels((prev) => prev.filter((l) => l.id !== id)), 1000);
+      setTimeout(() => setPenaltyLabels((prev) => prev.filter((l) => l.id !== id)), config.transitions.penaltyLabelLifetimeMs);
     }
   };
 
@@ -235,7 +235,7 @@ export default function Game({ gameType }: GameProps) {
   useEffect(() => {
     if (clickedStations.length > 0 && unseenStations.length === 0 && !currentStation) {
       stopTimer();
-      const delay = setTimeout(() => setModalOpen(true), 1000);
+      const delay = setTimeout(() => setModalOpen(true), config.transitions.gameEndModalDelayMs);
       return () => clearTimeout(delay);
     }
   }, [clickedStations.length, currentStation, stopTimer, unseenStations.length]);

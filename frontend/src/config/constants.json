@@ -19,9 +19,14 @@
     "gameVeilOutMs": 600,
     "correctFlashMs": 450,
     "wrongFlashMs": 450,
-    "wrongLabelDurationMs": 800,
+    "revealCircleLifetimeMs": 1100,
     "revealCircleDelayMs": 550,
-    "stationPanDurationMs": 500
+    "stationPanDelayMs": 300,
+    "stationPanDurationMs": 500,
+    "gameEndModalDelayMs": 1000,
+    "penaltyLabelLifetimeMs": 1000,
+    "clickDebounceMs": 200,
+    "copiedResetMs": 2000
   },
 
   "tierMessages": [

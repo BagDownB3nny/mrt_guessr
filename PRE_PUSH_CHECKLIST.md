@@ -75,7 +75,17 @@ After deploying to Vercel:
 
 ---
 
-## 4. Key architectural decisions (don't undo these)
+## 4. Project rules (enforce always)
+
+| Rule | Reason |
+|------|--------|
+| **All timing/duration constants in `constants.json`** | No hardcoded `setTimeout(fn, 300)` etc in component files. Add a named key to `transitions` or `gameplay` and read it via `config.transitions.xxx` |
+| **All colours in `palette.css`** | No hex values in CSS module files — use `var(--color-xxx)` |
+| **`CI=true npm run build` must pass before push** | Vercel treats warnings as errors in CI mode. Pre-push hook enforces this. |
+
+---
+
+## 5. Key architectural decisions (don't undo these)
 
 | Decision | Reason |
 |----------|--------|

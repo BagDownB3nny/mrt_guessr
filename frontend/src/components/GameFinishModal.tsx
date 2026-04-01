@@ -57,7 +57,7 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
       try {
         await navigator.clipboard.writeText(text);
         setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        setTimeout(() => setCopied(false), config.transitions.copiedResetMs);
       } catch {
         // clipboard not available
       }
