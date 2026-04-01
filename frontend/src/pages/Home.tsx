@@ -17,6 +17,7 @@ type HomeProps = {
 
 export default function Home({ onSelectStation }: HomeProps) {
   const stations: StationConfig[] = [
+    { text: "Daily Challenge",    onClick: () => onSelectStation("/daily") },
     { text: "Quickplay",          onClick: () => onSelectStation("/quickgame") },
     { text: "Singapore Tour",     onClick: () => onSelectStation("/singaporetour") },
     { text: "Speedrun",           onClick: () => onSelectStation("/speedrun") },

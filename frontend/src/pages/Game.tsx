@@ -13,6 +13,7 @@ export enum GameType {
   QUICKGAME,
   SINGAPORETOUR,
   SPEEDRUN,
+  DAILY,
 }
 
 interface GameProps {

@@ -48,5 +48,7 @@
     "ewl":        "#009645",
     "ccl":        "#FA9E0D",
     "grey":       "#8B8B8B"
-  }
+  },
+
+  "convexUrl": ""
 }

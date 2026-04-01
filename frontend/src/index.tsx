@@ -5,6 +5,7 @@ import reportWebVitals from "./reportWebVitals";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Game, { GameType } from "./pages/Game";
 import Mainhome from "./pages/MainHome";
+import DailyChallenge from "./pages/DailyChallenge";
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
   {
     path: "/speedrun",
     element: <Game gameType={GameType.SPEEDRUN} />,
+  },
+  {
+    path: "/daily",
+    element: <DailyChallenge />,
   },
 ]);
 
