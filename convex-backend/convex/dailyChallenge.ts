@@ -35,7 +35,13 @@ export const listAll = query({
   args: {},
   handler: async (ctx) => {
     const all = await ctx.db.query("challenge_queue").collect();
-    return all.map(c => ({ date: c.date, stationCount: c.stations.length, batch_id: c.batch_id }));
+    return all.map(c => ({ 
+      date: c.date, 
+      stations: c.stations,
+      stationCount: c.stations.length, 
+      uniqueCount: new Set(c.stations).size,
+      batch_id: c.batch_id 
+    }));
   },
 });
 
