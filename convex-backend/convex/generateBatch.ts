@@ -11,7 +11,6 @@ import { mutation } from "./_generated/server";
 
 const BATCH_SIZE = 5;           // number of days per batch
 const STATIONS_PER_DAY = 5;     // stations per daily challenge
-const RECENT_DAYS = 30;         // avoid repeating stations within this window
 
 // ── Theme definitions ────────────────────────────────────────────────────────
 
@@ -52,19 +51,15 @@ export const generateNextBatch = mutation({
   args: {},
   handler: async (ctx) => {
     // 1. Find the last queued date
-    const allQueued = await ctx.db
+    // Find the last queued date (no station dedup across batches)
+    const lastQueued = await ctx.db
       .query("challenge_queue")
       .order("desc")
-      .take(RECENT_DAYS);
+      .take(1);
 
-    const lastDate = allQueued.length > 0
-      ? allQueued[0].date
+    const lastDate = lastQueued.length > 0
+      ? lastQueued[0].date
       : yesterdaySGT();
-
-    // Collect recently used stations (last RECENT_DAYS challenges)
-    const recentStations = new Set<string>(
-      allQueued.flatMap((c) => c.stations)
-    );
 
     // 2. Fetch all stations
     const allStations = await ctx.db.query("stations").collect();
@@ -75,8 +70,8 @@ export const generateNextBatch = mutation({
     const allInserted: string[] = [];
 
     for (let i = 0; i < BATCH_SIZE; i++) {
-      // Track stations used so far in this batch to avoid intra-batch repeats
-      const usedInBatch = new Set([...recentStations, ...allInserted]);
+      // Only avoid repeats within this batch
+      const usedInBatch = new Set(allInserted);
 
       // Pick a random theme with enough unused candidates
       let candidatePool: string[] = [];
