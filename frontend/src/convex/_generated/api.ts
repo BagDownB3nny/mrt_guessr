@@ -12,4 +12,16 @@ export const api: any = {
   dailyChallenge: {
     getToday: "dailyChallenge:getToday",
   },
+  scores: {
+    getTop:    "scores:getTop",
+    submit:    "scores:submit",
+    qualifies: "scores:qualifies",
+  },
+  generateBatch: {
+    generateNextBatch: "generateBatch:generateNextBatch",
+  },
+  stationSeed: {
+    seedStations:  "stationSeed:seedStations",
+    countStations: "stationSeed:countStations",
+  },
 };

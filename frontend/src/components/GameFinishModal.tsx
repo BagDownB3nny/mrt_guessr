@@ -184,7 +184,7 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
 
         {/* Actions */}
         <div className={styles.actions}>
-          {/* Leaderboard button for qualifying speedrun times */}
+          {/* Leaderboard */}
           {isSpeedrun && finalTimeMs !== null && finalTimeMs! <= LEADERBOARD_THRESHOLD_MS && (
             <button
               className={styles.btnLeaderboard}
@@ -194,12 +194,15 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
               🏆 Leaderboard
             </button>
           )}
-          <button className={styles.btnShare} onClick={handleShare} type="button">
-            {copied ? "Copied!" : "Share"}
-          </button>
+          {/* Play again */}
           <button className={styles.btnPrimary} onClick={onPlayAgain} type="button">
             Play again
           </button>
+          {/* Share */}
+          <button className={styles.btnShare} onClick={handleShare} type="button">
+            {copied ? "Copied!" : "Share"}
+          </button>
+          {/* Home */}
           <button className={styles.btnSecondary} onClick={() => navigate("/")} type="button">
             Home
           </button>
