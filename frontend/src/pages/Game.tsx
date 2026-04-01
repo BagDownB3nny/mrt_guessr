@@ -216,6 +216,13 @@ export default function Game({ gameType }: GameProps) {
     setUnseenStations(stations);
   }, [gameType]);
 
+  // Speedrun: start timer the moment the veil disappears
+  useEffect(() => {
+    if (isSpeedrun && !veilVisible) {
+      startTimer();
+    }
+  }, [isSpeedrun, veilVisible, startTimer]);
+
   // Advance to the next station whenever the current one is cleared
   useEffect(() => {
     if (!currentStation && unseenStations.length > 0) {
