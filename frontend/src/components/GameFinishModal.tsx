@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Modal from "react-modal";
 import styles from "../css/GameFinishModal.module.css";
 import { useNavigate } from "react-router-dom";
@@ -35,16 +35,47 @@ function getTierMessage(score: number, maxScore: number): string {
 
 const LEADERBOARD_THRESHOLD_MS = (config as any).speedrun.leaderboardThresholdMs as number;
 
+const SCORE_ANIM_MS = 2000; // total duration of score count-up
+
 export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, onPlayAgain, onExploreMap, finalTimeMs }: Props) {
   const navigate = useNavigate();
   const [showLeaderboard, setShowLeaderboard] = useState(false);
 
-  const score = guessStats.inOneTry * 3 + guessStats.inTwoTries * 2 + guessStats.inThreeTries * 1;
+  const rawScore = guessStats.inOneTry * 3 + guessStats.inTwoTries * 2 + guessStats.inThreeTries * 1;
   const total = guessStats.inOneTry + guessStats.inTwoTries + guessStats.inThreeTries + guessStats.afterThreeTries;
-  const found = guessStats.inOneTry + guessStats.inTwoTries + guessStats.inThreeTries;
+
   const maxScore = total * 3;
-  const tierMessage = getTierMessage(score, maxScore);
+  // Score out of 10, rounded to 1dp
+  const finalScore = maxScore === 0 ? 0 : Math.round((rawScore / maxScore) * 100) / 10;
+  const tierMessage = getTierMessage(rawScore, maxScore);
   const isSpeedrun = finalTimeMs != null;
+
+  // Animated score count-up
+  const [displayScore, setDisplayScore] = useState(0);
+  const rafRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!modalOpen || isSpeedrun) return;
+    setDisplayScore(0);
+    const startTime = performance.now();
+
+    const tick = (now: number) => {
+      const elapsed = now - startTime;
+      // Ease-out cubic: progress decelerates as it approaches 1
+      const t = Math.min(elapsed / SCORE_ANIM_MS, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const current = Math.round(eased * finalScore * 10) / 10;
+      setDisplayScore(current);
+      if (t < 1) {
+        rafRef.current = requestAnimationFrame(tick);
+      } else {
+        setDisplayScore(finalScore);
+      }
+    };
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+  }, [modalOpen, finalScore, isSpeedrun]);
 
   return (
     <Modal
@@ -75,7 +106,10 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
             </div>
           ) : (
             <>
-              <div className={styles.headline}>Found {found}/{total} stations</div>
+              <div className={styles.scoreDisplay}>
+                <span className={styles.scoreNumber}>{displayScore.toFixed(1)}</span>
+                <span className={styles.scoreOutOf}>/10</span>
+              </div>
               <div className={styles.subline}>{tierMessage}</div>
             </>
           )}
