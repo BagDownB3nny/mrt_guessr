@@ -75,10 +75,12 @@
 }
 
 .title {
-    font-size: clamp(2.4rem, 5vw, 4.8rem);
-    font-weight: 400;
-    letter-spacing: 0.05em;
+    font-family: 'Barlow Condensed', 'Arial Narrow', 'Impact', sans-serif;
+    font-size: clamp(3.5rem, 10vw, 7rem);
+    font-weight: 800;
+    letter-spacing: -0.01em;
     text-transform: uppercase;
+    line-height: 0.92;
 }
 
 /* ── Track wrapper: centre the Singapore Tour stop on the screen midpoint ─ */
