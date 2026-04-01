@@ -229,7 +229,7 @@ export default function Game({ gameType }: GameProps) {
     if (!currentStation && unseenStations.length > 0) {
       getNewStation();
     }
-  }, [currentStation, getNewStation, unseenStations]);
+  }, [currentStation, getNewStation, unseenStations.length]);
 
   // End the game when all stations have been attempted (1s delay for breathing room)
   useEffect(() => {

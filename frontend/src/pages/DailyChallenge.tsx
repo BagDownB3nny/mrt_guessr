@@ -92,14 +92,18 @@ export default function DailyChallenge() {
     }
 
     if (!CONVEX_URL) {
+      console.error("CONVEX_URL is not configured in constants.json");
       setPhase("error");
       return;
     }
 
+    console.log("Fetching daily challenge from:", CONVEX_URL);
     const client = new ConvexHttpClient(CONVEX_URL);
     (client.query as any)(api.dailyChallenge.getToday)
       .then((result: { date: string; stations: string[] } | null) => {
+        console.log("Daily challenge result:", result);
         if (!result || result.stations.length === 0) {
+          console.error("No stations returned or empty array");
           setPhase("error");
           return;
         }
@@ -107,7 +111,10 @@ export default function DailyChallenge() {
         setUnseenStations(result.stations);
         setPhase("playing");
       })
-      .catch(() => setPhase("error"));
+      .catch((err: unknown) => {
+        console.error("Failed to fetch daily challenge:", err);
+        setPhase("error");
+      });
   }, []);
 
   // ── Station progression ─────────────────────────────────────────────────
@@ -125,7 +132,7 @@ export default function DailyChallenge() {
     if (phase === "playing" && unseenStations.length > 0 && !currentStation) {
       getNewStation();
     }
-  }, [phase, currentStation, getNewStation, unseenStations]);
+  }, [phase, currentStation, getNewStation, unseenStations.length]);
 
   // ── End game ────────────────────────────────────────────────────────────
 
