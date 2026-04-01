@@ -65,10 +65,8 @@
 /* ── Title ───────────────────────────────────────────────────────────────── */
 .titleContainer {
     position: absolute;
-    /* Align title just above the first station button.
-       Track top = 50dvh - second-station-center ≈ 50dvh - 7.95rem.
-       First button top edge = track top. Title sits 1.2rem above that. */
-    top: calc(50% - var(--second-station-center) - 5rem);
+    /* Align title just above the first station button */
+    top: calc(50% - var(--second-station-center) - 9rem);
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -260,7 +258,7 @@
     }
 
     .titleContainer {
-        top: calc(50% - var(--second-station-center) - 4.5rem);
+        top: calc(50% - var(--second-station-center) - 8rem);
     }
 
     .track { gap: 1rem; }
