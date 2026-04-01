@@ -151,17 +151,19 @@ export default function MrtMapController({
       // Station is on screen — show circle immediately, no pan needed
       spawnCircle();
     } else {
-      // Pan to the station first, then show the circle
-      try {
-        const api = transformRef.current;
-        if (api) {
-          const scale = api.instance.transformState.scale;
-          api.zoomToElement(buttonEl, scale, config.transitions.stationPanDurationMs, "easeOut");
+      // Wait 0.3s then pan to the station, then show the circle
+      setTimeout(() => {
+        try {
+          const api = transformRef.current;
+          if (api) {
+            const scale = api.instance.transformState.scale;
+            api.zoomToElement(buttonEl, scale, config.transitions.stationPanDurationMs, "easeOut");
+          }
+        } catch {
+          // Pan is best-effort
         }
-      } catch {
-        // Pan is best-effort
-      }
-      setTimeout(spawnCircle, config.transitions.revealCircleDelayMs);
+        setTimeout(spawnCircle, config.transitions.revealCircleDelayMs);
+      }, 300);
     }
   }, [currentStation, isMobile, tries]);
 

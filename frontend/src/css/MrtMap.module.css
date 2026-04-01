@@ -84,17 +84,19 @@
     display: none;
 }
 
-/* Station name text pop — expand then contract, linear */
+/* Station name text wiggle — clockwise/anticlockwise rotation, no easing */
 .stationTextPop {
-    animation: stationTextPop 0.4s linear forwards;
+    animation: stationTextWiggle 0.4s linear forwards;
     transform-box: fill-box;
     transform-origin: center;
 }
 
-@keyframes stationTextPop {
-    0%   { transform: scale(1); }
-    40%  { transform: scale(2); }
-    100% { transform: scale(1); }
+@keyframes stationTextWiggle {
+    0%   { transform: rotate(0deg); }
+    25%  { transform: rotate(15deg); }
+    50%  { transform: rotate(-15deg); }
+    75%  { transform: rotate(15deg); }
+    100% { transform: rotate(0deg); }
 }
 
 /* Wrong-guess floating label.
