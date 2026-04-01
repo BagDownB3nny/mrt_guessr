@@ -6,7 +6,7 @@ const crons = cronJobs();
 // Generate next 5-day batch of daily challenges every 5 days at midnight SGT (16:00 UTC)
 crons.interval(
   "generate daily challenge batch",
-  { days: 5 },
+  { hours: 24 * 5 },
   api.generateBatch.generateNextBatch,
   {}
 );
