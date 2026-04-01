@@ -38,19 +38,42 @@ function todaySGT(): string {
   return sgt.toISOString().slice(0, 10);
 }
 
-function getDailyCookieValue(): string | null {
-  const key = `${DAILY_COOKIE_PREFIX}${todaySGT()}`;
-  const match = document.cookie.split(";").find((c) => c.trim().startsWith(`${key}=`));
-  return match ? match.split("=").slice(1).join("=").trim() : null;
+interface DailyCookieData {
+  score: string;         // e.g. "8.3"
+  inOneTry: number;
+  inTwoTries: number;
+  inThreeTries: number;
+  afterThreeTries: number;
+  foundStations: string[];
+  missedStations: string[];
 }
 
-function setDailyCookie(value: string): void {
+function getDailyCookieData(): DailyCookieData | null {
+  const key = `${DAILY_COOKIE_PREFIX}${todaySGT()}`;
+  const match = document.cookie.split(";").find((c) => c.trim().startsWith(`${key}=`));
+  if (!match) return null;
+  try {
+    return JSON.parse(decodeURIComponent(match.split("=").slice(1).join("=").trim()));
+  } catch {
+    return null;
+  }
+}
+
+function setDailyCookie(stats: GuessStats, scoreStr: string): void {
   const date = todaySGT();
   const key = `${DAILY_COOKIE_PREFIX}${date}`;
-  // Expires at midnight SGT (midnight UTC+8 = 16:00 UTC next day)
+  const data: DailyCookieData = {
+    score: scoreStr,
+    inOneTry: stats.inOneTry,
+    inTwoTries: stats.inTwoTries,
+    inThreeTries: stats.inThreeTries,
+    afterThreeTries: stats.afterThreeTries,
+    foundStations: stats.foundStations,
+    missedStations: stats.missedStations,
+  };
   const tomorrow = new Date(date + "T16:00:00Z");
   tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
-  document.cookie = `${key}=${value}; expires=${tomorrow.toUTCString()}; path=/; SameSite=Lax`;
+  document.cookie = `${key}=${encodeURIComponent(JSON.stringify(data))}; expires=${tomorrow.toUTCString()}; path=/; SameSite=Lax`;
 }
 
 // ── Component ──────────────────────────────────────────────────────────────
@@ -62,7 +85,7 @@ export default function DailyChallenge() {
 
   const [phase, setPhase] = useState<Phase>("loading");
   const [todayStations, setTodayStations] = useState<string[]>([]);
-  const [alreadyPlayedResult, setAlreadyPlayedResult] = useState<string | null>(null);
+  const [savedResult, setSavedResult] = useState<DailyCookieData | null>(null);
 
   // Game state (mirrors Game.tsx)
   const [unseenStations, setUnseenStations] = useState<string[]>([]);
@@ -83,10 +106,10 @@ export default function DailyChallenge() {
   // ── Load today's challenge ──────────────────────────────────────────────
 
   useEffect(() => {
-    // Check cookie first
-    const cookieVal = getDailyCookieValue();
-    if (cookieVal) {
-      setAlreadyPlayedResult(cookieVal);
+    // Check cookie first — show results, but allow replay
+    const saved = getDailyCookieData();
+    if (saved) {
+      setSavedResult(saved);
       setPhase("already-played");
       return;
     }
@@ -141,7 +164,7 @@ export default function DailyChallenge() {
       const score = guessStats.inOneTry * 3 + guessStats.inTwoTries * 2 + guessStats.inThreeTries * 1;
       const max = todayStations.length * 3;
       const scoreStr = max === 0 ? "0.0" : (Math.round((score / max) * 100) / 10).toFixed(1);
-      setDailyCookie(`score:${scoreStr}`);
+      setDailyCookie(guessStats, scoreStr);
       const delay = setTimeout(() => setModalOpen(true), config.transitions.gameEndModalDelayMs);
       return () => clearTimeout(delay);
     }
@@ -180,6 +203,28 @@ export default function DailyChallenge() {
 
   const getStationsLeft = () => `${clickedStations.length}/${todayStations.length}`;
 
+  const handleReplay = useCallback(() => {
+    if (!CONVEX_URL) { setPhase("error"); return; }
+    setSavedResult(null);
+    setPhase("loading");
+    const client = new ConvexHttpClient(CONVEX_URL);
+    (client.query as any)(api.dailyChallenge.getToday)
+      .then((result: { date: string; stations: string[] } | null) => {
+        if (!result || result.stations.length === 0) { setPhase("error"); return; }
+        setTodayStations(result.stations);
+        setUnseenStations(result.stations);
+        setClickedStations([]);
+        setCurrentStation("");
+        setNewlyCorrectStation("");
+        setTries(TRIES_PER_STATION);
+        setGuessStats({ inOneTry: 0, inTwoTries: 0, inThreeTries: 0, afterThreeTries: 0, foundStations: [], missedStations: [] });
+        setModalOpen(false);
+        setVeilVisible(true);
+        setPhase("playing");
+      })
+      .catch(() => setPhase("error"));
+  }, []);
+
   const onExploreMap = () => {
     setModalOpen(false);
     document.querySelectorAll<HTMLElement>('[id$="_Text"]').forEach((el) => { el.style.display = "block"; });
@@ -210,18 +255,23 @@ export default function DailyChallenge() {
     );
   }
 
-  if (phase === "already-played") {
-    const scoreStr = alreadyPlayedResult?.replace("score:", "") ?? "?";
+  if (phase === "already-played" && savedResult) {
+    const statsFromCookie: GuessStats = {
+      inOneTry:        savedResult.inOneTry,
+      inTwoTries:      savedResult.inTwoTries,
+      inThreeTries:    savedResult.inThreeTries,
+      afterThreeTries: savedResult.afterThreeTries,
+      foundStations:   savedResult.foundStations,
+      missedStations:  savedResult.missedStations,
+    };
     return (
       <div className={styles.GameContainer}>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100dvh", gap: "1.2rem", color: "var(--color-ink)", padding: "2rem" }}>
-          <div style={{ fontSize: "1.1rem", opacity: 0.6, textTransform: "uppercase", letterSpacing: "0.1em" }}>Daily Challenge</div>
-          <div style={{ fontSize: "4rem", fontWeight: 800 }}>{scoreStr}<span style={{ fontSize: "1.8rem", opacity: 0.5 }}>/10</span></div>
-          <div style={{ fontSize: "1rem", opacity: 0.55 }}>Come back tomorrow</div>
-          <button onClick={() => navigate("/")} style={{ marginTop: "0.5rem", padding: "0.65rem 1.6rem", border: "2px solid currentColor", borderRadius: "999px", background: "transparent", cursor: "pointer", fontSize: "1rem", fontWeight: 700 }}>
-            Home
-          </button>
-        </div>
+        <GameFinishModal
+          modalOpen={true}
+          setModalOpen={() => navigate("/")}
+          guessStats={statsFromCookie}
+          onPlayAgain={handleReplay}
+        />
       </div>
     );
   }
