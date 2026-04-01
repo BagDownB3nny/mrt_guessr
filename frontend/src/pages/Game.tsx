@@ -109,8 +109,11 @@ export default function Game({ gameType }: GameProps) {
       timerRafRef.current = null;
     }
     if (timerStartRef.current !== null) {
+      // Use the same formula as the display tick so final time matches what was shown
       const ms = Math.floor(performance.now() - timerStartRef.current + penaltyMsRef.current);
       setFinalTimeMs(ms);
+      // Freeze the display at the exact same value
+      setElapsedMs(ms);
     }
   }, []);
 
