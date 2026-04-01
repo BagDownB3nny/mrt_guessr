@@ -65,7 +65,10 @@
 /* ── Title ───────────────────────────────────────────────────────────────── */
 .titleContainer {
     position: absolute;
-    top: 8dvh;
+    /* Align title just above the first station button.
+       Track top = 50dvh - second-station-center ≈ 50dvh - 7.95rem.
+       First button top edge = track top. Title sits 1.2rem above that. */
+    top: calc(50% - var(--second-station-center) - 5rem);
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -114,7 +117,7 @@
 
 .trackLine {
     position: absolute;
-    top: -3.5rem;
+    top: calc(var(--station-height) / 2);  /* starts at centre of first button */
     bottom: 0;
     left: 1.58rem;
     width: 0.35rem;
@@ -257,14 +260,14 @@
     }
 
     .titleContainer {
-        top: 6dvh;
+        top: calc(50% - var(--second-station-center) - 4.5rem);
     }
 
     .track { gap: 1rem; }
 
     /* Mobile marker centre: 2.9rem/2 - 0.35rem/2 = 1.45 - 0.175 = 1.275rem */
     .trackLine {
-        top: -2.8rem;
+        top: calc(var(--station-height) / 2);
         left: 1.28rem;
     }
 

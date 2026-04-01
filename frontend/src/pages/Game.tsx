@@ -191,6 +191,7 @@ export default function Game({ gameType }: GameProps) {
     document.querySelectorAll<HTMLElement>('[id$="_Text"]').forEach((el) => {
       el.style.display = "none";
     });
+    setVeilVisible(true);  // re-trigger veil fade-out → timer start on next map ready
     setClickedStations([]);
     setCurrentStation("");
     setNewlyCorrectStation("");
