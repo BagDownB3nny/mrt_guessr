@@ -47,6 +47,9 @@ export default function MrtMapController({
   const wrongLabelCounter = useRef(0);
   const [wrongLabels, setWrongLabels] = useState<WrongLabel[]>([]);
   const wrongLabelDivRef = useRef<HTMLDivElement | null>(null);
+  // Hint labels: shown after wrong label floats away, cleared on correct guess
+  const [hintLabels, setHintLabels] = useState<WrongLabel[]>([]);
+  const hintLabelRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   const lastClickTimeRef = useRef(0);
   // Reveal circle rendered in a fixed portal (tracks button position live)
   const [revealCircle, setRevealCircle] = useState<{ key: number; buttonId: string; size: number } | null>(null);
@@ -189,10 +192,25 @@ export default function MrtMapController({
     return () => cancelAnimationFrame(rafId);
   }, [wrongLabels]);
 
-  // ── Clear wrong label when station changes or tries run out ─────────────
+  // ── Hint labels: track button positions live via rAF ──────────────────
   useEffect(() => {
-    setWrongLabels([]);
-  }, [currentStation, tries]);
+    if (hintLabels.length === 0) return;
+    let rafId: number;
+    const track = () => {
+      hintLabels.forEach(({ id, buttonId }) => {
+        const el = document.getElementById(buttonId);
+        const div = hintLabelRefs.current.get(id);
+        if (el && div) {
+          const rect = el.getBoundingClientRect();
+          div.style.left = `${rect.left + rect.width / 2}px`;
+          div.style.top  = `${rect.top}px`;
+        }
+      });
+      rafId = requestAnimationFrame(track);
+    };
+    rafId = requestAnimationFrame(track);
+    return () => cancelAnimationFrame(rafId);
+  }, [hintLabels]);
 
   // ── Reveal circle: track button position live so it follows panning ─────
   useEffect(() => {
@@ -220,6 +238,8 @@ export default function MrtMapController({
     const id = newlyCorrectStation.replaceAll(" ", "_");
     const textEl = document.getElementById(`${id}_Text`);
     if (textEl) textEl.style.display = "block";
+    // Clear all hint labels when correct station found
+    setHintLabels([]);
   }, [newlyCorrectStation]);
 
   // ── SVG setup: touch-action + click binding ───────────────────────────────
@@ -265,9 +285,17 @@ export default function MrtMapController({
           onWrongClick(station);
           const id = ++wrongLabelCounter.current;
           const buttonId = el.id;
-          // Replace all previous labels — only show the latest wrong click.
-          // Label stays until the station changes (cleared in useEffect below).
+          // Replace all previous labels — only show the latest wrong click
           setWrongLabels([{ id, label: station, buttonId }]);
+          setTimeout(() => {
+            // After wrong label floats away, show a persistent hint label
+            setWrongLabels((prev) => prev.filter((l) => l.id !== id));
+            setHintLabels((prev) => {
+              // Only add if not already showing this station as a hint
+              if (prev.some((h) => h.buttonId === buttonId)) return prev;
+              return [...prev, { id, label: station, buttonId }];
+            });
+          }, config.transitions.wrongLabelDurationMs);
         }
       });
     });
@@ -328,6 +356,21 @@ export default function MrtMapController({
             key={id}
             ref={wrongLabelDivRef}
             className={styles.wrongLabel}
+            style={{ left: 0, top: 0 }}
+            aria-hidden="true"
+          >
+            {label}
+          </div>
+        ))}
+        {/* Hint labels — persistent, shown after wrong label floats away */}
+        {hintLabels.map(({ id, label }) => (
+          <div
+            key={id}
+            ref={(el) => {
+              if (el) hintLabelRefs.current.set(id, el);
+              else hintLabelRefs.current.delete(id);
+            }}
+            className={styles.hintLabel}
             style={{ left: 0, top: 0 }}
             aria-hidden="true"
           >
