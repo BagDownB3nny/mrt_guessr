@@ -207,6 +207,8 @@ export default function MrtMapController({
       if (el && station !== newlyCorrectStation) el.style.display = "none";
     });
     hintStationsRef.current.clear();
+    // Clear the reveal circle when correct station is clicked
+    setRevealCircle(null);
   }, [newlyCorrectStation]);
 
   // ── SVG setup: touch-action + click binding ───────────────────────────────

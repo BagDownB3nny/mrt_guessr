@@ -22,19 +22,14 @@
   padding: 0.45rem 0.65rem;
 }
 
-/* ── "Hints" label capsule ───────────────────────────────────── */
+/* ── "Hints" label — inside the container ────────────────────── */
 .hintLabel {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.3rem 0.75rem;
-  border-radius: 999px;
-  background-color: var(--color-bg-white);
-  border: 0.14rem solid var(--color-ink);
   color: var(--color-ink);
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  opacity: 0.5;
 }
 
 /* ── Row for line capsules ───────────────────────────────────── */
