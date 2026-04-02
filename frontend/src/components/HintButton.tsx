@@ -67,22 +67,26 @@ export default function HintButton({ currentStation, triesLeft, triesPerStation 
   return (
     <div className={styles.wrapper}>
       <div className={styles.hintLabel}>Hints</div>
-      {showLine && lines.length > 0 && (
-        <div key={`line-${lineKey}`} className={styles.hintRow}>
-          {lines.map((line) => (
-            <div
-              key={line.name}
-              className={`${styles.lineCapsule} ${styles.popIn}`}
-              style={{ backgroundColor: `var(${line.cssVar})` }}
-            >
-              {line.name}
+      {(showLine || showZone) && (
+        <div className={styles.hintsContainer}>
+          {showLine && lines.length > 0 && (
+            <div key={`line-${lineKey}`} className={styles.hintRow}>
+              {lines.map((line) => (
+                <div
+                  key={line.name}
+                  className={`${styles.lineCapsule} ${styles.popIn}`}
+                  style={{ backgroundColor: `var(${line.cssVar})` }}
+                >
+                  {line.name}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
-      {showZone && zone && (
-        <div key={`zone-${zoneKey}`} className={`${styles.zoneCapsule} ${styles.popIn}`}>
-          {zone}
+          )}
+          {showZone && zone && (
+            <div key={`zone-${zoneKey}`} className={`${styles.zoneCapsule} ${styles.popIn}`}>
+              {zone}
+            </div>
+          )}
         </div>
       )}
     </div>

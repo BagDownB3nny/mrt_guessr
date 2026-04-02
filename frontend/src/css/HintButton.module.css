@@ -11,6 +11,17 @@
   pointer-events: none;
 }
 
+/* ── Hints container — white capsule holding line + zone hints ── */
+.hintsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  background-color: var(--color-bg-white);
+  border: 0.14rem solid var(--color-ink);
+  border-radius: 0.75rem;
+  padding: 0.45rem 0.65rem;
+}
+
 /* ── "Hints" label capsule ───────────────────────────────────── */
 .hintLabel {
   display: inline-flex;
