@@ -127,29 +127,17 @@
     border-radius: 50%;
     border-style: solid;
     border-width: 3px;
-    border-color: var(--color-ink);
+    border-color: var(--color-nsrl);
     background-color: transparent;
-    position: absolute;
-    z-index: 3;
-    animation: shrinkAndDisappear 1s cubic-bezier(0.4, 0, 1, 1) forwards;
+    position: fixed;
+    z-index: 50;
+    animation: circlePulse var(--circle-pulse-speed, 500ms) ease-in-out infinite alternate;
     pointer-events: none;
 }
 
-@keyframes shrinkAndDisappear {
-    0% {
-        transform: scale(1);
-        opacity: 1;
-    }
-
-    95% {
-        transform: scale(0);
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 0;
-        transform: scale(0);
-    }
+@keyframes circlePulse {
+    0%   { transform: translate(-50%, -50%) scale(0.75); opacity: 0.9; }
+    100% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
 }
 
 @media (hover: hover) and (pointer: fine) {

@@ -120,7 +120,7 @@ export default function MrtMapController({
       const el = document.getElementById(buttonId);
       if (!el) return;
 
-      const size = isMobile ? 96 : 160;
+      const size = isMobile ? (config.transitions as any).revealCircleSizeMobilePx : (config.transitions as any).revealCircleSizePx;
 
       const key = ++revealCircleKey.current;
       setRevealCircle({ key, buttonId, size });
@@ -178,8 +178,8 @@ export default function MrtMapController({
         const rect = el.getBoundingClientRect();
         const cx = rect.left + rect.width / 2;
         const cy = rect.top + rect.height / 2;
-        div.style.left = `${cx - revealCircle.size / 2}px`;
-        div.style.top  = `${cy - revealCircle.size / 2}px`;
+        div.style.left = `${cx}px`;
+        div.style.top  = `${cy}px`;
       }
       rafId = requestAnimationFrame(track);
     };
@@ -313,6 +313,7 @@ export default function MrtMapController({
               height: revealCircle.size,
               left: 0,
               top: 0,
+              ["--circle-pulse-speed" as any]: `${(config.transitions as any).revealCirclePulseSpeedMs}ms`,
             }}
           />
         )}
