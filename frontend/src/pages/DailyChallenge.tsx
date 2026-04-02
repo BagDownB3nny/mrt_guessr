@@ -316,7 +316,7 @@ export default function DailyChallenge() {
         />
       </div>
       {!modalOpen && !showInstructions && (
-        <HintButton currentStation={currentStation} />
+        <HintButton currentStation={currentStation} triesLeft={tries} triesPerStation={TRIES_PER_STATION} />
       )}
     </>
   );

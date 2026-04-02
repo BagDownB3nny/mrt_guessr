@@ -304,7 +304,7 @@ export default function Game({ gameType }: GameProps) {
     {/* Hint button — fixed portal outside GameContainer (iOS blur safety).
         Hidden during speedrun (hints would be unfair) and when modal/instructions are showing. */}
     {!isSpeedrun && !modalOpen && !showInstructions && (
-      <HintButton currentStation={currentStation} />
+      <HintButton currentStation={currentStation} triesLeft={tries} triesPerStation={TRIES_PER_STATION} />
     )}
     {/* Penalty labels rendered outside GameContainer in a fixed portal so they
         never trigger GPU re-compositing of the map layer (fixes iOS blur) */}
