@@ -33,7 +33,7 @@ function buildShareText(scoreStr: string, isSpeedrun: boolean, timeStr?: string)
   return `I scored ${scoreStr}/10 on MRT Guessr! 🚇\nPlay at mrt-guessr.vercel.app`;
 }
 
-const LEADERBOARD_THRESHOLD_MS = (config as any).speedrun.leaderboardThresholdMs as number;
+
 
 const SCORE_ANIM_MS = 2000; // total duration of score count-up
 
