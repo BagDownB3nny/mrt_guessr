@@ -12,10 +12,9 @@
 .modalContent {
     position: relative;
     width: min(38rem, calc(100vw - 2rem));
-    max-height: calc(100dvh - 2.5rem);
     border: 0.45rem solid var(--color-ewl);
     border-radius: 2rem;
-    overflow: auto;
+    overflow: visible;
     outline: none;
 }
 
@@ -82,9 +81,6 @@
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
-    max-height: 22rem;
-    overflow-y: auto;
-    scrollbar-width: thin;
 }
 
 .empty {

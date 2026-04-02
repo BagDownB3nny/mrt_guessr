@@ -43,12 +43,7 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
   const [copied, setCopied] = useState(false);
   const isSpeedrun = finalTimeMs != null;
 
-  // Auto-open leaderboard when modal first appears if player qualifies
-  useEffect(() => {
-    if (modalOpen && isSpeedrun && finalTimeMs !== null && finalTimeMs <= LEADERBOARD_THRESHOLD_MS) {
-      setShowLeaderboard(true);
-    }
-  }, [modalOpen, isSpeedrun, finalTimeMs]);
+
 
   const handleShare = async () => {
     const scoreStr = finalScore.toFixed(1);
