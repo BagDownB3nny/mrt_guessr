@@ -143,25 +143,27 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
           )}
         </div>
 
-        {/* Stats grid */}
-        <div className={styles.grid}>
-          <div className={`${styles.cell} ${styles.cellGreen}`}>
-            <div className={styles.cellNumber}>{guessStats.inOneTry}</div>
-            <div className={styles.cellLabel}>1st try</div>
+        {/* Stats grid — hidden for speedrun */}
+        {!isSpeedrun && (
+          <div className={styles.grid}>
+            <div className={`${styles.cell} ${styles.cellGreen}`}>
+              <div className={styles.cellNumber}>{guessStats.inOneTry}</div>
+              <div className={styles.cellLabel}>1st try</div>
+            </div>
+            <div className={`${styles.cell} ${styles.cellYellow}`}>
+              <div className={styles.cellNumber}>{guessStats.inTwoTries}</div>
+              <div className={styles.cellLabel}>2nd try</div>
+            </div>
+            <div className={`${styles.cell} ${styles.cellOrange}`}>
+              <div className={styles.cellNumber}>{guessStats.inThreeTries}</div>
+              <div className={styles.cellLabel}>3rd try</div>
+            </div>
+            <div className={`${styles.cell} ${styles.cellRed}`}>
+              <div className={styles.cellNumber}>{guessStats.afterThreeTries}</div>
+              <div className={styles.cellLabel}>Missed</div>
+            </div>
           </div>
-          <div className={`${styles.cell} ${styles.cellYellow}`}>
-            <div className={styles.cellNumber}>{guessStats.inTwoTries}</div>
-            <div className={styles.cellLabel}>2nd try</div>
-          </div>
-          <div className={`${styles.cell} ${styles.cellOrange}`}>
-            <div className={styles.cellNumber}>{guessStats.inThreeTries}</div>
-            <div className={styles.cellLabel}>3rd try</div>
-          </div>
-          <div className={`${styles.cell} ${styles.cellRed}`}>
-            <div className={styles.cellNumber}>{guessStats.afterThreeTries}</div>
-            <div className={styles.cellLabel}>Missed</div>
-          </div>
-        </div>
+        )}
 
         {/* Station lists: found | missed — hidden for speedrun */}
         {!isSpeedrun && (
@@ -191,8 +193,8 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
 
         {/* Actions */}
         <div className={styles.actions}>
-          {/* Leaderboard */}
-          {isSpeedrun && finalTimeMs !== null && finalTimeMs! <= LEADERBOARD_THRESHOLD_MS && (
+          {/* Leaderboard — always visible for speedrun */}
+          {isSpeedrun && (
             <button
               className={styles.btnLeaderboard}
               onClick={() => setShowLeaderboard(true)}
