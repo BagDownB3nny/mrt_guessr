@@ -20,7 +20,7 @@
     "correctFlashMs": 450,
     "wrongFlashMs": 450,
     "revealCircleLifetimeMs": 1100,
-    "revealCircleDelayMs": 1000,
+    "revealCircleDelayMs": 800,
     "stationPanDelayMs": 500,
     "stationPanDurationMs": 500,
     "gameEndModalDelayMs": 1000,
