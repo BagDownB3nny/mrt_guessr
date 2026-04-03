@@ -55,7 +55,7 @@
     "score": "You've managed to find {found} station! In this tutorial we will be looking for a total of {total} stations",
     "nextStation": "Now let's try to find {station}!",
     "lives": "Ah that's not quite {station}! You have 2 more guesses left before we reveal the answer",
-    "hints": "To help you out, we will be providing hints here! First incorrect guess will display the lines of this station. Second incorrect guess will display the general area of the station.",
+    "hints": "To help you out, we will be providing hints here! \n First incorrect guess will display the lines of this station \n Second incorrect guess will display the general area of the station",
     "reveal": "That was a hard one! {station} is actually here! Tap on {station} to proceed!"
   },
 
