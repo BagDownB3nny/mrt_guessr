@@ -27,6 +27,20 @@ export function markTutorialEventSeen(event: string): Record<string, boolean> {
   return next;
 }
 
+export function markAllTutorialEventsComplete(): Record<string, boolean> {
+  const next = {
+    intro_find_station: true,
+    found_score: true,
+    found_next_station: true,
+    wrong_once_lives: true,
+    wrong_twice_hints: true,
+    wrong_thrice_reveal: true,
+    [TUTORIAL_COMPLETED_EVENT]: true,
+  };
+  writeTutorialEventsCookie(next);
+  return next;
+}
+
 export function hasCompletedTutorial(): boolean {
   const events = readTutorialEventsCookie();
   return events[TUTORIAL_COMPLETED_EVENT] === true;

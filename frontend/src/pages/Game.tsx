@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Analytics } from "@vercel/analytics/react";
+import { useNavigate } from "react-router-dom";
 import FixedBar from "../components/FixedBar";
 import MrtMapController from "../components/MrtMapController";
 import GameFinishModal from "../components/GameFinishModal";
 import TutorialOverlay, { TutorialHighlightTarget } from "../components/TutorialOverlay";
+import TutorialWelcomeCard from "../components/TutorialWelcomeCard";
 import HintButton from "../components/HintButton";
 import { getAllStations, sampleStations } from "../data/stations";
 import styles from "../css/Game.module.css";
 import config from "../config/constants.json";
-import { markTutorialEventSeen as persistTutorialEventSeen, readTutorialEventsCookie, TUTORIAL_COMPLETED_EVENT } from "../utils/tutorial";
+import { markAllTutorialEventsComplete, markTutorialEventSeen as persistTutorialEventSeen, readTutorialEventsCookie, TUTORIAL_COMPLETED_EVENT } from "../utils/tutorial";
 
 export enum GameType {
   QUICKGAME,
@@ -91,10 +93,12 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
   const [penaltyLabels, setPenaltyLabels] = useState<{ id: number; dx: number }[]>([]);
   const penaltyLabelKey = useRef(0);
   const isSpeedrun = gameType === GameType.SPEEDRUN;
+  const navigate = useNavigate();
   // Sea-colour entry veil — starts opaque, fades out once the SVG is ready
   const [veilVisible, setVeilVisible] = useState(true);
   // Tutorial scaffold
   const tutorialActive = tutorialMode;
+  const [tutorialWelcomeVisible, setTutorialWelcomeVisible] = useState(tutorialMode);
   const [tutorialHighlightTarget, setTutorialHighlightTarget] = useState<TutorialHighlightTarget>("station-card");
   const [tutorialInstruction, setTutorialInstruction] = useState("Find Dhoby Ghaut");
   const [tutorialThreeWrongTriggered, setTutorialThreeWrongTriggered] = useState(false);
@@ -386,16 +390,32 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
         currentStation={currentStation}
         newlyCorrectStation={newlyCorrectStation}
         tries={tries}
-        onMapReady={() => { setVeilVisible(false); }}
-        blocked={modalOpen}
+        onMapReady={() => { if (!tutorialWelcomeVisible) setVeilVisible(false); }}
+        blocked={modalOpen || tutorialWelcomeVisible}
       />
       {/* Entry veil: sea colour, fades out after map loads. */}
       <div
         className={`${styles.seaVeil} ${veilVisible ? "" : styles.seaVeilHidden}`}
         aria-hidden="true"
       />
+      {tutorialWelcomeVisible && tutorialActive && (
+        <TutorialWelcomeCard
+          onStart={() => {
+            setTutorialWelcomeVisible(false);
+            setVeilVisible(false);
+          }}
+          onSkip={() => {
+            const next = markAllTutorialEventsComplete();
+            setTutorialSeenEvents(next);
+            setTutorialWelcomeVisible(false);
+            setTutorialVisible(false);
+            setVeilVisible(false);
+            navigate("/", { replace: true });
+          }}
+        />
+      )}
       <TutorialOverlay
-        visible={!modalOpen && tutorialVisible}
+        visible={!modalOpen && !tutorialWelcomeVisible && tutorialVisible}
         highlightTarget={tutorialHighlightTarget}
         instruction={tutorialInstruction}
         showContinue={tutorialHighlightTarget !== "correct-station"}
@@ -445,7 +465,7 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
     </div>
     {/* Hint button — fixed portal outside GameContainer (iOS blur safety).
         Hidden during speedrun (hints would be unfair) and when modal/instructions are showing. */}
-    {!isSpeedrun && !modalOpen && (
+    {!isSpeedrun && !modalOpen && !tutorialWelcomeVisible && (
       <HintButton
         currentStation={currentStation}
         triesLeft={tries}
