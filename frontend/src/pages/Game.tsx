@@ -3,7 +3,7 @@ import { Analytics } from "@vercel/analytics/react";
 import FixedBar from "../components/FixedBar";
 import MrtMapController from "../components/MrtMapController";
 import GameFinishModal from "../components/GameFinishModal";
-import InstructionCard, { hasSeenInstructions } from "../components/InstructionCard";
+import TutorialOverlay, { TutorialHighlightTarget } from "../components/TutorialOverlay";
 import HintButton from "../components/HintButton";
 import { getAllStations, sampleStations } from "../data/stations";
 import styles from "../css/Game.module.css";
@@ -47,8 +47,10 @@ export function formatMs(ms: number): string {
 }
 const QUICKGAME_STATION_COUNT = config.gameplay.quickgameStationCount;
 const SPEEDRUN_STATION_COUNT = (config.gameplay as any).speedrunStationCount ?? 20;
+const TUTORIAL_STATIONS = ["Dhoby Ghaut", "Buona Vista", "Hume", "Siglap", "Gul Circle"] as const;
 
-function getInitialStations(gameType: GameType): string[] {
+function getInitialStations(gameType: GameType, useTutorial: boolean): string[] {
+  if (useTutorial && gameType === GameType.QUICKGAME) return [...TUTORIAL_STATIONS];
   if (gameType === GameType.QUICKGAME) return sampleStations(QUICKGAME_STATION_COUNT);
   if (gameType === GameType.SPEEDRUN)  return sampleStations(SPEEDRUN_STATION_COUNT);
   return getAllStations();
@@ -75,8 +77,10 @@ export default function Game({ gameType }: GameProps) {
   const isSpeedrun = gameType === GameType.SPEEDRUN;
   // Sea-colour entry veil — starts opaque, fades out once the SVG is ready
   const [veilVisible, setVeilVisible] = useState(true);
-  // Instruction card — shown once for new players (cookie-gated)
-  const [showInstructions, setShowInstructions] = useState(!hasSeenInstructions());
+  // Tutorial scaffold (Phase 1): replace cookie-based instruction card
+  const [tutorialActive] = useState(gameType === GameType.QUICKGAME);
+  const [tutorialHighlightTarget] = useState<TutorialHighlightTarget>("station-card");
+  const [tutorialInstruction] = useState("Find Dhoby Ghaut");
   const [guessStats, setGuessStats] = useState<GuessStats>({
     inOneTry: 0,
     inTwoTries: 0,
@@ -131,11 +135,15 @@ export default function Game({ gameType }: GameProps) {
         setCurrentStation("");
         return prev;
       }
+      if (tutorialActive) {
+        setCurrentStation(prev[0]);
+        return prev.slice(1);
+      }
       const idx = Math.floor(Math.random() * prev.length);
       setCurrentStation(prev[idx]);
       return prev.filter((_, i) => i !== idx);
     });
-  }, []);
+  }, [tutorialActive]);
 
   const recordGuess = (station: string, triesUsed: number) => {
     const t = Math.max(0, triesUsed);
@@ -198,7 +206,7 @@ export default function Game({ gameType }: GameProps) {
     setTries(TRIES_PER_STATION);
     setModalOpen(false);
     setGuessStats({ inOneTry: 0, inTwoTries: 0, inThreeTries: 0, afterThreeTries: 0, foundStations: [], missedStations: [] });
-    const stations = getInitialStations(gameType);
+    const stations = getInitialStations(gameType, tutorialActive);
     setTotalStations(stations.length);
     setUnseenStations(stations);
     // Speedrun: start timer immediately on restart (map is already loaded)
@@ -220,10 +228,10 @@ export default function Game({ gameType }: GameProps) {
 
   // Initialise stations on mount / game type change
   useEffect(() => {
-    const stations = getInitialStations(gameType);
+    const stations = getInitialStations(gameType, tutorialActive);
     setTotalStations(stations.length);
     setUnseenStations(stations);
-  }, [gameType]);
+  }, [gameType, tutorialActive]);
 
   // Speedrun: start timer the moment the veil disappears
   useEffect(() => {
@@ -270,26 +278,29 @@ export default function Game({ gameType }: GameProps) {
         currentStation={currentStation}
         newlyCorrectStation={newlyCorrectStation}
         tries={tries}
-        onMapReady={() => { if (!showInstructions) setVeilVisible(false); }}
+        onMapReady={() => { setVeilVisible(false); }}
         blocked={modalOpen}
       />
-      {/* Entry veil: sea colour, fades out after map loads.
-          During instructions, shrink so the bottom bar peeks through. */}
+      {/* Entry veil: sea colour, fades out after map loads. */}
       <div
-        className={`${styles.seaVeil} ${veilVisible ? "" : styles.seaVeilHidden} ${showInstructions ? styles.seaVeilShort : ""}`}
+        className={`${styles.seaVeil} ${veilVisible ? "" : styles.seaVeilHidden}`}
         aria-hidden="true"
       />
-      {/* Instruction card for first-time players — sits above the veil */}
-      {showInstructions && (
-        <InstructionCard onStart={() => { setShowInstructions(false); setVeilVisible(false); }} />
-      )}
+      <TutorialOverlay
+        visible={tutorialActive && !modalOpen}
+        highlightTarget={tutorialHighlightTarget}
+        instruction={tutorialInstruction}
+      />
       <FixedBar
         currentStation={currentStation}
         tries={tries}
         getStationsLeft={getStationsLeft}
         setModalOpen={setModalOpen}
         restartGame={restartGame}
-        minimal={showInstructions}
+        minimal={false}
+        highlightStationCard={tutorialActive && tutorialHighlightTarget === "station-card"}
+        highlightLives={tutorialActive && tutorialHighlightTarget === "lives"}
+        highlightScore={tutorialActive && tutorialHighlightTarget === "score"}
       />
       <GameFinishModal
         modalOpen={modalOpen}
@@ -303,8 +314,13 @@ export default function Game({ gameType }: GameProps) {
     </div>
     {/* Hint button — fixed portal outside GameContainer (iOS blur safety).
         Hidden during speedrun (hints would be unfair) and when modal/instructions are showing. */}
-    {!isSpeedrun && !modalOpen && !showInstructions && (
-      <HintButton currentStation={currentStation} triesLeft={tries} triesPerStation={TRIES_PER_STATION} />
+    {!isSpeedrun && !modalOpen && (
+      <HintButton
+        currentStation={currentStation}
+        triesLeft={tries}
+        triesPerStation={TRIES_PER_STATION}
+        highlighted={tutorialActive && tutorialHighlightTarget === "hints"}
+      />
     )}
     {/* Penalty labels rendered outside GameContainer in a fixed portal so they
         never trigger GPU re-compositing of the map layer (fixes iOS blur) */}

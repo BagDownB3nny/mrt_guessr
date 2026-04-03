@@ -11,6 +11,11 @@
   pointer-events: none;
 }
 
+.tutorialHighlight {
+  position: relative;
+  z-index: 280;
+}
+
 /* ── Hints container — white capsule holding line + zone hints ── */
 .hintsContainer {
   display: flex;

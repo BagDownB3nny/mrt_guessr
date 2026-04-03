@@ -1,0 +1,130 @@
+.veil {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 240;
+  pointer-events: none;
+}
+
+.highlightFrame {
+  position: fixed;
+  z-index: 260;
+  border-radius: 1rem;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5), 0 0 0 3px var(--color-bg-white);
+  pointer-events: none;
+}
+
+.instructionCard {
+  position: fixed;
+  z-index: 270;
+  max-width: min(16rem, calc(100vw - 2rem));
+  padding: 0.75rem 0.9rem;
+  border-radius: 1rem;
+  background: var(--color-bg-white);
+  color: var(--color-ink);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.35;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.22);
+}
+
+.station-card {
+  left: 50%;
+  bottom: 0.7rem;
+  width: min(22rem, calc(100vw - 8rem));
+  height: 4.9rem;
+  transform: translateX(-50%);
+}
+
+.station-cardCard {
+  left: 50%;
+  bottom: 6.3rem;
+  transform: translateX(-50%);
+}
+
+.lives {
+  left: calc(50% + 9rem);
+  bottom: 1.45rem;
+  width: 4.5rem;
+  height: 2rem;
+}
+
+.livesCard {
+  left: calc(50% + 9rem);
+  bottom: 4.2rem;
+}
+
+.hints {
+  left: 0.8rem;
+  top: 0.8rem;
+  width: 8.8rem;
+  height: 4.4rem;
+}
+
+.hintsCard {
+  left: 0.8rem;
+  top: 5.8rem;
+}
+
+.score {
+  left: 1rem;
+  bottom: 0.8rem;
+  width: 5rem;
+  height: 4.7rem;
+}
+
+.scoreCard {
+  left: 1rem;
+  bottom: 6.1rem;
+}
+
+.correct-station {
+  width: 6rem;
+  height: 6rem;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+}
+
+.correct-stationCard {
+  left: 50%;
+  top: calc(50% + 4.8rem);
+  transform: translateX(-50%);
+}
+
+@media (max-width: 640px) {
+  .station-card {
+    width: calc(100vw - 3rem);
+    height: 4.3rem;
+  }
+
+  .station-cardCard {
+    bottom: 5.7rem;
+  }
+
+  .lives {
+    left: auto;
+    right: 0.75rem;
+    bottom: 1.25rem;
+    width: 4.1rem;
+  }
+
+  .livesCard {
+    left: auto;
+    right: 0.75rem;
+    bottom: 3.9rem;
+  }
+
+  .score {
+    left: 0.75rem;
+    bottom: 0.75rem;
+    width: 4.5rem;
+    height: 4.2rem;
+  }
+
+  .scoreCard {
+    left: 0.75rem;
+    bottom: 5.5rem;
+  }
+}

@@ -50,6 +50,11 @@
 }
 
 /* Capsule title card for the station name */
+.tutorialHighlight {
+    position: relative;
+    z-index: 280;
+}
+
 .stationCapsule {
     display: inline-flex;
     align-items: center;

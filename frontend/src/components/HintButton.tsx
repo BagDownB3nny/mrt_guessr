@@ -19,9 +19,10 @@ interface Props {
   currentStation: string;
   triesLeft: number;
   triesPerStation: number;
+  highlighted?: boolean;
 }
 
-export default function HintButton({ currentStation, triesLeft, triesPerStation }: Props) {
+export default function HintButton({ currentStation, triesLeft, triesPerStation, highlighted = false }: Props) {
   const [lines, setLines] = useState<LineInfo[]>([]);
   const [zone, setZone] = useState<string | null>(null);
   const [showLine, setShowLine] = useState(false);
@@ -66,7 +67,7 @@ export default function HintButton({ currentStation, triesLeft, triesPerStation 
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.hintsContainer}>
+      <div className={`${styles.hintsContainer} ${highlighted ? styles.tutorialHighlight : ""}`}>
         <div className={styles.hintLabel}>Hints</div>
         {showLine && lines.length > 0 && (
           <div key={`line-${lineKey}`} className={styles.hintRow}>

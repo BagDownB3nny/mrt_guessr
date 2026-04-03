@@ -9,6 +9,9 @@ interface Props {
   setModalOpen: Dispatch<SetStateAction<boolean>>;
   restartGame: () => void;
   minimal?: boolean; // show only station capsule (e.g. during instructions)
+  highlightStationCard?: boolean;
+  highlightLives?: boolean;
+  highlightScore?: boolean;
 }
 
 const FixedBar: React.FC<Props> = (props) => {
@@ -19,6 +22,9 @@ const FixedBar: React.FC<Props> = (props) => {
     setModalOpen,
     restartGame,
     minimal = false,
+    highlightStationCard = false,
+    highlightLives = false,
+    highlightScore = false,
   } = props;
   const arrayData = [2, 1, 0];
   const navigate = useNavigate();
@@ -27,7 +33,7 @@ const FixedBar: React.FC<Props> = (props) => {
     <div className={`${styles.fixedBar} ${minimal ? styles.fixedBarMinimal : ""}`}>
       {/* Left: found */}
       {!minimal && (
-        <div className={styles.leftColumn}>
+        <div className={`${styles.leftColumn} ${highlightScore ? styles.tutorialHighlight : ""}`}>
           <div className={styles.statBlock}>
             <div className={styles.statLabel}>Found</div>
             <div className={styles.statValue}>{getStationsLeft()}</div>
@@ -38,7 +44,7 @@ const FixedBar: React.FC<Props> = (props) => {
       {/* Middle: station name + tries */}
       <div className={minimal ? styles.middleColumnFull : styles.middleColumn}>
         {currentStation ? (
-          <div key={currentStation} className={styles.stationCapsule}>
+          <div key={currentStation} className={`${styles.stationCapsule} ${highlightStationCard ? styles.tutorialHighlight : ""}`}>
             <span className={styles.stationName}>{currentStation}</span>
           </div>
         ) : (
@@ -51,7 +57,7 @@ const FixedBar: React.FC<Props> = (props) => {
           )
         )}
         {!minimal && (
-          <div className={styles.triesBox}>
+          <div className={`${styles.triesBox} ${highlightLives ? styles.tutorialHighlight : ""}`}>
             {arrayData.map((num) => {
               const isSpent = tries <= num;
               return (
