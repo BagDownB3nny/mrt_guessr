@@ -377,10 +377,10 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
     enqueueTutorialEvent("correct_first", [
       { target: "center", text: tutorialText.congrats.replace("{station}", newlyCorrectStation) },
       { target: "score", text: tutorialText.score.replace("{found}", String(clickedStations.length)).replace("{total}", String(totalStations)) },
-      { target: "station-card", text: tutorialText.nextStation },
+      { target: "station-card", text: tutorialText.nextStation.replace("{station}", currentStation) },
     ]);
     markTutorialEventSeen(TUTORIAL_COMPLETED_EVENT);
-  }, [tutorialActive, newlyCorrectStation, tutorialVisible, tutorialQueue.length, tutorialSeenEvents.correct_first, tutorialText.congrats, tutorialText.score, tutorialText.nextStation, clickedStations.length, totalStations, enqueueTutorialEvent, markTutorialEventSeen]);
+  }, [tutorialActive, newlyCorrectStation, currentStation, tutorialVisible, tutorialQueue.length, tutorialSeenEvents.correct_first, tutorialText.congrats, tutorialText.score, tutorialText.nextStation, clickedStations.length, totalStations, enqueueTutorialEvent, markTutorialEventSeen]);
 
   useEffect(() => {
     if (activeTutorialEvent !== "wrong_thrice_reveal") return;
