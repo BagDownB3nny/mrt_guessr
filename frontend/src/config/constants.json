@@ -19,7 +19,7 @@
     "gameVeilOutMs": 600,
     "correctFlashMs": 450,
     "wrongFlashMs": 450,
-    "revealCircleLifetimeMs": 2000,
+    "revealCircleLifetimeMs": 10000,
     "revealCircleDelayMs": 800,
     "revealCircleSizePx": 160,
     "revealCircleSizeMobilePx": 96,
