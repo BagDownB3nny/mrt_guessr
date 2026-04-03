@@ -89,6 +89,7 @@ export default function Game({ gameType }: GameProps) {
   const [tutorialInstruction, setTutorialInstruction] = useState("Find Dhoby Ghaut");
   const [tutorialThreeWrongTriggered, setTutorialThreeWrongTriggered] = useState(false);
   const [tutorialCelebrationQueued, setTutorialCelebrationQueued] = useState(false);
+  const [tutorialDismissed, setTutorialDismissed] = useState(false);
   const [guessStats, setGuessStats] = useState<GuessStats>({
     inOneTry: 0,
     inTwoTries: 0,
@@ -215,6 +216,7 @@ export default function Game({ gameType }: GameProps) {
     setModalOpen(false);
     setTutorialThreeWrongTriggered(false);
     setTutorialCelebrationQueued(false);
+    setTutorialDismissed(false);
     setTutorialHighlightTarget("station-card");
     setTutorialInstruction(`Find ${TUTORIAL_STATIONS_DEFAULT[0]}`);
     setGuessStats({ inOneTry: 0, inTwoTries: 0, inThreeTries: 0, afterThreeTries: 0, foundStations: [], missedStations: [] });
@@ -273,6 +275,7 @@ export default function Game({ gameType }: GameProps) {
     if (!tutorialActive || !currentStation || tutorialCelebrationQueued || tries <= 0) return;
     setTutorialHighlightTarget("station-card");
     setTutorialInstruction(`Find ${currentStation}`);
+    setTutorialDismissed(false);
   }, [currentStation, tries, tutorialActive, tutorialCelebrationQueued]);
 
   // Tutorial: first/second wrong clicks guide lives/hints
@@ -281,11 +284,13 @@ export default function Game({ gameType }: GameProps) {
     if (tries === 2) {
       setTutorialHighlightTarget("lives");
       setTutorialInstruction("3 tries — these show how many guesses you have left.");
+      setTutorialDismissed(false);
       return;
     }
     if (tries === 1) {
       setTutorialHighlightTarget("hints");
       setTutorialInstruction("Hints show up after wrong tries.");
+      setTutorialDismissed(false);
     }
   }, [tries, currentStation, tutorialActive]);
 
@@ -300,6 +305,7 @@ export default function Game({ gameType }: GameProps) {
     const timeout = setTimeout(() => {
       setTutorialHighlightTarget("correct-station");
       setTutorialInstruction(`${currentStation} is actually here! Tap on ${currentStation} to proceed!`);
+      setTutorialDismissed(false);
     }, delayMs);
     return () => clearTimeout(timeout);
   }, [tries, currentStation, tutorialActive, tutorialThreeWrongTriggered]);
@@ -310,16 +316,19 @@ export default function Game({ gameType }: GameProps) {
     setTutorialCelebrationQueued(true);
     setTutorialHighlightTarget("station-card");
     setTutorialInstruction(`Nice — ${newlyCorrectStation} is correct.`);
+    setTutorialDismissed(false);
 
     const showScore = setTimeout(() => {
       setTutorialHighlightTarget("score");
       setTutorialInstruction(`You’ve found ${clickedStations.length}/${totalStations} stations.`);
+      setTutorialDismissed(false);
     }, 900);
 
     const showNext = setTimeout(() => {
       if (currentStation) {
         setTutorialHighlightTarget("station-card");
         setTutorialInstruction("You get a new station after finding the previous one.");
+        setTutorialDismissed(false);
       }
       setTutorialCelebrationQueued(false);
     }, 1800);
@@ -361,9 +370,10 @@ export default function Game({ gameType }: GameProps) {
         aria-hidden="true"
       />
       <TutorialOverlay
-        visible={tutorialActive && !modalOpen}
+        visible={tutorialActive && !modalOpen && !tutorialDismissed}
         highlightTarget={tutorialHighlightTarget}
         instruction={`${tutorialInstruction}${tutorialThreeWrongTriggered && tutorialHighlightTarget === "correct-station" ? "" : ""}`}
+        onContinue={() => setTutorialDismissed(true)}
       />
       <FixedBar
         currentStation={currentStation}
