@@ -350,9 +350,13 @@ export default function Game({ gameType }: GameProps) {
     return () => clearTimeout(timeout);
   }, [tries, currentStation, tutorialActive, tutorialThreeWrongTriggered, tutorialSeenEvents.wrong_thrice_reveal]);
 
-  // Tutorial: after first correct answer, queue score then next-station cards behind Continue
+  // Tutorial: when user taps the revealed correct station, dismiss that card without Continue
   useEffect(() => {
     if (!tutorialActive || !newlyCorrectStation) return;
+    if (tutorialHighlightTarget === "correct-station") {
+      markTutorialEventSeen("wrong_thrice_reveal");
+      setTutorialDismissed(true);
+    }
     if (!tutorialSeenEvents.found_score) {
       setTutorialPendingStep("found_score");
       return;
@@ -360,7 +364,7 @@ export default function Game({ gameType }: GameProps) {
     if (!tutorialSeenEvents.found_next_station) {
       setTutorialPendingStep("found_next_station");
     }
-  }, [newlyCorrectStation, tutorialActive, tutorialSeenEvents.found_score, tutorialSeenEvents.found_next_station]);
+  }, [newlyCorrectStation, tutorialActive, tutorialHighlightTarget, tutorialSeenEvents.found_score, tutorialSeenEvents.found_next_station, markTutorialEventSeen]);
 
   useEffect(() => {
     if (!tutorialActive || tutorialPendingStep !== "found_score") return;
@@ -412,6 +416,7 @@ export default function Game({ gameType }: GameProps) {
         visible={tutorialActive && !modalOpen && !tutorialDismissed}
         highlightTarget={tutorialHighlightTarget}
         instruction={tutorialInstruction}
+        showContinue={tutorialHighlightTarget !== "correct-station"}
         onContinue={() => {
           if (tutorialHighlightTarget === "station-card") {
             if (!tutorialSeenEvents.intro_find_station) {
@@ -431,8 +436,6 @@ export default function Game({ gameType }: GameProps) {
             } else {
               setTutorialPendingStep("none");
             }
-          } else if (tutorialHighlightTarget === "correct-station") {
-            markTutorialEventSeen("wrong_thrice_reveal");
           }
           setTutorialDismissed(true);
         }}

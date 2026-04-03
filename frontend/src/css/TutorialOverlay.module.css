@@ -65,27 +65,29 @@
 }
 
 .lives {
-  left: calc(50% + 9rem);
-  bottom: 1.45rem;
-  width: 4.5rem;
-  height: 2rem;
+  left: 50%;
+  bottom: 1.1rem;
+  width: 8rem;
+  height: 3rem;
+  transform: translateX(-50%);
 }
 
 .livesCard {
-  left: calc(50% + 9rem);
-  bottom: 4.2rem;
+  left: 50%;
+  bottom: 4.7rem;
+  transform: translateX(-50%);
 }
 
 .hints {
-  left: 0.8rem;
-  top: 0.8rem;
-  width: 8.8rem;
-  height: 4.4rem;
+  left: 0.7rem;
+  top: 0.7rem;
+  width: 9.6rem;
+  height: 7rem;
 }
 
 .hintsCard {
   left: 0.8rem;
-  top: 5.8rem;
+  top: 8rem;
 }
 
 .score {
@@ -126,16 +128,19 @@
   }
 
   .lives {
-    left: auto;
-    right: 0.75rem;
-    bottom: 1.25rem;
-    width: 4.1rem;
+    left: 50%;
+    right: auto;
+    bottom: 1rem;
+    width: 7.2rem;
+    height: 2.8rem;
+    transform: translateX(-50%);
   }
 
   .livesCard {
-    left: auto;
-    right: 0.75rem;
-    bottom: 3.9rem;
+    left: 50%;
+    right: auto;
+    bottom: 4.3rem;
+    transform: translateX(-50%);
   }
 
   .score {

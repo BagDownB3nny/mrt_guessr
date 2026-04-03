@@ -8,21 +8,26 @@ interface Props {
   highlightTarget: TutorialHighlightTarget;
   instruction: string;
   onContinue: () => void;
+  showContinue?: boolean;
 }
 
-export default function TutorialOverlay({ visible, highlightTarget, instruction, onContinue }: Props) {
+export default function TutorialOverlay({ visible, highlightTarget, instruction, onContinue, showContinue = true }: Props) {
   if (!visible) return null;
 
   return (
     <>
       <div className={styles.veil} aria-hidden="true" />
-      <div className={`${styles.highlightFrame} ${styles[highlightTarget]}`} aria-hidden="true" />
+      {highlightTarget !== "correct-station" && (
+        <div className={`${styles.highlightFrame} ${styles[highlightTarget]}`} aria-hidden="true" />
+      )}
       <div className={`${styles.instructionCard} ${styles[`${highlightTarget}Card`]}`}>
         <div className={styles.cardTopBar} aria-hidden="true" />
         <div className={styles.cardBody}>{instruction}</div>
-        <button className={styles.continueButton} onClick={onContinue} type="button">
-          Continue
-        </button>
+        {showContinue && (
+          <button className={styles.continueButton} onClick={onContinue} type="button">
+            Continue
+          </button>
+        )}
       </div>
     </>
   );
