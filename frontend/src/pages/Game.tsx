@@ -49,6 +49,34 @@ const QUICKGAME_STATION_COUNT = config.gameplay.quickgameStationCount;
 const SPEEDRUN_STATION_COUNT = (config.gameplay as any).speedrunStationCount ?? 20;
 const TUTORIAL_STATIONS_DEFAULT = ["Dhoby Ghaut", "Buona Vista", "Hume", "Siglap", "Gul Circle"] as const;
 const TUTORIAL_STATIONS_THREE_WRONG = ["Dhoby Ghaut", "Buona Vista", "Hume", "Woodlands", "Rochor"] as const;
+const TUTORIAL_EVENTS_COOKIE = "mrt_guessr_tutorial_events";
+const TUTORIAL_COOKIE_DAYS = 365;
+
+type TutorialEventKey =
+  | "intro_find_station"
+  | "found_score"
+  | "found_next_station"
+  | "wrong_once_lives"
+  | "wrong_twice_hints"
+  | "wrong_thrice_reveal";
+
+function readTutorialEventsCookie(): Record<string, boolean> {
+  const raw = document.cookie
+    .split(";")
+    .map((c) => c.trim())
+    .find((c) => c.startsWith(`${TUTORIAL_EVENTS_COOKIE}=`));
+  if (!raw) return {};
+  try {
+    return JSON.parse(decodeURIComponent(raw.slice(TUTORIAL_EVENTS_COOKIE.length + 1)));
+  } catch {
+    return {};
+  }
+}
+
+function writeTutorialEventsCookie(events: Record<string, boolean>): void {
+  const expires = new Date(Date.now() + TUTORIAL_COOKIE_DAYS * 86400000).toUTCString();
+  document.cookie = `${TUTORIAL_EVENTS_COOKIE}=${encodeURIComponent(JSON.stringify(events))}; expires=${expires}; path=/; SameSite=Lax`;
+}
 
 function getInitialStations(gameType: GameType, useTutorial: boolean): string[] {
   if (useTutorial && gameType === GameType.QUICKGAME) return [...TUTORIAL_STATIONS_DEFAULT];
@@ -89,7 +117,8 @@ export default function Game({ gameType }: GameProps) {
   const [tutorialInstruction, setTutorialInstruction] = useState("Find Dhoby Ghaut");
   const [tutorialThreeWrongTriggered, setTutorialThreeWrongTriggered] = useState(false);
   const [tutorialDismissed, setTutorialDismissed] = useState(false);
-  const [tutorialPendingStep, setTutorialPendingStep] = useState<"none" | "score" | "next-station">("none");
+  const [tutorialPendingStep, setTutorialPendingStep] = useState<"none" | "found_score" | "found_next_station">("none");
+  const [tutorialSeenEvents, setTutorialSeenEvents] = useState<Record<string, boolean>>(() => readTutorialEventsCookie());
   const [guessStats, setGuessStats] = useState<GuessStats>({
     inOneTry: 0,
     inTwoTries: 0,
@@ -103,6 +132,15 @@ export default function Game({ gameType }: GameProps) {
 
   const getStationsLeft = (): string =>
     `${clickedStations.length}/${totalStations}`;
+
+  const markTutorialEventSeen = useCallback((event: TutorialEventKey) => {
+    setTutorialSeenEvents((prev) => {
+      if (prev[event]) return prev;
+      const next = { ...prev, [event]: true };
+      writeTutorialEventsCookie(next);
+      return next;
+    });
+  }, []);
 
   // ── Speedrun timer ────────────────────────────────────────────────────────
 
@@ -270,37 +308,39 @@ export default function Game({ gameType }: GameProps) {
     }
   }, [clickedStations.length, currentStation, stopTimer, unseenStations.length]);
 
-  // Tutorial: station-card prompt whenever a new tutorial station is active
+  // Tutorial: intro card only once ever
   useEffect(() => {
     if (!tutorialActive || !currentStation || tutorialPendingStep !== "none" || tries <= 0) return;
+    if (tutorialSeenEvents.intro_find_station) return;
     setTutorialHighlightTarget("station-card");
     setTutorialInstruction(`Find ${currentStation}`);
     setTutorialDismissed(false);
-  }, [currentStation, tries, tutorialActive, tutorialPendingStep]);
+  }, [currentStation, tries, tutorialActive, tutorialPendingStep, tutorialSeenEvents.intro_find_station]);
 
-  // Tutorial: first/second wrong clicks guide lives/hints
+  // Tutorial: first/second wrong clicks guide lives/hints only once ever
   useEffect(() => {
     if (!tutorialActive || !currentStation || tries === TRIES_PER_STATION || tries <= 0) return;
-    if (tries === 2) {
+    if (tries === 2 && !tutorialSeenEvents.wrong_once_lives) {
       setTutorialHighlightTarget("lives");
       setTutorialInstruction("3 tries — these show how many guesses you have left.");
       setTutorialDismissed(false);
       return;
     }
-    if (tries === 1) {
+    if (tries === 1 && !tutorialSeenEvents.wrong_twice_hints) {
       setTutorialHighlightTarget("hints");
       setTutorialInstruction("Hints show up after wrong tries.");
       setTutorialDismissed(false);
     }
-  }, [tries, currentStation, tutorialActive]);
+  }, [tries, currentStation, tutorialActive, tutorialSeenEvents.wrong_once_lives, tutorialSeenEvents.wrong_twice_hints]);
 
-  // Tutorial: 3 wrongs branch after pan/reveal delay
+  // Tutorial: 3 wrongs branch after pan/reveal delay, only once ever
   useEffect(() => {
     if (!tutorialActive || !currentStation || tries > 0) return;
     if (!tutorialThreeWrongTriggered) {
       setTutorialThreeWrongTriggered(true);
       setUnseenStations(getTutorialRemainingStationsAfterThreeWrong(currentStation));
     }
+    if (tutorialSeenEvents.wrong_thrice_reveal) return;
     const delayMs = config.transitions.stationPanDelayMs + config.transitions.revealCircleDelayMs + 350;
     const timeout = setTimeout(() => {
       setTutorialHighlightTarget("correct-station");
@@ -308,33 +348,34 @@ export default function Game({ gameType }: GameProps) {
       setTutorialDismissed(false);
     }, delayMs);
     return () => clearTimeout(timeout);
-  }, [tries, currentStation, tutorialActive, tutorialThreeWrongTriggered]);
+  }, [tries, currentStation, tutorialActive, tutorialThreeWrongTriggered, tutorialSeenEvents.wrong_thrice_reveal]);
 
-  // Tutorial: after correct answer, queue follow-up cards behind Continue
+  // Tutorial: after first correct answer, queue score then next-station cards behind Continue
   useEffect(() => {
     if (!tutorialActive || !newlyCorrectStation) return;
-    setTutorialHighlightTarget("station-card");
-    setTutorialInstruction(`Nice — ${newlyCorrectStation} is correct.`);
-    setTutorialDismissed(false);
-    setTutorialPendingStep("score");
-  }, [newlyCorrectStation, tutorialActive]);
+    if (!tutorialSeenEvents.found_score) {
+      setTutorialPendingStep("found_score");
+      return;
+    }
+    if (!tutorialSeenEvents.found_next_station) {
+      setTutorialPendingStep("found_next_station");
+    }
+  }, [newlyCorrectStation, tutorialActive, tutorialSeenEvents.found_score, tutorialSeenEvents.found_next_station]);
 
   useEffect(() => {
-    if (!tutorialActive || !tutorialDismissed || tutorialPendingStep !== "score") return;
+    if (!tutorialActive || tutorialPendingStep !== "found_score") return;
     setTutorialHighlightTarget("score");
     setTutorialInstruction(`You’ve found ${clickedStations.length}/${totalStations} stations.`);
     setTutorialDismissed(false);
-    setTutorialPendingStep("next-station");
-  }, [tutorialActive, tutorialDismissed, tutorialPendingStep, clickedStations.length, totalStations]);
+  }, [tutorialActive, tutorialPendingStep, clickedStations.length, totalStations]);
 
   useEffect(() => {
-    if (!tutorialActive || !tutorialDismissed || tutorialPendingStep !== "next-station") return;
+    if (!tutorialActive || !tutorialDismissed || tutorialPendingStep !== "found_next_station") return;
     if (currentStation) {
       setTutorialHighlightTarget("station-card");
       setTutorialInstruction("You get a new station after finding the previous one.");
       setTutorialDismissed(false);
     }
-    setTutorialPendingStep("none");
   }, [tutorialActive, tutorialDismissed, tutorialPendingStep, currentStation]);
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -370,8 +411,31 @@ export default function Game({ gameType }: GameProps) {
       <TutorialOverlay
         visible={tutorialActive && !modalOpen && !tutorialDismissed}
         highlightTarget={tutorialHighlightTarget}
-        instruction={`${tutorialInstruction}${tutorialThreeWrongTriggered && tutorialHighlightTarget === "correct-station" ? "" : ""}`}
-        onContinue={() => setTutorialDismissed(true)}
+        instruction={tutorialInstruction}
+        onContinue={() => {
+          if (tutorialHighlightTarget === "station-card") {
+            if (!tutorialSeenEvents.intro_find_station) {
+              markTutorialEventSeen("intro_find_station");
+            } else if (tutorialPendingStep === "found_next_station") {
+              markTutorialEventSeen("found_next_station");
+              setTutorialPendingStep("none");
+            }
+          } else if (tutorialHighlightTarget === "lives") {
+            markTutorialEventSeen("wrong_once_lives");
+          } else if (tutorialHighlightTarget === "hints") {
+            markTutorialEventSeen("wrong_twice_hints");
+          } else if (tutorialHighlightTarget === "score") {
+            markTutorialEventSeen("found_score");
+            if (!tutorialSeenEvents.found_next_station) {
+              setTutorialPendingStep("found_next_station");
+            } else {
+              setTutorialPendingStep("none");
+            }
+          } else if (tutorialHighlightTarget === "correct-station") {
+            markTutorialEventSeen("wrong_thrice_reveal");
+          }
+          setTutorialDismissed(true);
+        }}
       />
       <FixedBar
         currentStation={currentStation}
