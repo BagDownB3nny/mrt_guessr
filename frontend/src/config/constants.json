@@ -63,11 +63,11 @@
     "tileCount": 0,
     "tileWidthPx": 220,
     "tileHeightPx": 140,
-    "speedPxPerFrame": 1.4,
-    "capsuleSpawnRateMs": 900,
+    "speedPxPerFrame": 3,
+    "capsuleSpawnRateMs": 300,
     "capsuleFallSpeedPxPerFrame": 1.1,
-    "capsuleSpinSpeedDegPerFrame": 0.45,
-    "capsuleMaxCount": 12
+    "capsuleSpinSpeedDegPerFrame": 1.35,
+    "capsuleMaxCount": 40
   },
 
   "palette": {
