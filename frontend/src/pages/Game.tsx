@@ -47,13 +47,19 @@ export function formatMs(ms: number): string {
 }
 const QUICKGAME_STATION_COUNT = config.gameplay.quickgameStationCount;
 const SPEEDRUN_STATION_COUNT = (config.gameplay as any).speedrunStationCount ?? 20;
-const TUTORIAL_STATIONS = ["Dhoby Ghaut", "Buona Vista", "Hume", "Siglap", "Gul Circle"] as const;
+const TUTORIAL_STATIONS_DEFAULT = ["Dhoby Ghaut", "Buona Vista", "Hume", "Siglap", "Gul Circle"] as const;
+const TUTORIAL_STATIONS_THREE_WRONG = ["Dhoby Ghaut", "Buona Vista", "Hume", "Woodlands", "Rochor"] as const;
 
 function getInitialStations(gameType: GameType, useTutorial: boolean): string[] {
-  if (useTutorial && gameType === GameType.QUICKGAME) return [...TUTORIAL_STATIONS];
+  if (useTutorial && gameType === GameType.QUICKGAME) return [...TUTORIAL_STATIONS_DEFAULT];
   if (gameType === GameType.QUICKGAME) return sampleStations(QUICKGAME_STATION_COUNT);
   if (gameType === GameType.SPEEDRUN)  return sampleStations(SPEEDRUN_STATION_COUNT);
   return getAllStations();
+}
+
+function getTutorialRemainingStationsAfterThreeWrong(currentStation: string): string[] {
+  const idx = TUTORIAL_STATIONS_THREE_WRONG.indexOf(currentStation as (typeof TUTORIAL_STATIONS_THREE_WRONG)[number]);
+  return idx >= 0 ? [...TUTORIAL_STATIONS_THREE_WRONG.slice(idx + 1)] : [];
 }
 
 export default function Game({ gameType }: GameProps) {
@@ -210,7 +216,7 @@ export default function Game({ gameType }: GameProps) {
     setTutorialThreeWrongTriggered(false);
     setTutorialCelebrationQueued(false);
     setTutorialHighlightTarget("station-card");
-    setTutorialInstruction(`Find ${TUTORIAL_STATIONS[0]}`);
+    setTutorialInstruction(`Find ${TUTORIAL_STATIONS_DEFAULT[0]}`);
     setGuessStats({ inOneTry: 0, inTwoTries: 0, inThreeTries: 0, afterThreeTries: 0, foundStations: [], missedStations: [] });
     const stations = getInitialStations(gameType, tutorialActive);
     setTotalStations(stations.length);
@@ -286,14 +292,17 @@ export default function Game({ gameType }: GameProps) {
   // Tutorial: 3 wrongs branch after pan/reveal delay
   useEffect(() => {
     if (!tutorialActive || !currentStation || tries > 0) return;
-    setTutorialThreeWrongTriggered(true);
+    if (!tutorialThreeWrongTriggered) {
+      setTutorialThreeWrongTriggered(true);
+      setUnseenStations(getTutorialRemainingStationsAfterThreeWrong(currentStation));
+    }
     const delayMs = config.transitions.stationPanDelayMs + config.transitions.revealCircleDelayMs + 350;
     const timeout = setTimeout(() => {
       setTutorialHighlightTarget("correct-station");
       setTutorialInstruction(`${currentStation} is actually here! Tap on ${currentStation} to proceed!`);
     }, delayMs);
     return () => clearTimeout(timeout);
-  }, [tries, currentStation, tutorialActive]);
+  }, [tries, currentStation, tutorialActive, tutorialThreeWrongTriggered]);
 
   // Tutorial: after correct answer, congratulate then score then next-station explanation
   useEffect(() => {
