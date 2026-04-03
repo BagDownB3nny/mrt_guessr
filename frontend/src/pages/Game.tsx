@@ -298,9 +298,9 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
     setTutorialVisible(true);
   }, [currentStation, tries, tutorialActive, tutorialPendingStep, tutorialSeenEvents.intro_find_station]);
 
-  // Tutorial: first/second wrong clicks guide lives/hints only once ever
+  // One-time wrong-guess tutorial cards can also appear outside tutorial mode
   useEffect(() => {
-    if (!tutorialActive || !currentStation || tries === TRIES_PER_STATION || tries <= 0) return;
+    if (!currentStation || tries === TRIES_PER_STATION || tries <= 0 || isSpeedrun) return;
     if (tries === 2 && !tutorialSeenEvents.wrong_once_lives) {
       setTutorialHighlightTarget("lives");
       setTutorialInstruction("3 tries — these show how many guesses you have left.");
@@ -312,12 +312,12 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
       setTutorialInstruction("Hints show up after wrong tries.");
       setTutorialVisible(true);
     }
-  }, [tries, currentStation, tutorialActive, tutorialSeenEvents.wrong_once_lives, tutorialSeenEvents.wrong_twice_hints]);
+  }, [tries, currentStation, isSpeedrun, tutorialSeenEvents.wrong_once_lives, tutorialSeenEvents.wrong_twice_hints]);
 
-  // Tutorial: 3 wrongs branch after pan/reveal delay, only once ever
+  // 3-wrong reveal tutorial can also appear outside tutorial mode
   useEffect(() => {
-    if (!tutorialActive || !currentStation || tries > 0) return;
-    if (!tutorialThreeWrongTriggered) {
+    if (!currentStation || tries > 0 || isSpeedrun) return;
+    if (tutorialActive && !tutorialThreeWrongTriggered) {
       setTutorialThreeWrongTriggered(true);
       setUnseenStations(getTutorialRemainingStationsAfterThreeWrong(currentStation));
     }
@@ -329,7 +329,7 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
       setTutorialVisible(true);
     }, delayMs);
     return () => clearTimeout(timeout);
-  }, [tries, currentStation, tutorialActive, tutorialThreeWrongTriggered, tutorialSeenEvents.wrong_thrice_reveal]);
+  }, [tries, currentStation, isSpeedrun, tutorialActive, tutorialThreeWrongTriggered, tutorialSeenEvents.wrong_thrice_reveal]);
 
   // Tutorial: when user taps the revealed correct station, dismiss that card without Continue
   useEffect(() => {
@@ -395,7 +395,7 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
         aria-hidden="true"
       />
       <TutorialOverlay
-        visible={tutorialActive && !modalOpen && tutorialVisible}
+        visible={!modalOpen && tutorialVisible}
         highlightTarget={tutorialHighlightTarget}
         instruction={tutorialInstruction}
         showContinue={tutorialHighlightTarget !== "correct-station"}
@@ -429,9 +429,9 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
         setModalOpen={setModalOpen}
         restartGame={restartGame}
         minimal={false}
-        highlightStationCard={tutorialActive && tutorialHighlightTarget === "station-card"}
-        highlightLives={tutorialActive && tutorialHighlightTarget === "lives"}
-        highlightScore={tutorialActive && tutorialHighlightTarget === "score"}
+        highlightStationCard={tutorialVisible && tutorialHighlightTarget === "station-card"}
+        highlightLives={tutorialVisible && tutorialHighlightTarget === "lives"}
+        highlightScore={tutorialVisible && tutorialHighlightTarget === "score"}
       />
       <GameFinishModal
         modalOpen={modalOpen}
@@ -450,7 +450,7 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
         currentStation={currentStation}
         triesLeft={tries}
         triesPerStation={TRIES_PER_STATION}
-        highlighted={tutorialActive && tutorialHighlightTarget === "hints"}
+        highlighted={tutorialVisible && tutorialHighlightTarget === "hints"}
       />
     )}
     {/* Penalty labels rendered outside GameContainer in a fixed portal so they
