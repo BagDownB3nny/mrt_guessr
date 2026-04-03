@@ -116,7 +116,7 @@ export default function Game({ gameType }: GameProps) {
   const [tutorialHighlightTarget, setTutorialHighlightTarget] = useState<TutorialHighlightTarget>("station-card");
   const [tutorialInstruction, setTutorialInstruction] = useState("Find Dhoby Ghaut");
   const [tutorialThreeWrongTriggered, setTutorialThreeWrongTriggered] = useState(false);
-  const [tutorialDismissed, setTutorialDismissed] = useState(false);
+  const [tutorialVisible, setTutorialVisible] = useState(false);
   const [tutorialPendingStep, setTutorialPendingStep] = useState<"none" | "found_score" | "found_next_station">("none");
   const [tutorialSeenEvents, setTutorialSeenEvents] = useState<Record<string, boolean>>(() => readTutorialEventsCookie());
   const [guessStats, setGuessStats] = useState<GuessStats>({
@@ -253,7 +253,7 @@ export default function Game({ gameType }: GameProps) {
     setTries(TRIES_PER_STATION);
     setModalOpen(false);
     setTutorialThreeWrongTriggered(false);
-    setTutorialDismissed(false);
+    setTutorialVisible(false);
     setTutorialPendingStep("none");
     setTutorialHighlightTarget("station-card");
     setTutorialInstruction(`Find ${TUTORIAL_STATIONS_DEFAULT[0]}`);
@@ -314,7 +314,7 @@ export default function Game({ gameType }: GameProps) {
     if (tutorialSeenEvents.intro_find_station) return;
     setTutorialHighlightTarget("station-card");
     setTutorialInstruction(`Find ${currentStation}`);
-    setTutorialDismissed(false);
+    setTutorialVisible(true);
   }, [currentStation, tries, tutorialActive, tutorialPendingStep, tutorialSeenEvents.intro_find_station]);
 
   // Tutorial: first/second wrong clicks guide lives/hints only once ever
@@ -323,13 +323,13 @@ export default function Game({ gameType }: GameProps) {
     if (tries === 2 && !tutorialSeenEvents.wrong_once_lives) {
       setTutorialHighlightTarget("lives");
       setTutorialInstruction("3 tries — these show how many guesses you have left.");
-      setTutorialDismissed(false);
+      setTutorialVisible(true);
       return;
     }
     if (tries === 1 && !tutorialSeenEvents.wrong_twice_hints) {
       setTutorialHighlightTarget("hints");
       setTutorialInstruction("Hints show up after wrong tries.");
-      setTutorialDismissed(false);
+      setTutorialVisible(true);
     }
   }, [tries, currentStation, tutorialActive, tutorialSeenEvents.wrong_once_lives, tutorialSeenEvents.wrong_twice_hints]);
 
@@ -345,7 +345,7 @@ export default function Game({ gameType }: GameProps) {
     const timeout = setTimeout(() => {
       setTutorialHighlightTarget("correct-station");
       setTutorialInstruction(`${currentStation} is actually here! Tap on ${currentStation} to proceed!`);
-      setTutorialDismissed(false);
+      setTutorialVisible(true);
     }, delayMs);
     return () => clearTimeout(timeout);
   }, [tries, currentStation, tutorialActive, tutorialThreeWrongTriggered, tutorialSeenEvents.wrong_thrice_reveal]);
@@ -355,7 +355,7 @@ export default function Game({ gameType }: GameProps) {
     if (!tutorialActive || !newlyCorrectStation) return;
     if (tutorialHighlightTarget === "correct-station") {
       markTutorialEventSeen("wrong_thrice_reveal");
-      setTutorialDismissed(true);
+      setTutorialVisible(false);
     }
     if (!tutorialSeenEvents.found_score) {
       setTutorialPendingStep("found_score");
@@ -370,17 +370,17 @@ export default function Game({ gameType }: GameProps) {
     if (!tutorialActive || tutorialPendingStep !== "found_score") return;
     setTutorialHighlightTarget("score");
     setTutorialInstruction(`You’ve found ${clickedStations.length}/${totalStations} stations.`);
-    setTutorialDismissed(false);
+    setTutorialVisible(true);
   }, [tutorialActive, tutorialPendingStep, clickedStations.length, totalStations]);
 
   useEffect(() => {
-    if (!tutorialActive || !tutorialDismissed || tutorialPendingStep !== "found_next_station") return;
+    if (!tutorialActive || tutorialVisible || tutorialPendingStep !== "found_next_station") return;
     if (currentStation) {
       setTutorialHighlightTarget("station-card");
       setTutorialInstruction("You get a new station after finding the previous one.");
-      setTutorialDismissed(false);
+      setTutorialVisible(true);
     }
-  }, [tutorialActive, tutorialDismissed, tutorialPendingStep, currentStation]);
+  }, [tutorialActive, tutorialVisible, tutorialPendingStep, currentStation]);
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
@@ -413,7 +413,7 @@ export default function Game({ gameType }: GameProps) {
         aria-hidden="true"
       />
       <TutorialOverlay
-        visible={tutorialActive && !modalOpen && !tutorialDismissed}
+        visible={tutorialActive && !modalOpen && tutorialVisible}
         highlightTarget={tutorialHighlightTarget}
         instruction={tutorialInstruction}
         showContinue={tutorialHighlightTarget !== "correct-station"}
@@ -437,7 +437,7 @@ export default function Game({ gameType }: GameProps) {
               setTutorialPendingStep("none");
             }
           }
-          setTutorialDismissed(true);
+          setTutorialVisible(false);
         }}
       />
       <FixedBar
