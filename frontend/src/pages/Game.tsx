@@ -449,7 +449,7 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
         }}
       />
       <FixedBar
-        currentStation={currentStation}
+        currentStation={tutorialWelcomeVisible ? "" : currentStation}
         tries={tries}
         getStationsLeft={getStationsLeft}
         setModalOpen={setModalOpen}
