@@ -2,6 +2,7 @@ import React from "react";
 import styles from "../css/Home.module.css";
 import TrackButtonContainer from "../components/TrackButtonContainer";
 import HomeBouncingMaps from "../components/HomeBouncingMaps";
+import HomeFallingCapsules from "../components/HomeFallingCapsules";
 
 const KOFI_URL = "https://ko-fi.com/ratdownr3my";
 
@@ -28,6 +29,7 @@ export default function Home({ onSelectStation }: HomeProps) {
   return (
     <>
       <HomeBouncingMaps />
+      <HomeFallingCapsules />
 
       {/* ── First viewport: title + buttons ── */}
       <div className={styles.home}>

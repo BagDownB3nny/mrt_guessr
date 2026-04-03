@@ -59,6 +59,8 @@ export default function HomeBouncingMaps() {
     };
   }, []);
 
+  if (TILE_COUNT <= 0) return null;
+
   return (
     <div className={styles.layer} aria-hidden="true">
       {tiles.map((tile) => (

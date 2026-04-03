@@ -60,10 +60,14 @@
   },
 
   "homeBackground": {
-    "tileCount": 1,
+    "tileCount": 0,
     "tileWidthPx": 220,
     "tileHeightPx": 140,
-    "speedPxPerFrame": 1.4
+    "speedPxPerFrame": 1.4,
+    "capsuleSpawnRateMs": 900,
+    "capsuleFallSpeedPxPerFrame": 1.1,
+    "capsuleSpinSpeedDegPerFrame": 0.45,
+    "capsuleMaxCount": 12
   },
 
   "palette": {
