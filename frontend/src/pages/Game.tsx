@@ -88,8 +88,8 @@ export default function Game({ gameType }: GameProps) {
   const [tutorialHighlightTarget, setTutorialHighlightTarget] = useState<TutorialHighlightTarget>("station-card");
   const [tutorialInstruction, setTutorialInstruction] = useState("Find Dhoby Ghaut");
   const [tutorialThreeWrongTriggered, setTutorialThreeWrongTriggered] = useState(false);
-  const [tutorialCelebrationQueued, setTutorialCelebrationQueued] = useState(false);
   const [tutorialDismissed, setTutorialDismissed] = useState(false);
+  const [tutorialPendingStep, setTutorialPendingStep] = useState<"none" | "score" | "next-station">("none");
   const [guessStats, setGuessStats] = useState<GuessStats>({
     inOneTry: 0,
     inTwoTries: 0,
@@ -215,8 +215,8 @@ export default function Game({ gameType }: GameProps) {
     setTries(TRIES_PER_STATION);
     setModalOpen(false);
     setTutorialThreeWrongTriggered(false);
-    setTutorialCelebrationQueued(false);
     setTutorialDismissed(false);
+    setTutorialPendingStep("none");
     setTutorialHighlightTarget("station-card");
     setTutorialInstruction(`Find ${TUTORIAL_STATIONS_DEFAULT[0]}`);
     setGuessStats({ inOneTry: 0, inTwoTries: 0, inThreeTries: 0, afterThreeTries: 0, foundStations: [], missedStations: [] });
@@ -272,11 +272,11 @@ export default function Game({ gameType }: GameProps) {
 
   // Tutorial: station-card prompt whenever a new tutorial station is active
   useEffect(() => {
-    if (!tutorialActive || !currentStation || tutorialCelebrationQueued || tries <= 0) return;
+    if (!tutorialActive || !currentStation || tutorialPendingStep !== "none" || tries <= 0) return;
     setTutorialHighlightTarget("station-card");
     setTutorialInstruction(`Find ${currentStation}`);
     setTutorialDismissed(false);
-  }, [currentStation, tries, tutorialActive, tutorialCelebrationQueued]);
+  }, [currentStation, tries, tutorialActive, tutorialPendingStep]);
 
   // Tutorial: first/second wrong clicks guide lives/hints
   useEffect(() => {
@@ -310,34 +310,32 @@ export default function Game({ gameType }: GameProps) {
     return () => clearTimeout(timeout);
   }, [tries, currentStation, tutorialActive, tutorialThreeWrongTriggered]);
 
-  // Tutorial: after correct answer, congratulate then score then next-station explanation
+  // Tutorial: after correct answer, queue follow-up cards behind Continue
   useEffect(() => {
     if (!tutorialActive || !newlyCorrectStation) return;
-    setTutorialCelebrationQueued(true);
     setTutorialHighlightTarget("station-card");
     setTutorialInstruction(`Nice — ${newlyCorrectStation} is correct.`);
     setTutorialDismissed(false);
+    setTutorialPendingStep("score");
+  }, [newlyCorrectStation, tutorialActive]);
 
-    const showScore = setTimeout(() => {
-      setTutorialHighlightTarget("score");
-      setTutorialInstruction(`You’ve found ${clickedStations.length}/${totalStations} stations.`);
+  useEffect(() => {
+    if (!tutorialActive || !tutorialDismissed || tutorialPendingStep !== "score") return;
+    setTutorialHighlightTarget("score");
+    setTutorialInstruction(`You’ve found ${clickedStations.length}/${totalStations} stations.`);
+    setTutorialDismissed(false);
+    setTutorialPendingStep("next-station");
+  }, [tutorialActive, tutorialDismissed, tutorialPendingStep, clickedStations.length, totalStations]);
+
+  useEffect(() => {
+    if (!tutorialActive || !tutorialDismissed || tutorialPendingStep !== "next-station") return;
+    if (currentStation) {
+      setTutorialHighlightTarget("station-card");
+      setTutorialInstruction("You get a new station after finding the previous one.");
       setTutorialDismissed(false);
-    }, 900);
-
-    const showNext = setTimeout(() => {
-      if (currentStation) {
-        setTutorialHighlightTarget("station-card");
-        setTutorialInstruction("You get a new station after finding the previous one.");
-        setTutorialDismissed(false);
-      }
-      setTutorialCelebrationQueued(false);
-    }, 1800);
-
-    return () => {
-      clearTimeout(showScore);
-      clearTimeout(showNext);
-    };
-  }, [newlyCorrectStation, currentStation, clickedStations.length, totalStations, tutorialActive]);
+    }
+    setTutorialPendingStep("none");
+  }, [tutorialActive, tutorialDismissed, tutorialPendingStep, currentStation]);
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
