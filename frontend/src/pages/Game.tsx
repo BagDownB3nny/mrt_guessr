@@ -8,6 +8,7 @@ import HintButton from "../components/HintButton";
 import { getAllStations, sampleStations } from "../data/stations";
 import styles from "../css/Game.module.css";
 import config from "../config/constants.json";
+import { markTutorialEventSeen as persistTutorialEventSeen, readTutorialEventsCookie, TUTORIAL_COMPLETED_EVENT } from "../utils/tutorial";
 
 export enum GameType {
   QUICKGAME,
@@ -18,6 +19,7 @@ export enum GameType {
 
 interface GameProps {
   gameType: GameType;
+  tutorialMode?: boolean;
 }
 
 interface GuessStats {
@@ -49,8 +51,6 @@ const QUICKGAME_STATION_COUNT = config.gameplay.quickgameStationCount;
 const SPEEDRUN_STATION_COUNT = (config.gameplay as any).speedrunStationCount ?? 20;
 const TUTORIAL_STATIONS_DEFAULT = ["Dhoby Ghaut", "Buona Vista", "Hume", "Siglap", "Gul Circle"] as const;
 const TUTORIAL_STATIONS_THREE_WRONG = ["Dhoby Ghaut", "Buona Vista", "Hume", "Woodlands", "Rochor"] as const;
-const TUTORIAL_EVENTS_COOKIE = "mrt_guessr_tutorial_events";
-const TUTORIAL_COOKIE_DAYS = 365;
 
 type TutorialEventKey =
   | "intro_find_station"
@@ -59,24 +59,6 @@ type TutorialEventKey =
   | "wrong_once_lives"
   | "wrong_twice_hints"
   | "wrong_thrice_reveal";
-
-function readTutorialEventsCookie(): Record<string, boolean> {
-  const raw = document.cookie
-    .split(";")
-    .map((c) => c.trim())
-    .find((c) => c.startsWith(`${TUTORIAL_EVENTS_COOKIE}=`));
-  if (!raw) return {};
-  try {
-    return JSON.parse(decodeURIComponent(raw.slice(TUTORIAL_EVENTS_COOKIE.length + 1)));
-  } catch {
-    return {};
-  }
-}
-
-function writeTutorialEventsCookie(events: Record<string, boolean>): void {
-  const expires = new Date(Date.now() + TUTORIAL_COOKIE_DAYS * 86400000).toUTCString();
-  document.cookie = `${TUTORIAL_EVENTS_COOKIE}=${encodeURIComponent(JSON.stringify(events))}; expires=${expires}; path=/; SameSite=Lax`;
-}
 
 function getInitialStations(gameType: GameType, useTutorial: boolean): string[] {
   if (useTutorial && gameType === GameType.QUICKGAME) return [...TUTORIAL_STATIONS_DEFAULT];
@@ -90,7 +72,7 @@ function getTutorialRemainingStationsAfterThreeWrong(currentStation: string): st
   return idx >= 0 ? [...TUTORIAL_STATIONS_THREE_WRONG.slice(idx + 1)] : [];
 }
 
-export default function Game({ gameType }: GameProps) {
+export default function Game({ gameType, tutorialMode = false }: GameProps) {
   const [unseenStations, setUnseenStations] = useState<string[]>([]);
   const [currentStation, setCurrentStation] = useState("");
   const [clickedStations, setClickedStations] = useState<string[]>([]);
@@ -112,7 +94,7 @@ export default function Game({ gameType }: GameProps) {
   // Sea-colour entry veil — starts opaque, fades out once the SVG is ready
   const [veilVisible, setVeilVisible] = useState(true);
   // Tutorial scaffold
-  const [tutorialActive] = useState(gameType === GameType.QUICKGAME);
+  const tutorialActive = tutorialMode;
   const [tutorialHighlightTarget, setTutorialHighlightTarget] = useState<TutorialHighlightTarget>("station-card");
   const [tutorialInstruction, setTutorialInstruction] = useState("Find Dhoby Ghaut");
   const [tutorialThreeWrongTriggered, setTutorialThreeWrongTriggered] = useState(false);
@@ -133,12 +115,11 @@ export default function Game({ gameType }: GameProps) {
   const getStationsLeft = (): string =>
     `${clickedStations.length}/${totalStations}`;
 
-  const markTutorialEventSeen = useCallback((event: TutorialEventKey) => {
+  const markTutorialEventSeen = useCallback((event: TutorialEventKey | typeof TUTORIAL_COMPLETED_EVENT) => {
     setTutorialSeenEvents((prev) => {
       if (prev[event]) return prev;
-      const next = { ...prev, [event]: true };
-      writeTutorialEventsCookie(next);
-      return next;
+      const next = persistTutorialEventSeen(event);
+      return { ...prev, ...next };
     });
   }, []);
 
@@ -371,7 +352,8 @@ export default function Game({ gameType }: GameProps) {
     setTutorialHighlightTarget("score");
     setTutorialInstruction(`You’ve found ${clickedStations.length}/${totalStations} stations.`);
     setTutorialVisible(true);
-  }, [tutorialActive, tutorialPendingStep, clickedStations.length, totalStations]);
+    markTutorialEventSeen(TUTORIAL_COMPLETED_EVENT);
+  }, [tutorialActive, tutorialPendingStep, clickedStations.length, totalStations, markTutorialEventSeen]);
 
   useEffect(() => {
     if (!tutorialActive || tutorialVisible || tutorialPendingStep !== "found_next_station") return;
