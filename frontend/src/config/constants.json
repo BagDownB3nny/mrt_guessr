@@ -50,13 +50,13 @@
   "tutorial": {
     "welcomeTitle": "Welcome to MRT Guessr!",
     "welcomeBody": "How well do you know Singapore's MRT stations? Let's find out!",
-    "findStation": "Find {station}",
-    "congrats": "Nice — {station} is correct.",
-    "score": "You've found {found}/{total} stations.",
-    "nextStation": "You get a new station after finding the previous one.",
-    "lives": "3 tries — these show how many guesses you have left.",
-    "hints": "Hints show up after wrong tries.",
-    "reveal": "{station} is actually here! Tap on {station} to proceed!"
+    "findStation": "Let's start off easy! Look for {station} on the map and tap on it!",
+    "congrats": "Great job! — You found {station}!",
+    "score": "You've managed to find {found} station! In this tutorial we will be looking for a total of {total} stations",
+    "nextStation": "After getting a station correct, a new station will appear here to be found",
+    "lives": "Ah that's not quite {station}! You have 2 more guesses left before we reveal the answer",
+    "hints": "To help you out, we will be providing hints here! First incorrect guess will display the lines of this station. Second incorrect guess will display the general area of the station.",
+    "reveal": "That was a hard one! {station} is actually here! Tap on {station} to proceed!"
   },
 
   "palette": {
