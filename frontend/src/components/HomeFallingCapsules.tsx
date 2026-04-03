@@ -7,7 +7,7 @@ import styles from "../css/HomeFallingCapsules.module.css";
 type Capsule = {
   id: number;
   station: string;
-  colorVar: string;
+  colorVars: string[];
   x: number;
   y: number;
   rotation: number;
@@ -26,12 +26,12 @@ const STATIONS = getAllStations();
 function makeCapsule(id: number): Capsule {
   const station = STATIONS[Math.floor(Math.random() * STATIONS.length)];
   const lines = getLinesForStation(station);
-  const colorVar = lines[0]?.cssVar ?? "--color-nsrl";
+  const colorVars = lines.length > 0 ? lines.map((line) => line.cssVar) : ["--color-nsrl"];
   const maxX = Math.max(0, window.innerWidth - CAPSULE_WIDTH);
   return {
     id,
     station,
-    colorVar,
+    colorVars,
     x: Math.random() * maxX,
     y: -CAPSULE_HEIGHT - Math.random() * 120,
     rotation: Math.random() * 360,
@@ -85,7 +85,9 @@ export default function HomeFallingCapsules() {
           className={styles.capsule}
           style={{
             transform: `translate(${capsule.x}px, ${capsule.y}px) rotate(${capsule.rotation}deg)`,
-            backgroundColor: `var(${capsule.colorVar})`,
+            background: capsule.colorVars.length === 1
+              ? `var(${capsule.colorVars[0]})`
+              : `linear-gradient(90deg, ${capsule.colorVars.map((v, i, arr) => `var(${v}) ${(i / arr.length) * 100}% ${( (i + 1) / arr.length) * 100}%`).join(", ")})`,
           }}
         >
           <span className={styles.stationText}>{capsule.station}</span>
