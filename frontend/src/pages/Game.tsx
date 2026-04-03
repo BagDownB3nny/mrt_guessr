@@ -137,7 +137,6 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
   const enqueueTutorialEvent = useCallback((event: TutorialEventKey, cards: TutorialCard[]) => {
     setTutorialSeenEvents((prev) => {
       if (prev[event]) return prev;
-      const next = persistTutorialEventSeen(event);
       setTutorialQueue(cards);
       setActiveTutorialEvent(event);
       setTutorialVisible(cards.length > 0);
@@ -145,7 +144,7 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
         setTutorialHighlightTarget(cards[0].target);
         setTutorialInstruction(cards[0].text);
       }
-      return { ...prev, ...next };
+      return prev;
     });
   }, []);
 
@@ -153,6 +152,7 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
     setTutorialQueue((prev) => {
       const next = prev.slice(1);
       if (next.length === 0) {
+        if (activeTutorialEvent) markTutorialEventSeen(activeTutorialEvent);
         setTutorialVisible(false);
         setActiveTutorialEvent(null);
       } else {
@@ -162,7 +162,7 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
       }
       return next;
     });
-  }, []);
+  }, [activeTutorialEvent, markTutorialEventSeen]);
 
   // ── Speedrun timer ────────────────────────────────────────────────────────
 
@@ -385,10 +385,11 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
   useEffect(() => {
     if (activeTutorialEvent !== "wrong_thrice_reveal") return;
     if (!newlyCorrectStation) return;
+    markTutorialEventSeen("wrong_thrice_reveal");
     setTutorialVisible(false);
     setTutorialQueue([]);
     setActiveTutorialEvent(null);
-  }, [activeTutorialEvent, newlyCorrectStation]);
+  }, [activeTutorialEvent, newlyCorrectStation, markTutorialEventSeen]);
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
