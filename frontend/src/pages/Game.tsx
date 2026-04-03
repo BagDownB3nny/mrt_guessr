@@ -77,10 +77,12 @@ export default function Game({ gameType }: GameProps) {
   const isSpeedrun = gameType === GameType.SPEEDRUN;
   // Sea-colour entry veil — starts opaque, fades out once the SVG is ready
   const [veilVisible, setVeilVisible] = useState(true);
-  // Tutorial scaffold (Phase 1): replace cookie-based instruction card
+  // Tutorial scaffold
   const [tutorialActive] = useState(gameType === GameType.QUICKGAME);
-  const [tutorialHighlightTarget] = useState<TutorialHighlightTarget>("station-card");
-  const [tutorialInstruction] = useState("Find Dhoby Ghaut");
+  const [tutorialHighlightTarget, setTutorialHighlightTarget] = useState<TutorialHighlightTarget>("station-card");
+  const [tutorialInstruction, setTutorialInstruction] = useState("Find Dhoby Ghaut");
+  const [tutorialThreeWrongTriggered, setTutorialThreeWrongTriggered] = useState(false);
+  const [tutorialCelebrationQueued, setTutorialCelebrationQueued] = useState(false);
   const [guessStats, setGuessStats] = useState<GuessStats>({
     inOneTry: 0,
     inTwoTries: 0,
@@ -205,6 +207,10 @@ export default function Game({ gameType }: GameProps) {
     setNewlyCorrectStation("");
     setTries(TRIES_PER_STATION);
     setModalOpen(false);
+    setTutorialThreeWrongTriggered(false);
+    setTutorialCelebrationQueued(false);
+    setTutorialHighlightTarget("station-card");
+    setTutorialInstruction(`Find ${TUTORIAL_STATIONS[0]}`);
     setGuessStats({ inOneTry: 0, inTwoTries: 0, inThreeTries: 0, afterThreeTries: 0, foundStations: [], missedStations: [] });
     const stations = getInitialStations(gameType, tutorialActive);
     setTotalStations(stations.length);
@@ -256,6 +262,65 @@ export default function Game({ gameType }: GameProps) {
     }
   }, [clickedStations.length, currentStation, stopTimer, unseenStations.length]);
 
+  // Tutorial: station-card prompt whenever a new tutorial station is active
+  useEffect(() => {
+    if (!tutorialActive || !currentStation || tutorialCelebrationQueued || tries <= 0) return;
+    setTutorialHighlightTarget("station-card");
+    setTutorialInstruction(`Find ${currentStation}`);
+  }, [currentStation, tries, tutorialActive, tutorialCelebrationQueued]);
+
+  // Tutorial: first/second wrong clicks guide lives/hints
+  useEffect(() => {
+    if (!tutorialActive || !currentStation || tries === TRIES_PER_STATION || tries <= 0) return;
+    if (tries === 2) {
+      setTutorialHighlightTarget("lives");
+      setTutorialInstruction("3 tries — these show how many guesses you have left.");
+      return;
+    }
+    if (tries === 1) {
+      setTutorialHighlightTarget("hints");
+      setTutorialInstruction("Hints show up after wrong tries.");
+    }
+  }, [tries, currentStation, tutorialActive]);
+
+  // Tutorial: 3 wrongs branch after pan/reveal delay
+  useEffect(() => {
+    if (!tutorialActive || !currentStation || tries > 0) return;
+    setTutorialThreeWrongTriggered(true);
+    const delayMs = config.transitions.stationPanDelayMs + config.transitions.revealCircleDelayMs + 350;
+    const timeout = setTimeout(() => {
+      setTutorialHighlightTarget("correct-station");
+      setTutorialInstruction(`${currentStation} is actually here! Tap on ${currentStation} to proceed!`);
+    }, delayMs);
+    return () => clearTimeout(timeout);
+  }, [tries, currentStation, tutorialActive]);
+
+  // Tutorial: after correct answer, congratulate then score then next-station explanation
+  useEffect(() => {
+    if (!tutorialActive || !newlyCorrectStation) return;
+    setTutorialCelebrationQueued(true);
+    setTutorialHighlightTarget("station-card");
+    setTutorialInstruction(`Nice — ${newlyCorrectStation} is correct.`);
+
+    const showScore = setTimeout(() => {
+      setTutorialHighlightTarget("score");
+      setTutorialInstruction(`You’ve found ${clickedStations.length}/${totalStations} stations.`);
+    }, 900);
+
+    const showNext = setTimeout(() => {
+      if (currentStation) {
+        setTutorialHighlightTarget("station-card");
+        setTutorialInstruction("You get a new station after finding the previous one.");
+      }
+      setTutorialCelebrationQueued(false);
+    }, 1800);
+
+    return () => {
+      clearTimeout(showScore);
+      clearTimeout(showNext);
+    };
+  }, [newlyCorrectStation, currentStation, clickedStations.length, totalStations, tutorialActive]);
+
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
@@ -289,7 +354,7 @@ export default function Game({ gameType }: GameProps) {
       <TutorialOverlay
         visible={tutorialActive && !modalOpen}
         highlightTarget={tutorialHighlightTarget}
-        instruction={tutorialInstruction}
+        instruction={`${tutorialInstruction}${tutorialThreeWrongTriggered && tutorialHighlightTarget === "correct-station" ? "" : ""}`}
       />
       <FixedBar
         currentStation={currentStation}
