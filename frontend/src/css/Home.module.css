@@ -51,6 +51,8 @@
 /* ── First viewport ─────────────────────────────────────────────────────── */
 .home {
     --station-height: 4.5rem;
+
+    z-index: 1;
     --station-gap: 1.2rem;
     --second-station-center: calc(var(--station-height) + var(--station-gap) + (var(--station-height) / 2));
 

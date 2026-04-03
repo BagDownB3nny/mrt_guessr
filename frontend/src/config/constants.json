@@ -59,6 +59,13 @@
     "reveal": "That was a hard one! {station} is actually here! Tap on {station} to proceed!"
   },
 
+  "homeBackground": {
+    "tileCount": 1,
+    "tileWidthPx": 220,
+    "tileHeightPx": 140,
+    "speedPxPerFrame": 1.4
+  },
+
   "palette": {
     "bgApp":      "#E3E3E1",
     "bgWhite":    "#ffffff",
