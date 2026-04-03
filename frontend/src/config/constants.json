@@ -67,7 +67,9 @@
     "capsuleSpawnRateMs": 900,
     "capsuleFallSpeedPxPerFrame": 1.1,
     "capsuleSpinSpeedDegPerFrame": 0.45,
-    "capsuleMaxCount": 0
+    "capsuleMaxCount": 0,
+    "mapOpacity": 0.1,
+    "mapGrayscale": 1
   },
 
   "palette": {

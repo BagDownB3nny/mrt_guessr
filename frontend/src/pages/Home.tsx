@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "../css/Home.module.css";
 import TrackButtonContainer from "../components/TrackButtonContainer";
+import config from "../config/constants.json";
 
 
 const KOFI_URL = "https://ko-fi.com/ratdownr3my";
@@ -17,6 +18,7 @@ type HomeProps = {
 };
 
 export default function Home({ onSelectStation }: HomeProps) {
+  const homeBackground = (config as any).homeBackground;
   const stations: StationConfig[] = [
     { text: "Daily Challenge",    onClick: () => onSelectStation("/daily") },
     { text: "Quickplay",          onClick: () => onSelectStation("/quickgame") },
@@ -37,8 +39,8 @@ export default function Home({ onSelectStation }: HomeProps) {
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
           backgroundSize: "cover",
-          opacity: 0.1,
-          filter: "grayscale(1)",
+          opacity: homeBackground.mapOpacity,
+          filter: `grayscale(${homeBackground.mapGrayscale})`,
           pointerEvents: "none",
         }}
       />
