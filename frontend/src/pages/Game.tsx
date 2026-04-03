@@ -344,7 +344,7 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
     if (!currentStation || tutorialVisible || tutorialQueue.length > 0 || tries === TRIES_PER_STATION || tries <= 0 || isSpeedrun) return;
     if (!tutorialSeenEvents.wrong_once_lives && tries === 2) {
       enqueueTutorialEvent("wrong_once_lives", [
-        { target: "lives", text: tutorialText.lives },
+        { target: "lives", text: tutorialText.lives.replace("{station}", currentStation).replace("{triesLeft}", String(tries)) },
       ]);
       return;
     }
