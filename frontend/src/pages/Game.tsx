@@ -341,7 +341,7 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
   }, [tutorialActive, currentStation, tutorialVisible, tutorialQueue.length, tries, tutorialSeenEvents.intro_find_station, tutorialText.findStation, enqueueTutorialEvent]);
 
   useEffect(() => {
-    if (!currentStation || tutorialVisible || tutorialQueue.length > 0 || tries === TRIES_PER_STATION || tries <= 0 || isSpeedrun) return;
+    if (!tutorialActive || !currentStation || tutorialVisible || tutorialQueue.length > 0 || tries === TRIES_PER_STATION || tries <= 0 || isSpeedrun) return;
     if (!tutorialSeenEvents.wrong_once_lives && tries === 2) {
       enqueueTutorialEvent("wrong_once_lives", [
         { target: "lives", text: tutorialText.lives.replace("{station}", currentStation).replace("{triesLeft}", String(tries)) },
@@ -353,10 +353,10 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
         { target: "hints", text: tutorialText.hints },
       ]);
     }
-  }, [currentStation, tutorialVisible, tutorialQueue.length, tries, isSpeedrun, tutorialSeenEvents.wrong_once_lives, tutorialSeenEvents.wrong_twice_hints, tutorialText.lives, tutorialText.hints, enqueueTutorialEvent]);
+  }, [tutorialActive, currentStation, tutorialVisible, tutorialQueue.length, tries, isSpeedrun, tutorialSeenEvents.wrong_once_lives, tutorialSeenEvents.wrong_twice_hints, tutorialText.lives, tutorialText.hints, enqueueTutorialEvent]);
 
   useEffect(() => {
-    if (!currentStation || tutorialVisible || tutorialQueue.length > 0 || tries > 0 || isSpeedrun) return;
+    if (!tutorialActive || !currentStation || tutorialVisible || tutorialQueue.length > 0 || tries > 0 || isSpeedrun) return;
     if (tutorialActive && !tutorialThreeWrongTriggered) {
       setTutorialThreeWrongTriggered(true);
       setUnseenStations(getTutorialRemainingStationsAfterThreeWrong(currentStation));

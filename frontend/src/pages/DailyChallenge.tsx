@@ -12,7 +12,6 @@ import { api } from "../convex/_generated/api";
 import FixedBar from "../components/FixedBar";
 import MrtMapController from "../components/MrtMapController";
 import GameFinishModal from "../components/GameFinishModal";
-import InstructionCard, { hasSeenInstructions } from "../components/InstructionCard";
 import HintButton from "../components/HintButton";
 import styles from "../css/Game.module.css";
 import config from "../config/constants.json";
@@ -97,7 +96,6 @@ export default function DailyChallenge() {
   const [showGreenFlash, setShowGreenFlash] = useState(false);
   const [showRedFlash, setShowRedFlash] = useState(false);
   const [veilVisible, setVeilVisible] = useState(true);
-  const [showInstructions, setShowInstructions] = useState(!hasSeenInstructions());
   const [guessStats, setGuessStats] = useState<GuessStats>({
     inOneTry: 0, inTwoTries: 0, inThreeTries: 0,
     afterThreeTries: 0, foundStations: [], missedStations: [],
@@ -289,23 +287,20 @@ export default function DailyChallenge() {
           currentStation={currentStation}
           newlyCorrectStation={newlyCorrectStation}
           tries={tries}
-          onMapReady={() => { if (!showInstructions) setVeilVisible(false); }}
+          onMapReady={() => { setVeilVisible(false); }}
           blocked={modalOpen}
         />
         <div
-          className={`${styles.seaVeil} ${veilVisible ? "" : styles.seaVeilHidden} ${showInstructions ? styles.seaVeilShort : ""}`}
+          className={`${styles.seaVeil} ${veilVisible ? "" : styles.seaVeilHidden}`}
           aria-hidden="true"
         />
-        {showInstructions && (
-          <InstructionCard onStart={() => { setShowInstructions(false); setVeilVisible(false); }} />
-        )}
         <FixedBar
           currentStation={currentStation}
           tries={tries}
           getStationsLeft={getStationsLeft}
           setModalOpen={setModalOpen}
           restartGame={() => navigate("/")}
-          minimal={showInstructions}
+          minimal={false}
         />
         <GameFinishModal
           modalOpen={modalOpen}
@@ -315,7 +310,7 @@ export default function DailyChallenge() {
           onExploreMap={onExploreMap}
         />
       </div>
-      {!modalOpen && !showInstructions && (
+      {!modalOpen && (
         <HintButton currentStation={currentStation} triesLeft={tries} triesPerStation={TRIES_PER_STATION} />
       )}
     </>
