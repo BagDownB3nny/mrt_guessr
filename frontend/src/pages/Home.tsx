@@ -1,8 +1,7 @@
 import React from "react";
 import styles from "../css/Home.module.css";
 import TrackButtonContainer from "../components/TrackButtonContainer";
-import HomeBouncingMaps from "../components/HomeBouncingMaps";
-import HomeFallingCapsules from "../components/HomeFallingCapsules";
+
 
 const KOFI_URL = "https://ko-fi.com/ratdownr3my";
 
@@ -28,8 +27,21 @@ export default function Home({ onSelectStation }: HomeProps) {
 
   return (
     <>
-      <HomeBouncingMaps />
-      <HomeFallingCapsules />
+      <div
+        aria-hidden="true"
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 0,
+          backgroundImage: 'url("/full-mrt-map.svg")',
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+          opacity: 0.1,
+          filter: "grayscale(1)",
+          pointerEvents: "none",
+        }}
+      />
 
       {/* ── First viewport: title + buttons ── */}
       <div className={styles.home}>
