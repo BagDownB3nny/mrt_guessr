@@ -2,8 +2,10 @@
 
 Run this before shipping to production.
 
-## Build
+## Automated checks
 - [ ] `CI=true npm run build` passes in `frontend/`
+- [ ] `CI=true npm run test:unit` passes in `frontend/`
+- [ ] Tutorial flow unit tests pass before every push
 
 ## Manual browser QA
 - [ ] Open the game in an incognito / private window to trigger tutorial flow
