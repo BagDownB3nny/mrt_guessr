@@ -47,6 +47,18 @@
     "apiBase": "https://mrt.eiti.dev"
   },
 
+  "tutorial": {
+    "welcomeTitle": "Welcome to MRT Guessr!",
+    "welcomeBody": "How well do you know Singapore's MRT stations? Let's find out!",
+    "findStation": "Find {station}",
+    "congrats": "Nice — {station} is correct.",
+    "score": "You've found {found}/{total} stations.",
+    "nextStation": "You get a new station after finding the previous one.",
+    "lives": "3 tries — these show how many guesses you have left.",
+    "hints": "Hints show up after wrong tries.",
+    "reveal": "{station} is actually here! Tap on {station} to proceed!"
+  },
+
   "palette": {
     "bgApp":      "#E3E3E1",
     "bgWhite":    "#ffffff",

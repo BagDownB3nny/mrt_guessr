@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "../css/TutorialOverlay.module.css";
 
-export type TutorialHighlightTarget = "station-card" | "lives" | "hints" | "score" | "correct-station";
+export type TutorialHighlightTarget = "station-card" | "lives" | "hints" | "score" | "correct-station" | "center";
 
 interface Props {
   visible: boolean;
@@ -17,7 +17,7 @@ export default function TutorialOverlay({ visible, highlightTarget, instruction,
   return (
     <>
       <div className={styles.veil} aria-hidden="true" />
-      {highlightTarget !== "correct-station" && (
+      {highlightTarget !== "correct-station" && highlightTarget !== "center" && (
         <div className={`${styles.highlightFrame} ${styles[highlightTarget]}`} aria-hidden="true" />
       )}
       <div className={`${styles.instructionCard} ${styles[`${highlightTarget}Card`]}`}>
