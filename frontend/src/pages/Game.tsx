@@ -433,6 +433,8 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
               markTutorialEventSeen("found_next_station");
               setTutorialPendingStep("none");
             }
+          } else if (tutorialHighlightTarget === "center") {
+            setTutorialPendingStep("found_score");
           } else if (tutorialHighlightTarget === "lives") {
             markTutorialEventSeen("wrong_once_lives");
           } else if (tutorialHighlightTarget === "hints") {
