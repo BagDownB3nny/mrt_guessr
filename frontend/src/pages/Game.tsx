@@ -1,16 +1,17 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import { useNavigate } from "react-router-dom";
 import FixedBar from "../components/FixedBar";
 import MrtMapController from "../components/MrtMapController";
 import GameFinishModal from "../components/GameFinishModal";
-import TutorialOverlay, { TutorialHighlightTarget } from "../components/TutorialOverlay";
+import TutorialOverlay from "../components/TutorialOverlay";
 import TutorialWelcomeCard from "../components/TutorialWelcomeCard";
 import HintButton from "../components/HintButton";
 import { getAllStations, sampleStations } from "../data/stations";
 import styles from "../css/Game.module.css";
 import config from "../config/constants.json";
 import { markAllTutorialEventsComplete, markTutorialEventSeen as persistTutorialEventSeen, readTutorialEventsCookie, TUTORIAL_COMPLETED_EVENT } from "../utils/tutorial";
+import { advanceQueue, buildTutorialCards, consumeCompletionPending, createInitialTutorialEngineState, enqueueEvent, getActiveCard, getRevealDelayMs, shouldDismissRevealOnCorrectTap, shouldTriggerEvent, TutorialEngineState, TutorialEventKey } from "../utils/tutorialEngine";
 
 export enum GameType {
   QUICKGAME,
@@ -54,18 +55,6 @@ const SPEEDRUN_STATION_COUNT = (config.gameplay as any).speedrunStationCount ?? 
 const TUTORIAL_STATIONS_DEFAULT = ["Dhoby Ghaut", "Buona Vista", "Hume", "Siglap", "Gul Circle"] as const;
 const TUTORIAL_STATIONS_THREE_WRONG = ["Dhoby Ghaut", "Buona Vista", "Hume", "Woodlands", "Rochor"] as const;
 
-type TutorialEventKey =
-  | "intro_find_station"
-  | "correct_first"
-  | "wrong_once_lives"
-  | "wrong_twice_hints"
-  | "wrong_thrice_reveal";
-
-type TutorialCard = {
-  target: TutorialHighlightTarget;
-  text: string;
-  continueable?: boolean;
-};
 
 function getInitialStations(gameType: GameType, useTutorial: boolean): string[] {
   if (useTutorial && gameType === GameType.QUICKGAME) return [...TUTORIAL_STATIONS_DEFAULT];
@@ -105,14 +94,10 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
   const tutorialActive = tutorialMode;
   const [tutorialWelcomeVisible, setTutorialWelcomeVisible] = useState(tutorialMode);
   const tutorialText = (config as any).tutorial;
-  const [tutorialHighlightTarget, setTutorialHighlightTarget] = useState<TutorialHighlightTarget>("station-card");
-  const [tutorialInstruction, setTutorialInstruction] = useState(tutorialText.findStation.replace("{station}", "Dhoby Ghaut"));
   const [tutorialThreeWrongTriggered, setTutorialThreeWrongTriggered] = useState(false);
-  const [tutorialVisible, setTutorialVisible] = useState(false);
-  const [tutorialQueue, setTutorialQueue] = useState<TutorialCard[]>([]);
-  const [activeTutorialEvent, setActiveTutorialEvent] = useState<TutorialEventKey | null>(null);
-  const [tutorialRevealStation, setTutorialRevealStation] = useState<string | null>(null);
+  const [tutorialEngine, setTutorialEngine] = useState<TutorialEngineState>(createInitialTutorialEngineState());
   const [tutorialSeenEvents, setTutorialSeenEvents] = useState<Record<string, boolean>>(() => readTutorialEventsCookie());
+  const activeTutorialCard = getActiveCard(tutorialEngine);
   const [guessStats, setGuessStats] = useState<GuessStats>({
     inOneTry: 0,
     inTwoTries: 0,
@@ -135,35 +120,20 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
     });
   }, []);
 
-  const enqueueTutorialEvent = useCallback((event: TutorialEventKey, cards: TutorialCard[]) => {
-    setTutorialSeenEvents((prev) => {
-      if (prev[event]) return prev;
-      setTutorialQueue(cards);
-      setActiveTutorialEvent(event);
-      setTutorialVisible(cards.length > 0);
-      if (cards[0]) {
-        setTutorialHighlightTarget(cards[0].target);
-        setTutorialInstruction(cards[0].text);
-      }
-      return prev;
-    });
-  }, []);
+  const startTutorialEvent = useCallback((event: TutorialEventKey, ctx: { currentStation: string; newlyCorrectStation: string; wrongCount: number; clickedStationsCount: number; totalStations: number; isSpeedrun: boolean; tutorialActive: boolean; revealedStation: string | null; }) => {
+    if (tutorialSeenEvents[event]) return;
+    const cards = buildTutorialCards(event, ctx);
+    setTutorialEngine((prev) => enqueueEvent(prev, event, cards, ctx));
+  }, [tutorialSeenEvents]);
 
   const advanceTutorialQueue = useCallback(() => {
-    setTutorialQueue((prev) => {
-      const next = prev.slice(1);
-      if (next.length === 0) {
-        if (activeTutorialEvent) markTutorialEventSeen(activeTutorialEvent);
-        setTutorialVisible(false);
-        setActiveTutorialEvent(null);
-      } else {
-        setTutorialHighlightTarget(next[0].target);
-        setTutorialInstruction(next[0].text);
-        setTutorialVisible(true);
-      }
+    setTutorialEngine((prev) => {
+      const doneEvent = prev.queue.length <= 1 ? prev.activeEvent : null;
+      const next = advanceQueue(prev);
+      if (doneEvent) markTutorialEventSeen(doneEvent);
       return next;
     });
-  }, [activeTutorialEvent, markTutorialEventSeen]);
+  }, [markTutorialEventSeen]);
 
   // ── Speedrun timer ────────────────────────────────────────────────────────
 
@@ -276,12 +246,7 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
     setTries(TRIES_PER_STATION);
     setModalOpen(false);
     setTutorialThreeWrongTriggered(false);
-    setTutorialVisible(false);
-    setTutorialQueue([]);
-    setActiveTutorialEvent(null);
-    setTutorialRevealStation(null);
-    setTutorialHighlightTarget("station-card");
-    setTutorialInstruction(tutorialText.findStation.replace("{station}", TUTORIAL_STATIONS_DEFAULT[0]));
+    setTutorialEngine(createInitialTutorialEngineState());
     setGuessStats({ inOneTry: 0, inTwoTries: 0, inThreeTries: 0, afterThreeTries: 0, foundStations: [], missedStations: [] });
     const stations = getInitialStations(gameType, tutorialActive);
     setTotalStations(stations.length);
@@ -333,67 +298,63 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
     }
   }, [clickedStations.length, currentStation, stopTimer, unseenStations.length]);
 
-  // Tutorial event detector → queue cards through a single presenter
-  useEffect(() => {
-    if (!tutorialActive || !currentStation || tutorialVisible || tutorialQueue.length > 0 || tries <= 0) return;
-    if (tutorialSeenEvents.intro_find_station) return;
-    enqueueTutorialEvent("intro_find_station", [
-      { target: "station-card", text: tutorialText.findStation.replace("{station}", currentStation) },
-    ]);
-  }, [tutorialActive, currentStation, tutorialVisible, tutorialQueue.length, tries, tutorialSeenEvents.intro_find_station, tutorialText.findStation, enqueueTutorialEvent]);
+  // Tutorial event detector → raw triggers feed a small engine
+  const tutorialCtx = useMemo(() => ({
+    tutorialActive,
+    isSpeedrun,
+    currentStation,
+    wrongCount: TRIES_PER_STATION - tries,
+    clickedStationsCount: clickedStations.length,
+    totalStations,
+    newlyCorrectStation,
+    revealedStation: tutorialEngine.revealedStation,
+  }), [tutorialActive, isSpeedrun, currentStation, tries, clickedStations.length, totalStations, newlyCorrectStation, tutorialEngine.revealedStation]);
 
   useEffect(() => {
-    if (!tutorialActive || !currentStation || tutorialVisible || tutorialQueue.length > 0 || tries === TRIES_PER_STATION || tries <= 0 || isSpeedrun) return;
-    if (!tutorialSeenEvents.wrong_once_lives && tries === 2) {
-      enqueueTutorialEvent("wrong_once_lives", [
-        { target: "lives", text: tutorialText.lives.replace("{station}", currentStation).replace("{triesLeft}", String(tries)) },
-      ]);
+    if (shouldTriggerEvent("intro_find_station", tutorialCtx, tutorialSeenEvents, tutorialEngine)) {
+      startTutorialEvent("intro_find_station", tutorialCtx);
+    }
+  }, [tutorialCtx, tutorialSeenEvents, tutorialEngine, startTutorialEvent]);
+
+  useEffect(() => {
+    if (shouldTriggerEvent("wrong_once_lives", tutorialCtx, tutorialSeenEvents, tutorialEngine)) {
+      startTutorialEvent("wrong_once_lives", tutorialCtx);
       return;
     }
-    if (!tutorialSeenEvents.wrong_twice_hints && tries === 1) {
-      enqueueTutorialEvent("wrong_twice_hints", [
-        { target: "hints", text: tutorialText.hints },
-      ]);
+    if (shouldTriggerEvent("wrong_twice_hints", tutorialCtx, tutorialSeenEvents, tutorialEngine)) {
+      startTutorialEvent("wrong_twice_hints", tutorialCtx);
     }
-  }, [tutorialActive, currentStation, tutorialVisible, tutorialQueue.length, tries, isSpeedrun, tutorialSeenEvents.wrong_once_lives, tutorialSeenEvents.wrong_twice_hints, tutorialText.lives, tutorialText.hints, enqueueTutorialEvent]);
+  }, [tutorialCtx, tutorialSeenEvents, tutorialEngine, startTutorialEvent]);
 
   useEffect(() => {
-    if (!tutorialActive || !currentStation || tutorialVisible || tutorialQueue.length > 0 || tries > 0 || isSpeedrun) return;
-    if (tutorialActive && !tutorialThreeWrongTriggered) {
+    if (!shouldTriggerEvent("wrong_thrice_reveal", tutorialCtx, tutorialSeenEvents, tutorialEngine)) return;
+    if (!tutorialThreeWrongTriggered) {
       setTutorialThreeWrongTriggered(true);
       setUnseenStations(getTutorialRemainingStationsAfterThreeWrong(currentStation));
     }
-    if (tutorialSeenEvents.wrong_thrice_reveal) return;
-    const delayMs = config.transitions.stationPanDelayMs + config.transitions.revealCircleDelayMs + 350;
-    const timeout = setTimeout(() => {
-      setTutorialRevealStation(currentStation);
-      enqueueTutorialEvent("wrong_thrice_reveal", [
-        { target: "correct-station", text: tutorialText.reveal.replaceAll("{station}", currentStation), continueable: false },
-      ]);
-    }, delayMs);
+    const timeout = setTimeout(() => startTutorialEvent("wrong_thrice_reveal", tutorialCtx), getRevealDelayMs());
     return () => clearTimeout(timeout);
-  }, [currentStation, tutorialVisible, tutorialQueue.length, tries, isSpeedrun, tutorialActive, tutorialThreeWrongTriggered, tutorialSeenEvents.wrong_thrice_reveal, tutorialText.reveal, enqueueTutorialEvent]);
+  }, [tutorialCtx, tutorialSeenEvents, tutorialEngine, tutorialThreeWrongTriggered, currentStation, startTutorialEvent]);
 
   useEffect(() => {
-    if (!tutorialActive || !newlyCorrectStation || tutorialVisible || tutorialQueue.length > 0) return;
-    if (tutorialSeenEvents.correct_first) return;
-    enqueueTutorialEvent("correct_first", [
-      { target: "center", text: tutorialText.congrats.replace("{station}", newlyCorrectStation) },
-      { target: "score", text: tutorialText.score.replace("{found}", String(clickedStations.length)).replace("{total}", String(totalStations)) },
-      { target: "station-card", text: tutorialText.nextStation.replace("{station}", currentStation) },
-    ]);
+    if (!shouldTriggerEvent("correct_first", tutorialCtx, tutorialSeenEvents, tutorialEngine)) return;
+    startTutorialEvent("correct_first", tutorialCtx);
     markTutorialEventSeen(TUTORIAL_COMPLETED_EVENT);
-  }, [tutorialActive, newlyCorrectStation, currentStation, tutorialVisible, tutorialQueue.length, tutorialSeenEvents.correct_first, tutorialText.congrats, tutorialText.score, tutorialText.nextStation, clickedStations.length, totalStations, enqueueTutorialEvent, markTutorialEventSeen]);
+  }, [tutorialCtx, tutorialSeenEvents, tutorialEngine, startTutorialEvent, markTutorialEventSeen]);
 
   useEffect(() => {
-    if (activeTutorialEvent !== "wrong_thrice_reveal") return;
-    if (!newlyCorrectStation || !tutorialRevealStation || newlyCorrectStation !== tutorialRevealStation) return;
+    if (!shouldDismissRevealOnCorrectTap(tutorialEngine, newlyCorrectStation)) return;
     markTutorialEventSeen("wrong_thrice_reveal");
-    setTutorialVisible(false);
-    setTutorialQueue([]);
-    setActiveTutorialEvent(null);
-    setTutorialRevealStation(null);
-  }, [activeTutorialEvent, newlyCorrectStation, tutorialRevealStation, markTutorialEventSeen]);
+    setTutorialEngine(createInitialTutorialEngineState());
+  }, [tutorialEngine, newlyCorrectStation, markTutorialEventSeen]);
+
+  useEffect(() => {
+    const [nextState, completionEvent] = consumeCompletionPending(tutorialEngine);
+    if (completionEvent) {
+      setTutorialEngine(nextState);
+      markTutorialEventSeen(completionEvent);
+    }
+  }, [tutorialEngine, markTutorialEventSeen]);
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
@@ -437,17 +398,17 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
             const next = markAllTutorialEventsComplete();
             setTutorialSeenEvents(next);
             setTutorialWelcomeVisible(false);
-            setTutorialVisible(false);
+            setTutorialEngine(createInitialTutorialEngineState());
             setVeilVisible(false);
             navigate("/", { replace: true });
           }}
         />
       )}
       <TutorialOverlay
-        visible={!modalOpen && !tutorialWelcomeVisible && tutorialVisible}
-        highlightTarget={tutorialHighlightTarget}
-        instruction={tutorialInstruction}
-        showContinue={tutorialHighlightTarget !== "correct-station"}
+        visible={!modalOpen && !tutorialWelcomeVisible && tutorialEngine.visible && !!activeTutorialCard}
+        highlightTarget={activeTutorialCard?.target ?? "station-card"}
+        instruction={activeTutorialCard?.text ?? ""}
+        showContinue={activeTutorialCard?.continueable !== false}
         onContinue={advanceTutorialQueue}
       />
       <FixedBar
@@ -457,9 +418,9 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
         setModalOpen={setModalOpen}
         restartGame={restartGame}
         minimal={false}
-        highlightStationCard={tutorialVisible && tutorialHighlightTarget === "station-card"}
-        highlightLives={tutorialVisible && tutorialHighlightTarget === "lives"}
-        highlightScore={tutorialVisible && tutorialHighlightTarget === "score"}
+        highlightStationCard={tutorialEngine.visible && activeTutorialCard?.target === "station-card"}
+        highlightLives={tutorialEngine.visible && activeTutorialCard?.target === "lives"}
+        highlightScore={tutorialEngine.visible && activeTutorialCard?.target === "score"}
       />
       <GameFinishModal
         modalOpen={modalOpen}
@@ -478,7 +439,7 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
         currentStation={currentStation}
         triesLeft={tries}
         triesPerStation={TRIES_PER_STATION}
-        highlighted={tutorialVisible && tutorialHighlightTarget === "hints"}
+        highlighted={tutorialEngine.visible && activeTutorialCard?.target === "hints"}
       />
     )}
     {/* Penalty labels rendered outside GameContainer in a fixed portal so they
