@@ -1,5 +1,6 @@
 import config from "../config/constants.json";
 import { TUTORIAL_COMPLETED_EVENT } from "./tutorial";
+import { TutorialHighlightTarget } from "./tutorialHighlight";
 
 export type TutorialEventKey =
   | "intro_find_station"
@@ -7,8 +8,6 @@ export type TutorialEventKey =
   | "wrong_once_lives"
   | "wrong_twice_hints"
   | "wrong_thrice_reveal";
-
-export type TutorialHighlightTarget = "station-card" | "lives" | "hints" | "score" | "correct-station" | "center" | "clicked-station";
 
 export type TutorialCard = {
   target: TutorialHighlightTarget;

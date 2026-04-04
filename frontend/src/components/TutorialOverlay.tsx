@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "../css/TutorialOverlay.module.css";
-
-export type TutorialHighlightTarget = "station-card" | "lives" | "hints" | "score" | "correct-station" | "center" | "clicked-station";
+import { measureTutorialTarget, TutorialHighlightTarget } from "../utils/tutorialHighlight";
 
 interface Props {
   visible: boolean;
@@ -24,11 +23,10 @@ export default function TutorialOverlay({ visible, highlightTarget, instruction,
 
     const measure = () => {
       if (highlightTarget === "clicked-station") {
-        setRect(anchorRect ?? null);
+        setRect(anchorRect ?? measureTutorialTarget(highlightTarget, clickedStationName) ?? null);
         return;
       }
-      const el = document.querySelector(`[data-tutorial-target="${highlightTarget}"]`) as HTMLElement | null;
-      setRect(el ? el.getBoundingClientRect() : null);
+      setRect(measureTutorialTarget(highlightTarget) ?? null);
     };
 
     measure();
