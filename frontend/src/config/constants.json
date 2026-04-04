@@ -77,7 +77,7 @@
     "backgroundBoundaryWidthPx": 1200,
     "backgroundBoundaryHeightPx": 800,
     "backgroundPanSpeedPxPerFrame": 0.2,
-    "backgroundZoomLevel": 0.6,
+    "backgroundZoomLevel": 0.9,
     "backgroundCenterZoomLevel": 1.2,
     "backgroundImageWidthPx": 1800,
     "backgroundImageHeightPx": 1200,
