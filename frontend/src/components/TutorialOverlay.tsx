@@ -8,11 +8,12 @@ interface Props {
   highlightTarget: TutorialHighlightTarget;
   instruction: string;
   clickedStationName?: string;
+  anchorRect?: DOMRect | null;
   onContinue: () => void;
   showContinue?: boolean;
 }
 
-export default function TutorialOverlay({ visible, highlightTarget, instruction, clickedStationName, onContinue, showContinue = true }: Props) {
+export default function TutorialOverlay({ visible, highlightTarget, instruction, clickedStationName, anchorRect = null, onContinue, showContinue = true }: Props) {
   const [rect, setRect] = useState<DOMRect | null>(null);
 
   useEffect(() => {
@@ -39,6 +40,14 @@ export default function TutorialOverlay({ visible, highlightTarget, instruction,
 
   if (!visible) return null;
 
+  const clickedStationCardStyle = highlightTarget === "clicked-station" && anchorRect
+    ? {
+        left: anchorRect.left + anchorRect.width / 2,
+        top: anchorRect.bottom + 16,
+        transform: "translateX(-50%)",
+      }
+    : undefined;
+
   return (
     <>
       {highlightTarget !== "correct-station" && <div className={styles.veil} aria-hidden="true" />}
@@ -54,7 +63,7 @@ export default function TutorialOverlay({ visible, highlightTarget, instruction,
           }}
         />
       )}
-      <div className={`${styles.instructionCard} ${styles[`${highlightTarget}Card`]}`}>
+      <div className={`${styles.instructionCard} ${styles[`${highlightTarget}Card`]}`} style={clickedStationCardStyle}>
         <div className={styles.cardTopBar} aria-hidden="true" />
         <div className={styles.cardBody}>{instruction}</div>
         {showContinue && (

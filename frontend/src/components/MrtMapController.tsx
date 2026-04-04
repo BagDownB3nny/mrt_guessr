@@ -22,6 +22,7 @@ interface Props {
   currentStation: string;
   newlyCorrectStation: string;
   tutorialHighlightedStation?: string | null;
+  onTutorialHighlightRect?: (rect: DOMRect | null) => void;
   tries: number;
   onMapReady?: () => void;
   blocked?: boolean;  // when true, map is non-interactive (e.g. modal open)
@@ -33,6 +34,7 @@ export default function MrtMapController({
   currentStation,
   newlyCorrectStation,
   tutorialHighlightedStation = null,
+  onTutorialHighlightRect,
   tries,
   onMapReady,
   blocked = false,
@@ -206,12 +208,15 @@ export default function MrtMapController({
         div.style.top = `${cy}px`;
         div.style.width = `${size}px`;
         div.style.height = `${size}px`;
+        onTutorialHighlightRect?.(rect);
+      } else {
+        onTutorialHighlightRect?.(null);
       }
       rafId = requestAnimationFrame(track);
     };
     rafId = requestAnimationFrame(track);
     return () => cancelAnimationFrame(rafId);
-  }, [tutorialHighlightedStation]);
+  }, [tutorialHighlightedStation, onTutorialHighlightRect]);
 
   // ── Reveal station name text when correctly guessed ───────────────────────
   useEffect(() => {

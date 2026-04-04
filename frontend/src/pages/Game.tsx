@@ -108,6 +108,7 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
   const [tutorialWelcomeVisible, setTutorialWelcomeVisible] = useState(tutorialMode);
   const tutorialText = (config as any).tutorial;
   const [tutorialThreeWrongTriggered, setTutorialThreeWrongTriggered] = useState(false);
+  const [tutorialAnchorRect, setTutorialAnchorRect] = useState<DOMRect | null>(null);
   const [tutorialEngine, setTutorialEngine] = useState<TutorialEngineState>(createInitialTutorialEngineState());
   const [tutorialSeenEvents, setTutorialSeenEvents] = useState<Record<string, boolean>>(() => readTutorialEventsCookie());
   const activeTutorialCard = getActiveCard(tutorialEngine);
@@ -391,6 +392,7 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
         currentStation={currentStation}
         newlyCorrectStation={newlyCorrectStation}
         tutorialHighlightedStation={activeTutorialCard?.target === "clicked-station" ? newlyCorrectStation : null}
+        onTutorialHighlightRect={setTutorialAnchorRect}
         tries={tries}
         onMapReady={() => { if (!tutorialWelcomeVisible) setVeilVisible(false); }}
         blocked={modalOpen || tutorialWelcomeVisible}
@@ -423,6 +425,7 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
         highlightTarget={activeTutorialCard?.target ?? "station-card"}
         instruction={activeTutorialCard?.text ?? ""}
         clickedStationName={newlyCorrectStation}
+        anchorRect={activeTutorialCard?.target === "clicked-station" ? tutorialAnchorRect : null}
         showContinue={activeTutorialCard?.continueable !== false}
         onContinue={advanceTutorialQueue}
       />
