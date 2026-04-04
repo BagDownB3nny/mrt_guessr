@@ -36,6 +36,12 @@ export default function Home({ onSelectStation }: HomeProps) {
   const velocityRef = useRef({ x: speed, y: speed });
 
   useEffect(() => {
+    const isMobile = window.innerWidth <= 768;
+    if (!isMobile) {
+      setBgOffset({ x: 0, y: 0 });
+      return;
+    }
+
     let rafId = 0;
     const tick = () => {
       setBgOffset((prev) => {
