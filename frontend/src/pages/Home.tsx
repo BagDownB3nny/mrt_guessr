@@ -35,7 +35,7 @@ export default function Home({ onSelectStation }: HomeProps) {
           position: "fixed",
           inset: 0,
           zIndex: 0,
-          backgroundImage: 'url("/full-mrt-map.svg")',
+          backgroundImage: 'url("/home-mrt-map-bg.png")',
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
           backgroundSize: "cover",
