@@ -26,9 +26,12 @@ export default function Home({ onSelectStation }: HomeProps) {
   const centerZoom = homeBackground.backgroundCenterZoomLevel;
   const imageWidth = homeBackground.backgroundImageWidthPx;
   const imageHeight = homeBackground.backgroundImageHeightPx;
+  const imageAspectRatio = imageWidth / imageHeight;
+  const fittedImageHeight = Math.min(boundaryHeight, boundaryWidth / imageAspectRatio);
+  const fittedImageWidth = fittedImageHeight * imageAspectRatio;
   const [bgOffset, setBgOffset] = useState(() => {
-    const limitX = Math.max(0, (imageWidth - boundaryWidth) / 2);
-    const limitY = Math.max(0, (imageHeight - boundaryHeight) / 2);
+    const limitX = Math.max(0, (fittedImageWidth - boundaryWidth) / 2);
+    const limitY = Math.max(0, (fittedImageHeight - boundaryHeight) / 2);
     return {
       x: (Math.random() * 2 - 1) * limitX,
       y: (Math.random() * 2 - 1) * limitY,
@@ -46,8 +49,8 @@ export default function Home({ onSelectStation }: HomeProps) {
     let rafId = 0;
     const tick = () => {
       setBgOffset((prev) => {
-        const limitX = Math.max(0, (imageWidth - boundaryWidth) / 2);
-        const limitY = Math.max(0, (imageHeight - boundaryHeight) / 2);
+        const limitX = Math.max(0, (fittedImageWidth - boundaryWidth) / 2);
+        const limitY = Math.max(0, (fittedImageHeight - boundaryHeight) / 2);
         let nextX = prev.x + velocityRef.current.x;
         let nextY = prev.y + velocityRef.current.y;
 
@@ -68,7 +71,7 @@ export default function Home({ onSelectStation }: HomeProps) {
     velocityRef.current = { x: speed, y: speed };
     rafId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafId);
-  }, [speed, boundaryWidth, boundaryHeight, imageWidth, imageHeight]);
+  }, [speed, boundaryWidth, boundaryHeight, fittedImageWidth, fittedImageHeight]);
 
   const stations: StationConfig[] = [
     { text: "Daily Challenge",    onClick: () => onSelectStation("/daily") },
@@ -88,8 +91,8 @@ export default function Home({ onSelectStation }: HomeProps) {
           position: "fixed",
           left: "50%",
           top: "50%",
-          width: imageWidth,
-          height: imageHeight,
+          width: fittedImageWidth,
+          height: fittedImageHeight,
           zIndex: 0,
           opacity: homeBackground.mapOpacity,
           filter: `grayscale(${homeBackground.mapGrayscale})`,
