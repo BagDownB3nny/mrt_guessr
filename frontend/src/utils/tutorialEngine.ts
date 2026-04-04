@@ -58,7 +58,7 @@ export function buildTutorialCards(event: TutorialEventKey, ctx: TutorialContext
       return [{ target: "station-card", text: tutorialText.findStation.replace("{station}", ctx.currentStation), dimmed: true }];
     case "correct_first":
       return [
-        { target: "clicked-station", text: tutorialText.congrats.replace("{station}", ctx.newlyCorrectStation), dimmed: true },
+        { target: "center", text: tutorialText.congrats.replace("{station}", ctx.newlyCorrectStation), dimmed: true },
         { target: "score", text: tutorialText.score.replace("{found}", String(ctx.clickedStationsCount)).replace("{total}", String(ctx.totalStations)), dimmed: true },
         { target: "station-card", text: tutorialText.nextStation.replace("{station}", ctx.currentStation), dimmed: true },
       ];
