@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../css/TutorialOverlay.module.css";
 import { measureTutorialTarget, TutorialHighlightTarget } from "../utils/tutorialHighlight";
+import config from "../config/constants.json";
 
 interface Props {
   visible: boolean;
@@ -15,6 +16,7 @@ interface Props {
 
 export default function TutorialOverlay({ visible, highlightTarget, instruction, clickedStationName, anchorRect = null, dimmed = true, onContinue, showContinue = true }: Props) {
   const [rect, setRect] = useState<DOMRect | null>(null);
+  const tutorialConfig = (config as any).tutorial;
 
   useEffect(() => {
     if (!visible || highlightTarget === "correct-station" || highlightTarget === "center") {
@@ -53,16 +55,16 @@ export default function TutorialOverlay({ visible, highlightTarget, instruction,
 
   return (
     <>
-      {dimmed && <div className={styles.veil} aria-hidden="true" />}
+      {dimmed && <div className={styles.veil} aria-hidden="true" style={{ opacity: tutorialConfig.highlightVeilOpacity }} />}
       {highlightTarget !== "correct-station" && highlightTarget !== "center" && rect && (
         <div
           className={styles.highlightFrame}
           aria-hidden="true"
           style={{
-            left: rect.left - 8,
-            top: rect.top - 8,
-            width: rect.width + 16,
-            height: rect.height + 16,
+            left: rect.left - tutorialConfig.highlightCutoutPaddingPx,
+            top: rect.top - tutorialConfig.highlightCutoutPaddingPx,
+            width: rect.width + tutorialConfig.highlightCutoutPaddingPx * 2,
+            height: rect.height + tutorialConfig.highlightCutoutPaddingPx * 2,
           }}
         />
       )}

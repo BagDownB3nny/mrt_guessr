@@ -56,7 +56,9 @@
     "nextStation": "Now let's try to find {station}!",
     "lives": "Ah that's not quite {station}! You have 2 more guesses left before we reveal the answer",
     "hints": "To help you out, we will be providing hints here! \n First incorrect guess will display the lines of this station \n Second incorrect guess will display the general area of the station",
-    "reveal": "That was a hard one! {station} is actually here! Tap on {station} to proceed!"
+    "reveal": "That was a hard one! {station} is actually here! Tap on {station} to proceed!",
+    "highlightVeilOpacity": 0.5,
+    "highlightCutoutPaddingPx": 8
   },
 
   "homeBackground": {
