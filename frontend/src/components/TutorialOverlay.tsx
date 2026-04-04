@@ -56,38 +56,18 @@ export default function TutorialOverlay({ visible, highlightTarget, instruction,
   return (
     <>
       {dimmed && rect && (
-        <>
-          <div
-            className={styles.veilSegment}
-            aria-hidden="true"
-            style={{ left: 0, top: 0, width: "100vw", height: Math.max(0, rect.top - tutorialConfig.highlightCutoutPaddingPx), opacity: tutorialConfig.highlightVeilOpacity }}
-          />
-          <div
-            className={styles.veilSegment}
-            aria-hidden="true"
-            style={{ left: 0, top: Math.max(0, rect.top - tutorialConfig.highlightCutoutPaddingPx), width: Math.max(0, rect.left - tutorialConfig.highlightCutoutPaddingPx), height: rect.height + tutorialConfig.highlightCutoutPaddingPx * 2, opacity: tutorialConfig.highlightVeilOpacity }}
-          />
-          <div
-            className={styles.veilSegment}
-            aria-hidden="true"
-            style={{ left: rect.right + tutorialConfig.highlightCutoutPaddingPx, top: Math.max(0, rect.top - tutorialConfig.highlightCutoutPaddingPx), width: Math.max(0, window.innerWidth - rect.right - tutorialConfig.highlightCutoutPaddingPx), height: rect.height + tutorialConfig.highlightCutoutPaddingPx * 2, opacity: tutorialConfig.highlightVeilOpacity }}
-          />
-          <div
-            className={styles.veilSegment}
-            aria-hidden="true"
-            style={{ left: 0, top: rect.bottom + tutorialConfig.highlightCutoutPaddingPx, width: "100vw", height: Math.max(0, window.innerHeight - rect.bottom - tutorialConfig.highlightCutoutPaddingPx), opacity: tutorialConfig.highlightVeilOpacity }}
-          />
-          <div
-            className={styles.highlightFrame}
-            aria-hidden="true"
-            style={{
-              left: rect.left - tutorialConfig.highlightCutoutPaddingPx,
-              top: rect.top - tutorialConfig.highlightCutoutPaddingPx,
-              width: rect.width + tutorialConfig.highlightCutoutPaddingPx * 2,
-              height: rect.height + tutorialConfig.highlightCutoutPaddingPx * 2,
-            }}
-          />
-        </>
+        <div
+          className={styles.highlightFrame}
+          aria-hidden="true"
+          style={{
+            left: rect.left - tutorialConfig.highlightCutoutPaddingPx,
+            top: rect.top - tutorialConfig.highlightCutoutPaddingPx,
+            width: rect.width + tutorialConfig.highlightCutoutPaddingPx * 2,
+            height: rect.height + tutorialConfig.highlightCutoutPaddingPx * 2,
+            borderRadius: 9999,
+            boxShadow: `0 0 0 9999px rgba(0, 0, 0, ${tutorialConfig.highlightVeilOpacity}), 0 0 0 3px var(--color-bg-white)`,
+          }}
+        />
       )}
       {dimmed && !rect && <div className={styles.veil} aria-hidden="true" style={{ opacity: tutorialConfig.highlightVeilOpacity }} />}
       <div className={`${styles.instructionCard} ${styles[`${highlightTarget}Card`]}`} style={clickedStationCardStyle}>
