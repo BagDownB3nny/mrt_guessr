@@ -26,8 +26,8 @@ export default function Home({ onSelectStation }: HomeProps) {
   const imageWidth = homeBackground.backgroundImageWidthPx;
   const imageHeight = homeBackground.backgroundImageHeightPx;
   const [bgOffset, setBgOffset] = useState(() => {
-    const limitX = Math.max(0, (boundaryWidth - imageWidth) / 2);
-    const limitY = Math.max(0, (boundaryHeight - imageHeight) / 2);
+    const limitX = Math.max(0, (imageWidth - boundaryWidth) / 2);
+    const limitY = Math.max(0, (imageHeight - boundaryHeight) / 2);
     return {
       x: (Math.random() * 2 - 1) * limitX,
       y: (Math.random() * 2 - 1) * limitY,
@@ -39,8 +39,8 @@ export default function Home({ onSelectStation }: HomeProps) {
     let rafId = 0;
     const tick = () => {
       setBgOffset((prev) => {
-        const limitX = Math.max(0, (boundaryWidth - imageWidth) / 2);
-        const limitY = Math.max(0, (boundaryHeight - imageHeight) / 2);
+        const limitX = Math.max(0, (imageWidth - boundaryWidth) / 2);
+        const limitY = Math.max(0, (imageHeight - boundaryHeight) / 2);
         let nextX = prev.x + velocityRef.current.x;
         let nextY = prev.y + velocityRef.current.y;
 
