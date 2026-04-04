@@ -48,7 +48,15 @@ export default function Home({ onSelectStation }: HomeProps) {
       {/* ── First viewport: title + buttons ── */}
       <div className={styles.home}>
         <div className={styles.titleContainer}>
-          <div className={styles.title}>Mrt Guessr</div>
+          <div
+            className={styles.title}
+            style={{
+              ["--title-underline-offset" as any]: `${homeBackground.titleUnderlineOffsetRem}rem`,
+              ["--title-underline-overhang" as any]: `${homeBackground.titleUnderlineOverhangPct}%`,
+            }}
+          >
+            Mrt Guessr
+          </div>
         </div>
 
         {/* Track: line + station buttons.

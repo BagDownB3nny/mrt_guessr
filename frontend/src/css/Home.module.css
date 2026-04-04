@@ -88,14 +88,16 @@
     color: var(--color-nsrl);
     position: relative;
     display: inline-block;
+    --title-underline-offset: 0.45rem;
+    --title-underline-overhang: 6%;
 }
 
 .title::after {
     content: "";
     position: absolute;
-    left: 6%;
-    right: 6%;
-    bottom: -0.45rem;
+    left: calc(-1 * var(--title-underline-overhang));
+    right: calc(-1 * var(--title-underline-overhang));
+    bottom: calc(-1 * var(--title-underline-offset));
     height: 0.42rem;
     border-radius: 999px;
     background: #8b6a4a;
