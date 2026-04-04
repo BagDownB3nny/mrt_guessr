@@ -37,7 +37,7 @@ export type TutorialEngineState = {
 };
 
 const tutorialText = (config as any).tutorial;
-const revealDelayMs = (config.transitions as any).stationPanDelayMs + (config.transitions as any).revealCircleDelayMs + 350;
+const revealDelayMs = (config.transitions as any).stationPanDelayMs + (config.transitions as any).revealCircleDelayMs;
 
 export function createInitialTutorialEngineState(): TutorialEngineState {
   return {
