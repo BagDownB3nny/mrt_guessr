@@ -77,7 +77,7 @@
     "backgroundBoundaryWidthPx": 800,
     "backgroundBoundaryHeightPx": 400,
     "backgroundPanSpeedPxPerFrame": 0.5,
-    "backgroundZoomLevel": 0.8,
+    "backgroundZoomLevel": 1.5,
     "titleUnderlineOffsetRem": 0.6,
     "titleUnderlineOverhangPct": 10
   },
