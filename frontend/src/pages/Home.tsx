@@ -23,6 +23,7 @@ export default function Home({ onSelectStation }: HomeProps) {
   const boundaryWidth = homeBackground.backgroundBoundaryWidthPx;
   const boundaryHeight = homeBackground.backgroundBoundaryHeightPx;
   const zoom = homeBackground.backgroundZoomLevel;
+  const centerZoom = homeBackground.backgroundCenterZoomLevel;
   const imageWidth = homeBackground.backgroundImageWidthPx;
   const imageHeight = homeBackground.backgroundImageHeightPx;
   const [bgOffset, setBgOffset] = useState(() => {
@@ -79,8 +80,10 @@ export default function Home({ onSelectStation }: HomeProps) {
 
   return (
     <>
-      <div
+      <img
         aria-hidden="true"
+        src="/home-mrt-map-bg.png"
+        alt=""
         style={{
           position: "fixed",
           left: "50%",
@@ -88,14 +91,12 @@ export default function Home({ onSelectStation }: HomeProps) {
           width: imageWidth,
           height: imageHeight,
           zIndex: 0,
-          backgroundImage: 'url("/home-mrt-map-bg.png")',
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-          backgroundSize: `${zoom * 100}%`,
           opacity: homeBackground.mapOpacity,
           filter: `grayscale(${homeBackground.mapGrayscale})`,
           pointerEvents: "none",
-          transform: `translate(calc(-50% + ${bgOffset.x}px), calc(-50% + ${bgOffset.y}px))`,
+          objectFit: "contain",
+          transform: `translate(calc(-50% + ${bgOffset.x}px), calc(-50% + ${bgOffset.y}px)) scale(${window.innerWidth <= 768 ? zoom : centerZoom})`,
+          transformOrigin: "center center",
         }}
       />
 
