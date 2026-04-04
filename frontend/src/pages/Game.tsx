@@ -64,8 +64,21 @@ function getInitialStations(gameType: GameType, useTutorial: boolean): string[] 
 }
 
 function getTutorialRemainingStationsAfterThreeWrong(currentStation: string): string[] {
-  const idx = TUTORIAL_STATIONS_THREE_WRONG.indexOf(currentStation as (typeof TUTORIAL_STATIONS_THREE_WRONG)[number]);
-  return idx >= 0 ? [...TUTORIAL_STATIONS_THREE_WRONG.slice(idx + 1)] : [];
+  const currentIdx = TUTORIAL_STATIONS_DEFAULT.indexOf(currentStation as (typeof TUTORIAL_STATIONS_DEFAULT)[number]);
+  if (currentIdx < 0) return [];
+
+  // Before or at Hume, branch future stations fully to the alternate path.
+  if (currentIdx <= 2) {
+    return [...TUTORIAL_STATIONS_THREE_WRONG.slice(currentIdx + 1)];
+  }
+
+  // If the player first triggers the 3-wrong branch on Siglap, keep the alternate final stop.
+  if (currentStation === "Siglap") {
+    return ["Rochor"];
+  }
+
+  // Final station has no remaining follow-up.
+  return [];
 }
 
 export default function Game({ gameType, tutorialMode = false }: GameProps) {
