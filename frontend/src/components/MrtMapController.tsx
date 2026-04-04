@@ -353,14 +353,13 @@ export default function MrtMapController({
         {tutorialHighlightedStation && (
           <div
             ref={tutorialHighlightDivRef}
-            className={styles.circle}
+            className={styles.tutorialStationHighlight}
             style={{
               position: "fixed",
               left: 0,
               top: 0,
               width: 0,
               height: 0,
-              ["--circle-pulse-speed" as any]: `${(config.transitions as any).revealCirclePulseSpeedMs}ms`,
             }}
           />
         )}
