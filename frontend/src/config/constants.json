@@ -73,7 +73,7 @@
     "capsuleSpinSpeedDegPerFrame": 0.45,
     "capsuleMaxCount": 0,
     "mapOpacity": 0.1,
-    "mapGrayscale": 0.8,
+    "mapGrayscale": 0.6,
     "mobile": {
       "boundaryWidthPx": 1200,
       "boundaryHeightPx": 800,
