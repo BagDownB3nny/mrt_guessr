@@ -119,8 +119,8 @@
 
 .centerCard {
   left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  top: calc(50% + 8rem);
+  transform: translateX(-50%);
 }
 
 @media (max-width: 640px) {
