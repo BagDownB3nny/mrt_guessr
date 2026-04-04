@@ -23,7 +23,14 @@ export default function Home({ onSelectStation }: HomeProps) {
   const boundaryWidth = homeBackground.backgroundBoundaryWidthPx;
   const boundaryHeight = homeBackground.backgroundBoundaryHeightPx;
   const zoom = homeBackground.backgroundZoomLevel;
-  const [bgOffset, setBgOffset] = useState({ x: 0, y: 0 });
+  const [bgOffset, setBgOffset] = useState(() => {
+    const limitX = Math.max(0, (boundaryWidth - window.innerWidth) / 2);
+    const limitY = Math.max(0, (boundaryHeight - window.innerHeight) / 2);
+    return {
+      x: (Math.random() * 2 - 1) * limitX,
+      y: (Math.random() * 2 - 1) * limitY,
+    };
+  });
   const velocityRef = useRef({ x: speed, y: speed });
 
   useEffect(() => {
