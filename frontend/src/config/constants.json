@@ -73,13 +73,15 @@
     "capsuleSpinSpeedDegPerFrame": 0.45,
     "capsuleMaxCount": 0,
     "mapOpacity": 0.1,
-    "mapGrayscale": 0.6,
+    "mapGrayscale": 0.8,
     "backgroundBoundaryWidthPx": 1200,
     "backgroundBoundaryHeightPx": 800,
-    "backgroundPanSpeedPxPerFrame": 0.5,
-    "backgroundZoomLevel": 1.5,
-    "titleUnderlineOffsetRem": 0.6,
-    "titleUnderlineOverhangPct": 10
+    "backgroundPanSpeedPxPerFrame": 1,
+    "backgroundZoomLevel": 1,
+    "backgroundImageWidthPx": 1800,
+    "backgroundImageHeightPx": 1200,
+    "titleUnderlineOffsetRem": 1.2,
+    "titleUnderlineOverhangPct": 22
   },
 
   "palette": {

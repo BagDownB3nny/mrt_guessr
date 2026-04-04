@@ -23,9 +23,11 @@ export default function Home({ onSelectStation }: HomeProps) {
   const boundaryWidth = homeBackground.backgroundBoundaryWidthPx;
   const boundaryHeight = homeBackground.backgroundBoundaryHeightPx;
   const zoom = homeBackground.backgroundZoomLevel;
+  const imageWidth = homeBackground.backgroundImageWidthPx;
+  const imageHeight = homeBackground.backgroundImageHeightPx;
   const [bgOffset, setBgOffset] = useState(() => {
-    const limitX = Math.max(0, (boundaryWidth - window.innerWidth) / 2);
-    const limitY = Math.max(0, (boundaryHeight - window.innerHeight) / 2);
+    const limitX = Math.max(0, (boundaryWidth - imageWidth) / 2);
+    const limitY = Math.max(0, (boundaryHeight - imageHeight) / 2);
     return {
       x: (Math.random() * 2 - 1) * limitX,
       y: (Math.random() * 2 - 1) * limitY,
@@ -37,8 +39,8 @@ export default function Home({ onSelectStation }: HomeProps) {
     let rafId = 0;
     const tick = () => {
       setBgOffset((prev) => {
-        const limitX = Math.max(0, (boundaryWidth - window.innerWidth) / 2);
-        const limitY = Math.max(0, (boundaryHeight - window.innerHeight) / 2);
+        const limitX = Math.max(0, (boundaryWidth - imageWidth) / 2);
+        const limitY = Math.max(0, (boundaryHeight - imageHeight) / 2);
         let nextX = prev.x + velocityRef.current.x;
         let nextY = prev.y + velocityRef.current.y;
 
@@ -59,7 +61,7 @@ export default function Home({ onSelectStation }: HomeProps) {
     velocityRef.current = { x: speed, y: speed };
     rafId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafId);
-  }, [speed, boundaryWidth, boundaryHeight]);
+  }, [speed, boundaryWidth, boundaryHeight, imageWidth, imageHeight]);
 
   const stations: StationConfig[] = [
     { text: "Daily Challenge",    onClick: () => onSelectStation("/daily") },
@@ -77,8 +79,8 @@ export default function Home({ onSelectStation }: HomeProps) {
           position: "fixed",
           left: "50%",
           top: "50%",
-          width: boundaryWidth,
-          height: boundaryHeight,
+          width: imageWidth,
+          height: imageHeight,
           zIndex: 0,
           backgroundImage: 'url("/home-mrt-map-bg.png")',
           backgroundRepeat: "no-repeat",
