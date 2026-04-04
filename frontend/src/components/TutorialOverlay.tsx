@@ -72,7 +72,11 @@ export default function TutorialOverlay({ visible, highlightTarget, instruction,
       {dimmed && !rect && <div className={styles.veil} aria-hidden="true" style={{ opacity: tutorialConfig.highlightVeilOpacity }} />}
       <div className={`${styles.instructionCard} ${styles[`${highlightTarget}Card`]}`} style={clickedStationCardStyle}>
         <div className={styles.cardTopBar} aria-hidden="true" />
-        <div className={styles.cardBody}>{instruction}</div>
+        <div className={styles.cardBody}>
+          {instruction.split("\n").map((line, index) => (
+            <div key={`${index}-${line}`} className={styles.cardLine}>{line.trim()}</div>
+          ))}
+        </div>
         {showContinue && (
           <button className={styles.continueButton} onClick={onContinue} type="button">
             Continue
