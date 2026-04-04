@@ -1,9 +1,14 @@
-.veil {
+.veil,
+.veilSegment {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 1);
   z-index: 240;
   pointer-events: none;
+}
+
+.veilSegment {
+  inset: auto;
 }
 
 .highlightFrame {
