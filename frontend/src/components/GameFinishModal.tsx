@@ -24,6 +24,7 @@ interface Props {
   onPlayAgain: () => void;
   onExploreMap?: () => void;
   finalTimeMs?: number | null;
+  tutorialMode?: boolean;
 }
 
 function buildShareText(scoreStr: string, isSpeedrun: boolean, timeStr?: string): string {
@@ -37,7 +38,7 @@ function buildShareText(scoreStr: string, isSpeedrun: boolean, timeStr?: string)
 
 const SCORE_ANIM_MS = 2000; // total duration of score count-up
 
-export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, onPlayAgain, onExploreMap, finalTimeMs }: Props) {
+export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, onPlayAgain, onExploreMap, finalTimeMs, tutorialMode = false }: Props) {
   const navigate = useNavigate();
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -128,6 +129,10 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
               <span className={styles.timerMain}>{formatMs(finalTimeMs!).split('.')[0]}</span>
               <span className={styles.timerSub}>.{formatMs(finalTimeMs!).split('.')[1]}</span>
             </div>
+          ) : tutorialMode ? (
+            <div className={styles.scoreDisplay}>
+              <span className={styles.scoreNumber} style={{ fontSize: "2rem", lineHeight: 1.1 }}>You've completed the tutorial!</span>
+            </div>
           ) : (
             <>
               <div className={styles.scoreDisplay}>
@@ -139,7 +144,7 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
         </div>
 
         {/* Stats grid — hidden for speedrun */}
-        {!isSpeedrun && (
+        {!isSpeedrun && !tutorialMode && (
           <div className={styles.grid}>
             <div className={`${styles.cell} ${styles.cellGreen}`}>
               <div className={styles.cellNumber}>{guessStats.inOneTry}</div>
@@ -161,7 +166,7 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
         )}
 
         {/* Station lists: found | missed — hidden for speedrun */}
-        {!isSpeedrun && (
+        {!isSpeedrun && !tutorialMode && (
           <div className={styles.stationLists}>
             <div className={styles.stationListBox}>
               <div className={styles.stationListTitle}>Found</div>
@@ -199,16 +204,20 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
             </button>
           )}
           {/* Play again */}
-          <button className={styles.btnPrimary} onClick={onPlayAgain} type="button">
-            Play again
-          </button>
+          {!tutorialMode && (
+            <button className={styles.btnPrimary} onClick={onPlayAgain} type="button">
+              Play again
+            </button>
+          )}
           {/* Share */}
-          <button className={styles.btnShare} onClick={handleShare} type="button">
-            {copied ? "Copied!" : "Share"}
-          </button>
+          {!tutorialMode && (
+            <button className={styles.btnShare} onClick={handleShare} type="button">
+              {copied ? "Copied!" : "Share"}
+            </button>
+          )}
           {/* Home */}
           <button className={styles.btnSecondary} onClick={() => navigate("/")} type="button">
-            Home
+            {tutorialMode ? "Let's play!" : "Home"}
           </button>
         </div>
       </div>

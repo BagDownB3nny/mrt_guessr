@@ -442,6 +442,7 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
         onPlayAgain={restartGame}
         onExploreMap={onExploreMap}
         finalTimeMs={isSpeedrun ? finalTimeMs : null}
+        tutorialMode={tutorialActive}
       />
       <Analytics />
     </div>
