@@ -384,12 +384,12 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
 
   useEffect(() => {
     if (activeTutorialEvent !== "wrong_thrice_reveal") return;
-    if (!newlyCorrectStation) return;
+    if (!newlyCorrectStation || newlyCorrectStation !== currentStation) return;
     markTutorialEventSeen("wrong_thrice_reveal");
     setTutorialVisible(false);
     setTutorialQueue([]);
     setActiveTutorialEvent(null);
-  }, [activeTutorialEvent, newlyCorrectStation, markTutorialEventSeen]);
+  }, [activeTutorialEvent, newlyCorrectStation, currentStation, markTutorialEventSeen]);
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
