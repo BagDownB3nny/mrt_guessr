@@ -74,11 +74,18 @@
     "capsuleMaxCount": 0,
     "mapOpacity": 0.1,
     "mapGrayscale": 0.8,
-    "backgroundBoundaryWidthPx": 1200,
-    "backgroundBoundaryHeightPx": 800,
-    "backgroundPanSpeedPxPerFrame": 0.2,
-    "backgroundZoomLevel": 0.9,
-    "backgroundCenterZoomLevel": 1.2,
+    "mobile": {
+      "boundaryWidthPx": 1200,
+      "boundaryHeightPx": 800,
+      "backgroundSpeedPxPerFrame": 0.2,
+      "backgroundScale": 0.9
+    },
+    "desktop": {
+      "boundaryWidthPx": 1800,
+      "boundaryHeightPx": 1200,
+      "backgroundSpeedPxPerFrame": 0.1,
+      "backgroundScale": 1.2
+    },
     "backgroundImageWidthPx": 1800,
     "backgroundImageHeightPx": 1200,
     "titleUnderlineOffsetRem": 1.2,

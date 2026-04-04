@@ -19,11 +19,12 @@ type HomeProps = {
 
 export default function Home({ onSelectStation }: HomeProps) {
   const homeBackground = (config as any).homeBackground;
-  const speed = homeBackground.backgroundPanSpeedPxPerFrame;
-  const boundaryWidth = homeBackground.backgroundBoundaryWidthPx;
-  const boundaryHeight = homeBackground.backgroundBoundaryHeightPx;
-  const mobileZoom = homeBackground.backgroundZoomLevel;
-  const desktopZoom = homeBackground.backgroundCenterZoomLevel;
+  const isMobile = window.innerWidth <= 768;
+  const modeConfig = isMobile ? homeBackground.mobile : homeBackground.desktop;
+  const speed = modeConfig.backgroundSpeedPxPerFrame;
+  const boundaryWidth = modeConfig.boundaryWidthPx;
+  const boundaryHeight = modeConfig.boundaryHeightPx;
+  const scale = modeConfig.backgroundScale;
   const imageWidth = homeBackground.backgroundImageWidthPx;
   const imageHeight = homeBackground.backgroundImageHeightPx;
   const imageAspectRatio = imageWidth / imageHeight;
@@ -38,14 +39,8 @@ export default function Home({ onSelectStation }: HomeProps) {
     };
   });
   const velocityRef = useRef({ x: speed, y: speed });
-  const isMobile = window.innerWidth <= 768;
 
   useEffect(() => {
-    if (!isMobile) {
-      setBgOffset({ x: 0, y: 0 });
-      return;
-    }
-
     let rafId = 0;
     const tick = () => {
       setBgOffset((prev) => {
@@ -73,7 +68,7 @@ export default function Home({ onSelectStation }: HomeProps) {
     return () => cancelAnimationFrame(rafId);
   }, [isMobile, speed, boundaryWidth, boundaryHeight, fittedImageWidth, fittedImageHeight]);
 
-  const renderMobileBackground = () => (
+  const renderBackground = () => (
     <img
       aria-hidden="true"
       src="/home-mrt-map-bg.png"
@@ -90,30 +85,7 @@ export default function Home({ onSelectStation }: HomeProps) {
         pointerEvents: "none",
         objectFit: "contain",
         maxWidth: "none",
-        transform: `translate(calc(-50% + ${bgOffset.x}px), calc(-50% + ${bgOffset.y}px)) scale(${mobileZoom})`,
-        transformOrigin: "center center",
-      }}
-    />
-  );
-
-  const renderDesktopBackground = () => (
-    <img
-      aria-hidden="true"
-      src="/home-mrt-map-bg.png"
-      alt=""
-      style={{
-        position: "fixed",
-        left: "50%",
-        top: "50%",
-        width: "100vw",
-        height: "auto",
-        zIndex: 0,
-        opacity: homeBackground.mapOpacity,
-        filter: `grayscale(${homeBackground.mapGrayscale})`,
-        pointerEvents: "none",
-        objectFit: "contain",
-        maxWidth: "none",
-        transform: `translate(-50%, -50%) scale(${desktopZoom})`,
+        transform: `translate(calc(-50% + ${bgOffset.x}px), calc(-50% + ${bgOffset.y}px)) scale(${scale})`,
         transformOrigin: "center center",
       }}
     />
@@ -129,7 +101,7 @@ export default function Home({ onSelectStation }: HomeProps) {
 
   return (
     <>
-      {isMobile ? renderMobileBackground() : renderDesktopBackground()}
+      {renderBackground()}
 
       {/* ── First viewport: title + buttons ── */}
       <div className={styles.home}>
