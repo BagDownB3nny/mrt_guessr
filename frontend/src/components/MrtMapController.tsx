@@ -3,12 +3,10 @@ import { useEffect, useRef, useState } from "react";
 import {
   TransformWrapper,
   TransformComponent,
-  MiniMap,
   ReactZoomPanPinchRef,
 } from "react-zoom-pan-pinch";
 import SVG from "react-inlinesvg";
 import styles from "../css/MrtMap.module.css";
-import Controls from "./Controls";
 import config from "../config/constants.json";
 
 // SVG station element IDs follow the pattern "Station_Name_Button".
@@ -342,16 +340,6 @@ export default function MrtMapController({
           />
         )}
 
-        <div className={styles.mapTools}>
-          <Controls />
-          <MiniMap
-            width={isMobile ? 124 : 220}
-            height={isMobile ? 88 : 156}
-            borderColor="#262627"
-          >
-            <SVG src="/full-mrt-map.svg" width="100%" height="100%" title="MRT map minimap" />
-          </MiniMap>
-        </div>
       </TransformWrapper>
     </div>
   );
