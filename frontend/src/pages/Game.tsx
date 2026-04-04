@@ -52,8 +52,8 @@ export function formatMs(ms: number): string {
 }
 const QUICKGAME_STATION_COUNT = config.gameplay.quickgameStationCount;
 const SPEEDRUN_STATION_COUNT = (config.gameplay as any).speedrunStationCount ?? 20;
-const TUTORIAL_STATIONS_DEFAULT = ["Dhoby Ghaut", "Buona Vista", "Hume", "Siglap", "Gul Circle"] as const;
-const TUTORIAL_STATIONS_THREE_WRONG = ["Dhoby Ghaut", "Buona Vista", "Hume", "Woodlands", "Rochor"] as const;
+const TUTORIAL_STATIONS_DEFAULT = ((config as any).tutorial.stationsDefault ?? ["Dhoby Ghaut", "Buona Vista", "Hume", "Siglap", "Gul Circle"]) as string[];
+const TUTORIAL_STATIONS_THREE_WRONG = ((config as any).tutorial.stationsThreeWrongPath ?? ["Dhoby Ghaut", "Buona Vista", "Hume", "Woodlands", "Rochor"]) as string[];
 
 
 function getInitialStations(gameType: GameType, useTutorial: boolean): string[] {

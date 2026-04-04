@@ -50,6 +50,8 @@
   "tutorial": {
     "welcomeTitle": "Welcome to MRT Guessr!",
     "welcomeBody": "How well do you know Singapore's MRT stations? Let's find out!",
+    "stationsDefault": ["Dhoby Ghaut", "Buona Vista", "Hume", "Siglap", "Gul Circle"],
+    "stationsThreeWrongPath": ["Dhoby Ghaut", "Buona Vista", "Hume", "Woodlands", "Rochor"],
     "findStation": "Let's start off easy! Look for {station} on the map and tap on it!",
     "congrats": "Great job! — You found {station}!",
     "score": "You've managed to find {found} station! In this tutorial we will be looking for a total of {total} stations",
