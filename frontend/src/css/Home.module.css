@@ -84,6 +84,21 @@
     letter-spacing: -0.01em;
     text-transform: uppercase;
     line-height: 0.92;
+    font-style: italic;
+    color: var(--color-nsrl);
+    position: relative;
+    display: inline-block;
+}
+
+.title::after {
+    content: "";
+    position: absolute;
+    left: 6%;
+    right: 6%;
+    bottom: -0.45rem;
+    height: 0.42rem;
+    border-radius: 999px;
+    background: #8b6a4a;
 }
 
 /* ── Track wrapper: centre the Singapore Tour stop on the screen midpoint ─ */
