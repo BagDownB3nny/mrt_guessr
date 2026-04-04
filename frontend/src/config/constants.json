@@ -74,6 +74,10 @@
     "capsuleMaxCount": 0,
     "mapOpacity": 0.1,
     "mapGrayscale": 0.8,
+    "backgroundBoundaryWidthPx": 2200,
+    "backgroundBoundaryHeightPx": 1600,
+    "backgroundPanSpeedPxPerFrame": 0.35,
+    "backgroundZoomLevel": 1.35,
     "titleUnderlineOffsetRem": 0.6,
     "titleUnderlineOverhangPct": 10
   },

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "../css/Home.module.css";
 import TrackButtonContainer from "../components/TrackButtonContainer";
 import config from "../config/constants.json";
@@ -19,6 +19,41 @@ type HomeProps = {
 
 export default function Home({ onSelectStation }: HomeProps) {
   const homeBackground = (config as any).homeBackground;
+  const speed = homeBackground.backgroundPanSpeedPxPerFrame;
+  const boundaryWidth = homeBackground.backgroundBoundaryWidthPx;
+  const boundaryHeight = homeBackground.backgroundBoundaryHeightPx;
+  const zoom = homeBackground.backgroundZoomLevel;
+  const [bgOffset, setBgOffset] = useState({ x: 0, y: 0 });
+  const velocityRef = useRef({ x: speed, y: speed });
+
+  useEffect(() => {
+    let rafId = 0;
+    const tick = () => {
+      setBgOffset((prev) => {
+        const limitX = Math.max(0, (boundaryWidth - window.innerWidth) / 2);
+        const limitY = Math.max(0, (boundaryHeight - window.innerHeight) / 2);
+        let nextX = prev.x + velocityRef.current.x;
+        let nextY = prev.y + velocityRef.current.y;
+
+        if (nextX <= -limitX || nextX >= limitX) {
+          velocityRef.current.x *= -1;
+          nextX = Math.max(-limitX, Math.min(limitX, nextX));
+        }
+        if (nextY <= -limitY || nextY >= limitY) {
+          velocityRef.current.y *= -1;
+          nextY = Math.max(-limitY, Math.min(limitY, nextY));
+        }
+
+        return { x: nextX, y: nextY };
+      });
+      rafId = requestAnimationFrame(tick);
+    };
+
+    velocityRef.current = { x: speed, y: speed };
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [speed, boundaryWidth, boundaryHeight]);
+
   const stations: StationConfig[] = [
     { text: "Daily Challenge",    onClick: () => onSelectStation("/daily") },
     { text: "Quickplay",          onClick: () => onSelectStation("/quickgame") },
@@ -33,15 +68,19 @@ export default function Home({ onSelectStation }: HomeProps) {
         aria-hidden="true"
         style={{
           position: "fixed",
-          inset: 0,
+          left: "50%",
+          top: "50%",
+          width: boundaryWidth,
+          height: boundaryHeight,
           zIndex: 0,
           backgroundImage: 'url("/home-mrt-map-bg.png")',
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
-          backgroundSize: "cover",
+          backgroundSize: `${zoom * 100}%`,
           opacity: homeBackground.mapOpacity,
           filter: `grayscale(${homeBackground.mapGrayscale})`,
           pointerEvents: "none",
+          transform: `translate(calc(-50% + ${bgOffset.x}px), calc(-50% + ${bgOffset.y}px))`,
         }}
       />
 
