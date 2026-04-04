@@ -111,6 +111,7 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
   const [tutorialVisible, setTutorialVisible] = useState(false);
   const [tutorialQueue, setTutorialQueue] = useState<TutorialCard[]>([]);
   const [activeTutorialEvent, setActiveTutorialEvent] = useState<TutorialEventKey | null>(null);
+  const [tutorialRevealStation, setTutorialRevealStation] = useState<string | null>(null);
   const [tutorialSeenEvents, setTutorialSeenEvents] = useState<Record<string, boolean>>(() => readTutorialEventsCookie());
   const [guessStats, setGuessStats] = useState<GuessStats>({
     inOneTry: 0,
@@ -278,6 +279,7 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
     setTutorialVisible(false);
     setTutorialQueue([]);
     setActiveTutorialEvent(null);
+    setTutorialRevealStation(null);
     setTutorialHighlightTarget("station-card");
     setTutorialInstruction(tutorialText.findStation.replace("{station}", TUTORIAL_STATIONS_DEFAULT[0]));
     setGuessStats({ inOneTry: 0, inTwoTries: 0, inThreeTries: 0, afterThreeTries: 0, foundStations: [], missedStations: [] });
@@ -364,6 +366,7 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
     if (tutorialSeenEvents.wrong_thrice_reveal) return;
     const delayMs = config.transitions.stationPanDelayMs + config.transitions.revealCircleDelayMs + 350;
     const timeout = setTimeout(() => {
+      setTutorialRevealStation(currentStation);
       enqueueTutorialEvent("wrong_thrice_reveal", [
         { target: "correct-station", text: tutorialText.reveal.replaceAll("{station}", currentStation), continueable: false },
       ]);
@@ -384,12 +387,13 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
 
   useEffect(() => {
     if (activeTutorialEvent !== "wrong_thrice_reveal") return;
-    if (!newlyCorrectStation || newlyCorrectStation !== currentStation) return;
+    if (!newlyCorrectStation || !tutorialRevealStation || newlyCorrectStation !== tutorialRevealStation) return;
     markTutorialEventSeen("wrong_thrice_reveal");
     setTutorialVisible(false);
     setTutorialQueue([]);
     setActiveTutorialEvent(null);
-  }, [activeTutorialEvent, newlyCorrectStation, currentStation, markTutorialEventSeen]);
+    setTutorialRevealStation(null);
+  }, [activeTutorialEvent, newlyCorrectStation, tutorialRevealStation, markTutorialEventSeen]);
 
   // ── Render ─────────────────────────────────────────────────────────────────
 

@@ -16,7 +16,7 @@ export default function TutorialOverlay({ visible, highlightTarget, instruction,
 
   return (
     <>
-      <div className={styles.veil} aria-hidden="true" />
+      {highlightTarget !== "correct-station" && <div className={styles.veil} aria-hidden="true" />}
       {highlightTarget !== "correct-station" && highlightTarget !== "center" && (
         <div className={`${styles.highlightFrame} ${styles[highlightTarget]}`} aria-hidden="true" />
       )}
