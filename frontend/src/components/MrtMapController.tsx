@@ -51,7 +51,6 @@ export default function MrtMapController({
   const [revealCircle, setRevealCircle] = useState<{ key: number; buttonId: string; size: number } | null>(null);
   const revealCircleKey = useRef(0);
   const revealCircleDivRef = useRef<HTMLDivElement | null>(null);
-  const tutorialHighlightDivRef = useRef<HTMLDivElement | null>(null);
   // Tracks whether a touch moved before a click fires, so panning doesn't
   // accidentally trigger station selection.
   const touchMovedRef = useRef(false);
@@ -198,16 +197,8 @@ export default function MrtMapController({
     let rafId: number;
     const track = () => {
       const el = document.getElementById(`${tutorialHighlightedStation.replaceAll(" ", "_")}_Button`);
-      const div = tutorialHighlightDivRef.current;
-      if (el && div) {
+      if (el) {
         const rect = el.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
-        const size = Math.max(rect.width, rect.height) * 2;
-        div.style.left = `${cx}px`;
-        div.style.top = `${cy}px`;
-        div.style.width = `${size}px`;
-        div.style.height = `${size}px`;
         onTutorialHighlightRect?.(rect);
       } else {
         onTutorialHighlightRect?.(null);
@@ -350,19 +341,7 @@ export default function MrtMapController({
             }}
           />
         )}
-        {tutorialHighlightedStation && (
-          <div
-            ref={tutorialHighlightDivRef}
-            className={styles.tutorialStationHighlight}
-            style={{
-              position: "fixed",
-              left: 0,
-              top: 0,
-              width: 0,
-              height: 0,
-            }}
-          />
-        )}
+
         <div className={styles.mapTools}>
           <Controls />
           <MiniMap

@@ -17,12 +17,16 @@ export default function TutorialOverlay({ visible, highlightTarget, instruction,
   const [rect, setRect] = useState<DOMRect | null>(null);
 
   useEffect(() => {
-    if (!visible || highlightTarget === "correct-station" || highlightTarget === "center" || highlightTarget === "clicked-station") {
-      setRect(null);
+    if (!visible || highlightTarget === "correct-station" || highlightTarget === "center") {
+      setRect(anchorRect ?? null);
       return;
     }
 
     const measure = () => {
+      if (highlightTarget === "clicked-station") {
+        setRect(anchorRect ?? null);
+        return;
+      }
       const el = document.querySelector(`[data-tutorial-target="${highlightTarget}"]`) as HTMLElement | null;
       setRect(el ? el.getBoundingClientRect() : null);
     };
@@ -36,7 +40,7 @@ export default function TutorialOverlay({ visible, highlightTarget, instruction,
       cancelAnimationFrame(raf2);
       window.removeEventListener("resize", measure);
     };
-  }, [visible, highlightTarget, clickedStationName]);
+  }, [visible, highlightTarget, clickedStationName, anchorRect]);
 
   if (!visible) return null;
 
@@ -51,7 +55,7 @@ export default function TutorialOverlay({ visible, highlightTarget, instruction,
   return (
     <>
       {highlightTarget !== "correct-station" && <div className={styles.veil} aria-hidden="true" />}
-      {highlightTarget !== "correct-station" && highlightTarget !== "center" && highlightTarget !== "clicked-station" && rect && (
+      {highlightTarget !== "correct-station" && highlightTarget !== "center" && rect && (
         <div
           className={styles.highlightFrame}
           aria-hidden="true"
