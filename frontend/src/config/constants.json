@@ -83,7 +83,7 @@
     "desktop": {
       "boundaryWidthPx": 1800,
       "boundaryHeightPx": 1200,
-      "backgroundSpeedPxPerFrame": 0.1,
+      "backgroundSpeedPxPerFrame": 0.05,
       "backgroundScale": 1.6
     },
     "backgroundImageWidthPx": 1800,
