@@ -8,11 +8,12 @@ interface Props {
   instruction: string;
   clickedStationName?: string;
   anchorRect?: DOMRect | null;
+  dimmed?: boolean;
   onContinue: () => void;
   showContinue?: boolean;
 }
 
-export default function TutorialOverlay({ visible, highlightTarget, instruction, clickedStationName, anchorRect = null, onContinue, showContinue = true }: Props) {
+export default function TutorialOverlay({ visible, highlightTarget, instruction, clickedStationName, anchorRect = null, dimmed = true, onContinue, showContinue = true }: Props) {
   const [rect, setRect] = useState<DOMRect | null>(null);
 
   useEffect(() => {
@@ -52,7 +53,7 @@ export default function TutorialOverlay({ visible, highlightTarget, instruction,
 
   return (
     <>
-      {highlightTarget !== "correct-station" && <div className={styles.veil} aria-hidden="true" />}
+      {dimmed && <div className={styles.veil} aria-hidden="true" />}
       {highlightTarget !== "correct-station" && highlightTarget !== "center" && rect && (
         <div
           className={styles.highlightFrame}

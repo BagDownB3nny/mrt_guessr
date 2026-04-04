@@ -426,6 +426,7 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
         instruction={activeTutorialCard?.text ?? ""}
         clickedStationName={newlyCorrectStation}
         anchorRect={activeTutorialCard?.target === "clicked-station" ? tutorialAnchorRect : null}
+        dimmed={activeTutorialCard?.dimmed !== false}
         showContinue={activeTutorialCard?.continueable !== false}
         onContinue={advanceTutorialQueue}
       />
