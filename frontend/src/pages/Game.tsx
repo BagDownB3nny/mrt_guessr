@@ -390,6 +390,7 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
         onWrongClick={onWrongClick}
         currentStation={currentStation}
         newlyCorrectStation={newlyCorrectStation}
+        tutorialHighlightedStation={activeTutorialCard?.target === "clicked-station" ? newlyCorrectStation : null}
         tries={tries}
         onMapReady={() => { if (!tutorialWelcomeVisible) setVeilVisible(false); }}
         blocked={modalOpen || tutorialWelcomeVisible}

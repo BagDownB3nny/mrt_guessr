@@ -21,6 +21,7 @@ interface Props {
   onWrongClick: (stationName: string) => void;
   currentStation: string;
   newlyCorrectStation: string;
+  tutorialHighlightedStation?: string | null;
   tries: number;
   onMapReady?: () => void;
   blocked?: boolean;  // when true, map is non-interactive (e.g. modal open)
@@ -31,6 +32,7 @@ export default function MrtMapController({
   onWrongClick,
   currentStation,
   newlyCorrectStation,
+  tutorialHighlightedStation = null,
   tries,
   onMapReady,
   blocked = false,
@@ -47,6 +49,7 @@ export default function MrtMapController({
   const [revealCircle, setRevealCircle] = useState<{ key: number; buttonId: string; size: number } | null>(null);
   const revealCircleKey = useRef(0);
   const revealCircleDivRef = useRef<HTMLDivElement | null>(null);
+  const tutorialHighlightDivRef = useRef<HTMLDivElement | null>(null);
   // Tracks whether a touch moved before a click fires, so panning doesn't
   // accidentally trigger station selection.
   const touchMovedRef = useRef(false);
@@ -187,6 +190,29 @@ export default function MrtMapController({
     return () => cancelAnimationFrame(rafId);
   }, [revealCircle]);
 
+  // ── Tutorial clicked-station highlight: tracks map panning live ───────────
+  useEffect(() => {
+    if (!tutorialHighlightedStation) return;
+    let rafId: number;
+    const track = () => {
+      const el = document.getElementById(`${tutorialHighlightedStation.replaceAll(" ", "_")}_Button`);
+      const div = tutorialHighlightDivRef.current;
+      if (el && div) {
+        const rect = el.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const size = Math.max(rect.width, rect.height) * 2;
+        div.style.left = `${cx}px`;
+        div.style.top = `${cy}px`;
+        div.style.width = `${size}px`;
+        div.style.height = `${size}px`;
+      }
+      rafId = requestAnimationFrame(track);
+    };
+    rafId = requestAnimationFrame(track);
+    return () => cancelAnimationFrame(rafId);
+  }, [tutorialHighlightedStation]);
+
   // ── Reveal station name text when correctly guessed ───────────────────────
   useEffect(() => {
     if (!newlyCorrectStation) return;
@@ -315,6 +341,20 @@ export default function MrtMapController({
               height: revealCircle.size,
               left: 0,
               top: 0,
+              ["--circle-pulse-speed" as any]: `${(config.transitions as any).revealCirclePulseSpeedMs}ms`,
+            }}
+          />
+        )}
+        {tutorialHighlightedStation && (
+          <div
+            ref={tutorialHighlightDivRef}
+            className={styles.circle}
+            style={{
+              position: "fixed",
+              left: 0,
+              top: 0,
+              width: 0,
+              height: 0,
               ["--circle-pulse-speed" as any]: `${(config.transitions as any).revealCirclePulseSpeedMs}ms`,
             }}
           />

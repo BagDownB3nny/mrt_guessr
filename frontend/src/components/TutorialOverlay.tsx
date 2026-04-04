@@ -16,24 +16,25 @@ export default function TutorialOverlay({ visible, highlightTarget, instruction,
   const [rect, setRect] = useState<DOMRect | null>(null);
 
   useEffect(() => {
-    if (!visible || highlightTarget === "correct-station" || highlightTarget === "center") {
+    if (!visible || highlightTarget === "correct-station" || highlightTarget === "center" || highlightTarget === "clicked-station") {
       setRect(null);
       return;
     }
 
     const measure = () => {
-      let el: HTMLElement | null = null;
-      if (highlightTarget === "clicked-station" && clickedStationName) {
-        el = document.getElementById(`${clickedStationName.replaceAll(" ", "_")}_Button`) as HTMLElement | null;
-      } else {
-        el = document.querySelector(`[data-tutorial-target="${highlightTarget}"]`) as HTMLElement | null;
-      }
+      const el = document.querySelector(`[data-tutorial-target="${highlightTarget}"]`) as HTMLElement | null;
       setRect(el ? el.getBoundingClientRect() : null);
     };
 
     measure();
+    const raf1 = requestAnimationFrame(measure);
+    const raf2 = requestAnimationFrame(() => requestAnimationFrame(measure));
     window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    return () => {
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
+      window.removeEventListener("resize", measure);
+    };
   }, [visible, highlightTarget, clickedStationName]);
 
   if (!visible) return null;
@@ -41,7 +42,7 @@ export default function TutorialOverlay({ visible, highlightTarget, instruction,
   return (
     <>
       {highlightTarget !== "correct-station" && <div className={styles.veil} aria-hidden="true" />}
-      {highlightTarget !== "correct-station" && highlightTarget !== "center" && rect && (
+      {highlightTarget !== "correct-station" && highlightTarget !== "center" && highlightTarget !== "clicked-station" && rect && (
         <div
           className={styles.highlightFrame}
           aria-hidden="true"
