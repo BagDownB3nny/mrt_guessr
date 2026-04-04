@@ -22,8 +22,8 @@ export default function Home({ onSelectStation }: HomeProps) {
   const speed = homeBackground.backgroundPanSpeedPxPerFrame;
   const boundaryWidth = homeBackground.backgroundBoundaryWidthPx;
   const boundaryHeight = homeBackground.backgroundBoundaryHeightPx;
-  const zoom = homeBackground.backgroundZoomLevel;
-  const centerZoom = homeBackground.backgroundCenterZoomLevel;
+  const mobileZoom = homeBackground.backgroundZoomLevel;
+  const desktopZoom = homeBackground.backgroundCenterZoomLevel;
   const imageWidth = homeBackground.backgroundImageWidthPx;
   const imageHeight = homeBackground.backgroundImageHeightPx;
   const imageAspectRatio = imageWidth / imageHeight;
@@ -38,9 +38,9 @@ export default function Home({ onSelectStation }: HomeProps) {
     };
   });
   const velocityRef = useRef({ x: speed, y: speed });
+  const isMobile = window.innerWidth <= 768;
 
   useEffect(() => {
-    const isMobile = window.innerWidth <= 768;
     if (!isMobile) {
       setBgOffset({ x: 0, y: 0 });
       return;
@@ -71,7 +71,53 @@ export default function Home({ onSelectStation }: HomeProps) {
     velocityRef.current = { x: speed, y: speed };
     rafId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafId);
-  }, [speed, boundaryWidth, boundaryHeight, fittedImageWidth, fittedImageHeight]);
+  }, [isMobile, speed, boundaryWidth, boundaryHeight, fittedImageWidth, fittedImageHeight]);
+
+  const renderMobileBackground = () => (
+    <img
+      aria-hidden="true"
+      src="/home-mrt-map-bg.png"
+      alt=""
+      style={{
+        position: "fixed",
+        left: "50%",
+        top: "50%",
+        width: fittedImageWidth,
+        height: fittedImageHeight,
+        zIndex: 0,
+        opacity: homeBackground.mapOpacity,
+        filter: `grayscale(${homeBackground.mapGrayscale})`,
+        pointerEvents: "none",
+        objectFit: "contain",
+        maxWidth: "none",
+        transform: `translate(calc(-50% + ${bgOffset.x}px), calc(-50% + ${bgOffset.y}px)) scale(${mobileZoom})`,
+        transformOrigin: "center center",
+      }}
+    />
+  );
+
+  const renderDesktopBackground = () => (
+    <img
+      aria-hidden="true"
+      src="/home-mrt-map-bg.png"
+      alt=""
+      style={{
+        position: "fixed",
+        left: "50%",
+        top: "50%",
+        width: "100vw",
+        height: "auto",
+        zIndex: 0,
+        opacity: homeBackground.mapOpacity,
+        filter: `grayscale(${homeBackground.mapGrayscale})`,
+        pointerEvents: "none",
+        objectFit: "contain",
+        maxWidth: "none",
+        transform: `translate(-50%, -50%) scale(${desktopZoom})`,
+        transformOrigin: "center center",
+      }}
+    />
+  );
 
   const stations: StationConfig[] = [
     { text: "Daily Challenge",    onClick: () => onSelectStation("/daily") },
@@ -83,26 +129,7 @@ export default function Home({ onSelectStation }: HomeProps) {
 
   return (
     <>
-      <img
-        aria-hidden="true"
-        src="/home-mrt-map-bg.png"
-        alt=""
-        style={{
-          position: "fixed",
-          left: "50%",
-          top: "50%",
-          width: window.innerWidth <= 768 ? fittedImageWidth : "100vw",
-          height: window.innerWidth <= 768 ? fittedImageHeight : "auto",
-          zIndex: 0,
-          opacity: homeBackground.mapOpacity,
-          filter: `grayscale(${homeBackground.mapGrayscale})`,
-          pointerEvents: "none",
-          objectFit: "contain",
-          maxWidth: "none",
-          transform: `translate(calc(-50% + ${bgOffset.x}px), calc(-50% + ${bgOffset.y}px)) scale(${window.innerWidth <= 768 ? zoom : centerZoom})`,
-          transformOrigin: "center center",
-        }}
-      />
+      {isMobile ? renderMobileBackground() : renderDesktopBackground()}
 
       {/* ── First viewport: title + buttons ── */}
       <div className={styles.home}>
