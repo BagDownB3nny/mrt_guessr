@@ -33,7 +33,7 @@ const FixedBar: React.FC<Props> = (props) => {
     <div className={`${styles.fixedBar} ${minimal ? styles.fixedBarMinimal : ""}`}>
       {/* Left: found */}
       {!minimal && (
-        <div className={`${styles.leftColumn} ${highlightScore ? styles.tutorialHighlight : ""}`}>
+        <div className={`${styles.leftColumn} ${highlightScore ? styles.tutorialHighlight : ""}`} data-tutorial-target="score">
           <div className={styles.statBlock}>
             <div className={styles.statLabel}>Found</div>
             <div className={styles.statValue}>{getStationsLeft()}</div>
@@ -44,7 +44,7 @@ const FixedBar: React.FC<Props> = (props) => {
       {/* Middle: station name + tries */}
       <div className={minimal ? styles.middleColumnFull : styles.middleColumn}>
         {currentStation ? (
-          <div key={currentStation} className={`${styles.stationCapsule} ${highlightStationCard ? styles.tutorialHighlight : ""}`}>
+          <div key={currentStation} className={`${styles.stationCapsule} ${highlightStationCard ? styles.tutorialHighlight : ""}`} data-tutorial-target="station-card">
             <span className={styles.stationName}>{currentStation}</span>
           </div>
         ) : (
@@ -57,7 +57,7 @@ const FixedBar: React.FC<Props> = (props) => {
           )
         )}
         {!minimal && (
-          <div className={`${styles.triesBox} ${highlightLives ? styles.tutorialHighlight : ""}`}>
+          <div className={`${styles.triesBox} ${highlightLives ? styles.tutorialHighlight : ""}`} data-tutorial-target="lives">
             {arrayData.map((num) => {
               const isSpent = tries <= num;
               return (

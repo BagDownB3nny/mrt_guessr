@@ -67,7 +67,7 @@ export default function HintButton({ currentStation, triesLeft, triesPerStation,
 
   return (
     <div className={styles.wrapper}>
-      <div className={`${styles.hintsContainer} ${highlighted ? styles.tutorialHighlight : ""}`}>
+      <div className={`${styles.hintsContainer} ${highlighted ? styles.tutorialHighlight : ""}`} data-tutorial-target="hints">
         <div className={styles.hintLabel}>Hints</div>
         {showLine && lines.length > 0 && (
           <div key={`line-${lineKey}`} className={styles.hintRow}>

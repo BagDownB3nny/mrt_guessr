@@ -144,7 +144,7 @@ export default function GameFinishModal({ modalOpen, setModalOpen, guessStats, o
         </div>
 
         {/* Stats grid — hidden for speedrun */}
-        {!isSpeedrun && !tutorialMode && (
+        {!isSpeedrun && (
           <div className={styles.grid}>
             <div className={`${styles.cell} ${styles.cellGreen}`}>
               <div className={styles.cellNumber}>{guessStats.inOneTry}</div>
