@@ -8,7 +8,7 @@ export type TutorialEventKey =
   | "wrong_twice_hints"
   | "wrong_thrice_reveal";
 
-export type TutorialHighlightTarget = "station-card" | "lives" | "hints" | "score" | "correct-station" | "center";
+export type TutorialHighlightTarget = "station-card" | "lives" | "hints" | "score" | "correct-station" | "center" | "clicked-station";
 
 export type TutorialCard = {
   target: TutorialHighlightTarget;
@@ -59,7 +59,7 @@ export function buildTutorialCards(event: TutorialEventKey, ctx: TutorialContext
       return [{ target: "station-card", text: tutorialText.findStation.replace("{station}", ctx.currentStation), dimmed: true }];
     case "correct_first":
       return [
-        { target: "center", text: tutorialText.congrats.replace("{station}", ctx.newlyCorrectStation), dimmed: true },
+        { target: "clicked-station", text: tutorialText.congrats.replace("{station}", ctx.newlyCorrectStation), dimmed: true },
         { target: "score", text: tutorialText.score.replace("{found}", String(ctx.clickedStationsCount)).replace("{total}", String(ctx.totalStations)), dimmed: true },
         { target: "station-card", text: tutorialText.nextStation.replace("{station}", ctx.currentStation), dimmed: true },
       ];

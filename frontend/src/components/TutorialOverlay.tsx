@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
 import styles from "../css/TutorialOverlay.module.css";
 
-export type TutorialHighlightTarget = "station-card" | "lives" | "hints" | "score" | "correct-station" | "center";
+export type TutorialHighlightTarget = "station-card" | "lives" | "hints" | "score" | "correct-station" | "center" | "clicked-station";
 
 interface Props {
   visible: boolean;
   highlightTarget: TutorialHighlightTarget;
   instruction: string;
+  clickedStationName?: string;
   onContinue: () => void;
   showContinue?: boolean;
 }
 
-export default function TutorialOverlay({ visible, highlightTarget, instruction, onContinue, showContinue = true }: Props) {
+export default function TutorialOverlay({ visible, highlightTarget, instruction, clickedStationName, onContinue, showContinue = true }: Props) {
   const [rect, setRect] = useState<DOMRect | null>(null);
 
   useEffect(() => {
@@ -21,14 +22,19 @@ export default function TutorialOverlay({ visible, highlightTarget, instruction,
     }
 
     const measure = () => {
-      const el = document.querySelector(`[data-tutorial-target="${highlightTarget}"]`) as HTMLElement | null;
+      let el: HTMLElement | null = null;
+      if (highlightTarget === "clicked-station" && clickedStationName) {
+        el = document.getElementById(`${clickedStationName.replaceAll(" ", "_")}_Button`) as HTMLElement | null;
+      } else {
+        el = document.querySelector(`[data-tutorial-target="${highlightTarget}"]`) as HTMLElement | null;
+      }
       setRect(el ? el.getBoundingClientRect() : null);
     };
 
     measure();
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
-  }, [visible, highlightTarget]);
+  }, [visible, highlightTarget, clickedStationName]);
 
   if (!visible) return null;
 

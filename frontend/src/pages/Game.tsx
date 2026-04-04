@@ -421,6 +421,7 @@ export default function Game({ gameType, tutorialMode = false }: GameProps) {
         visible={!modalOpen && !tutorialWelcomeVisible && tutorialEngine.visible && !!activeTutorialCard}
         highlightTarget={activeTutorialCard?.target ?? "station-card"}
         instruction={activeTutorialCard?.text ?? ""}
+        clickedStationName={newlyCorrectStation}
         showContinue={activeTutorialCard?.continueable !== false}
         onContinue={advanceTutorialQueue}
       />
