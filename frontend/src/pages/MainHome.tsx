@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../css/Home.module.css";
 import Home from "./Home";
@@ -10,6 +10,17 @@ const VEIL_IN_DURATION = config.transitions.landingVeilInMs;
 export default function Mainhome() {
   const navigate  = useNavigate();
   const [phase, setPhase] = useState<"idle" | "travelling">("idle");
+
+  useEffect(() => {
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevBodyOverflow = document.body.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.style.overflow = prevBodyOverflow;
+    };
+  }, []);
 
   const handleSelectStation = (route?: string) => {
     if (phase !== "idle" || !route) return;
