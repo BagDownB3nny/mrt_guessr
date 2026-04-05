@@ -3,19 +3,11 @@ import Modal from "react-modal";
 import styles from "../css/GameFinishModal.module.css";
 import { useNavigate } from "react-router-dom";
 import config from "../config/constants.json";
-import { formatMs } from "../pages/Game";
+import { formatMs } from "../gameplay/StandardGamePage";
+import { GuessStats } from "../gameplay/shared";
 import SpeedrunLeaderboard from "./SpeedrunLeaderboard";
 
 Modal.setAppElement("#root");
-
-interface GuessStats {
-  inOneTry: number;
-  inTwoTries: number;
-  inThreeTries: number;
-  afterThreeTries: number;
-  foundStations: string[];
-  missedStations: string[];
-}
 
 interface Props {
   modalOpen: boolean;

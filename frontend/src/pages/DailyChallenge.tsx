@@ -15,19 +15,11 @@ import GameFinishModal from "../components/GameFinishModal";
 import HintButton from "../components/HintButton";
 import styles from "../css/Game.module.css";
 import config from "../config/constants.json";
+import { applyGuessToStats, createEmptyGuessStats, GuessStats, setAllStationLabelsVisible } from "../gameplay/shared";
 
 const CONVEX_URL = (config as any).convexUrl as string | undefined;
 const TRIES_PER_STATION = config.gameplay.triesPerStation;
 const DAILY_COOKIE_PREFIX = "mrt_daily_";
-
-interface GuessStats {
-  inOneTry: number;
-  inTwoTries: number;
-  inThreeTries: number;
-  afterThreeTries: number;
-  foundStations: string[];
-  missedStations: string[];
-}
 
 // ── Cookie helpers ─────────────────────────────────────────────────────────
 
@@ -96,10 +88,7 @@ export default function DailyChallenge() {
   const [showGreenFlash, setShowGreenFlash] = useState(false);
   const [showRedFlash, setShowRedFlash] = useState(false);
   const [veilVisible, setVeilVisible] = useState(true);
-  const [guessStats, setGuessStats] = useState<GuessStats>({
-    inOneTry: 0, inTwoTries: 0, inThreeTries: 0,
-    afterThreeTries: 0, foundStations: [], missedStations: [],
-  });
+  const [guessStats, setGuessStats] = useState<GuessStats>(createEmptyGuessStats);
 
   // ── Load today's challenge ──────────────────────────────────────────────
 
@@ -171,16 +160,7 @@ export default function DailyChallenge() {
   // ── Handlers ────────────────────────────────────────────────────────────
 
   const recordGuess = (station: string, triesUsed: number) => {
-    const t = Math.max(0, triesUsed);
-    const isFound = t > 0;
-    setGuessStats((prev) => ({
-      inOneTry:        prev.inOneTry        + (t === 3 ? 1 : 0),
-      inTwoTries:      prev.inTwoTries      + (t === 2 ? 1 : 0),
-      inThreeTries:    prev.inThreeTries    + (t === 1 ? 1 : 0),
-      afterThreeTries: prev.afterThreeTries + (t === 0 ? 1 : 0),
-      foundStations:   isFound ? [...prev.foundStations, station] : prev.foundStations,
-      missedStations:  isFound ? prev.missedStations : [...prev.missedStations, station],
-    }));
+    setGuessStats((prev) => applyGuessToStats(prev, station, triesUsed));
   };
 
   const onCorrectClick = (station: string, triesRemaining: number) => {
@@ -215,7 +195,7 @@ export default function DailyChallenge() {
         setCurrentStation("");
         setNewlyCorrectStation("");
         setTries(TRIES_PER_STATION);
-        setGuessStats({ inOneTry: 0, inTwoTries: 0, inThreeTries: 0, afterThreeTries: 0, foundStations: [], missedStations: [] });
+        setGuessStats(createEmptyGuessStats());
         setModalOpen(false);
         setVeilVisible(true);
         setPhase("playing");
@@ -225,7 +205,7 @@ export default function DailyChallenge() {
 
   const onExploreMap = () => {
     setModalOpen(false);
-    document.querySelectorAll<HTMLElement>('[id$="_Text"]').forEach((el) => { el.style.display = "block"; });
+    setAllStationLabelsVisible(true);
   };
 
   // ── Loading / error / already-played states ─────────────────────────────

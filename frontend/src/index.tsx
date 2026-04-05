@@ -3,9 +3,12 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
-import Game, { GameType } from "./pages/Game";
 import Mainhome from "./pages/MainHome";
 import DailyChallenge from "./pages/DailyChallenge";
+import Quickplay from "./pages/Quickplay";
+import Tutorial from "./pages/Tutorial";
+import Speedrun from "./pages/Speedrun";
+import SingaporeTour from "./pages/SingaporeTour";
 import TutorialGate from "./components/TutorialGate";
 
 const router = createBrowserRouter([
@@ -24,19 +27,19 @@ const router = createBrowserRouter([
       },
       {
         path: "tutorial",
-        element: <Game gameType={GameType.QUICKGAME} tutorialMode />,
+        element: <Tutorial />,
       },
       {
         path: "quickgame",
-        element: <Game gameType={GameType.QUICKGAME} />,
+        element: <Quickplay />,
       },
       {
         path: "singaporetour",
-        element: <Game gameType={GameType.SINGAPORETOUR} />,
+        element: <SingaporeTour />,
       },
       {
         path: "speedrun",
-        element: <Game gameType={GameType.SPEEDRUN} />,
+        element: <Speedrun />,
       },
       {
         path: "daily",

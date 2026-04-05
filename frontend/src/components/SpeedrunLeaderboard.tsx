@@ -12,7 +12,7 @@ import Modal from "react-modal";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../convex/_generated/api";
 import styles from "../css/SpeedrunLeaderboard.module.css";
-import { formatMs } from "../pages/Game";
+import { formatMs } from "../gameplay/StandardGamePage";
 import config from "../config/constants.json";
 
 Modal.setAppElement("#root");
